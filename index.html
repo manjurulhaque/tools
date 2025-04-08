@@ -1,7 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<!-- Google tag (gtag.js) -->
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Advanced Image to PDF Converter | Manjurul.com</title>
+		<meta
+			name="description"
+			content="Convert images to high-quality PDFs with advanced features including compression, drag & drop, reordering, and layout selection."
+		/>
+		<meta
+			name="keywords"
+			content="image to pdf, convert images, pdf creator, photo to pdf, online converter"
+		/>
+		<meta name="author" content="Manjurul Haque" />
+		<meta property="og:title" content="Advanced Image to PDF Converter" />
+		<meta
+			property="og:description"
+			content="Convert your images to PDF with drag-and-drop support, compression settings, and layout customization."
+		/>
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://www.manjurul.com" />
+		<meta property="og:image" content="https://www.manjurul.com/preview.png" />
 		<script
 			async
 			src="https://www.googletagmanager.com/gtag/js?id=G-BT5Z6NFW4C"
@@ -12,100 +31,69 @@
 				dataLayer.push(arguments);
 			}
 			gtag("js", new Date());
-
 			gtag("config", "G-BT5Z6NFW4C");
 		</script>
-	
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<meta
-			name="description"
-			content="Convert images to high-quality PDFs with advanced features including compression, drag & drop, reordering, and layout selection."
-		/>
-		<meta
-			name="keywords"
-			content="image to pdf, convert images, pdf creator, photo to pdf, online converter"
-		/>
-		<meta name="author" content="Your Name" />
-		<meta property="og:title" content="Advanced Image to PDF Converter" />
-		<meta
-			property="og:description"
-			content="Convert your images to PDF with drag-and-drop support, compression settings, and layout customization."
-		/>
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://www.manjurul.com" />
-		<meta property="og:image" content="https://www.manjurul.com/preview.png" />
-		<!-- <link rel="icon" href="favicon.ico" type="image/x-icon" /> -->
-		<title>Advanced Image to PDF Converter | Manjurul.com</title>
 		<style>
 			body {
 				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-				background-color: #f5f5f5;
 				margin: 0;
-				padding: 0;
+				background-color: #f7f9fc;
 			}
-
-			/* ---------- NAVIGATION BAR ---------- */
 			nav {
-				display: flex;
-				align-items: center;
-				justify-content: space-between;
-				background-color: #ffffff;
+				background-color: #007bff;
+				color: #fff;
 				padding: 1rem 2rem;
-				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
 				position: sticky;
 				top: 0;
-				z-index: 1000;
+				z-index: 999;
 			}
-
 			nav .logo {
 				font-size: 1.5rem;
 				font-weight: bold;
-				color: #007bff;
 			}
-
-			.container {
-				max-width: 800px;
+			nav .badge {
+				background: #ffc107;
+				color: #333;
+				padding: 5px 10px;
+				border-radius: 20px;
+				font-size: 0.85rem;
+				font-weight: bold;
+			}
+			main.container {
+				max-width: 900px;
 				margin: auto;
-				background: white;
-				padding: 30px;
+				background: #fff;
+				padding: 2rem;
 				border-radius: 10px;
-				box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+				box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
 			}
-
 			h1 {
 				text-align: center;
 				color: #333;
 			}
-
-			input[type="file"] {
-				display: block;
-				margin: 20px auto;
-			}
-
 			.drop-zone {
-				border: 2px dashed #999;
+				border: 2px dashed #007bff;
 				border-radius: 10px;
-				padding: 30px;
+				padding: 2rem;
 				text-align: center;
-				color: #666;
+				color: #555;
 				cursor: pointer;
 				transition: background-color 0.3s ease;
-				margin-bottom: 20px;
+				margin-bottom: 1rem;
 			}
-
 			.drop-zone:hover {
-				background-color: #e6f7ff;
+				background-color: #e6f2ff;
 			}
-
 			.preview-container {
 				display: flex;
 				flex-wrap: wrap;
 				gap: 15px;
 				margin-bottom: 20px;
 			}
-
-			.preview-container .preview-item {
+			.preview-item {
 				position: relative;
 				width: 120px;
 				height: 120px;
@@ -114,14 +102,12 @@
 				overflow: hidden;
 				box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 			}
-
-			.preview-container img {
+			.preview-item img {
 				width: 100%;
 				height: 100%;
 				object-fit: cover;
 			}
-
-			.preview-container .remove-btn {
+			.remove-btn {
 				position: absolute;
 				top: 5px;
 				right: 5px;
@@ -134,31 +120,26 @@
 				font-size: 12px;
 				cursor: pointer;
 			}
-
 			button {
-				display: block;
 				width: 100%;
 				padding: 12px;
 				background-color: #007bff;
-				border: none;
 				color: white;
-				font-size: 16px;
+				border: none;
 				border-radius: 8px;
+				font-size: 16px;
 				cursor: pointer;
-				margin-bottom: 20px;
+				margin-top: 20px;
 			}
-
 			button:hover {
 				background-color: #0056b3;
 			}
-
 			label {
 				display: block;
 				margin-top: 10px;
 				font-weight: bold;
 				color: #444;
 			}
-
 			input[type="range"],
 			select {
 				width: 100%;
@@ -167,68 +148,57 @@
 				border-radius: 5px;
 				border: 1px solid #ccc;
 			}
+			#uploadCounter {
+				background: red;
+				color: white;
+				border-radius: 999px;
+				padding: 2px 8px;
+				font-size: 12px;
+				margin-left: 8px;
+			}
 		</style>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
 	</head>
 	<body>
-		<!-- ---------- NAVIGATION BAR ---------- -->
 		<nav>
 			<div class="logo">MANJURUL.COM - PDF Tools</div>
-			<!-- <ul class="nav-links">
-				<li><a href="index.html">Home</a></li>
-				<li><a href="contact.html">Contact</a></li>
-			</ul> -->
+			<div class="badge">Image to PDF Converter</div>
 		</nav>
-		
-		<main class="container">
-			<header>
-				<h1>Advanced Image to PDF Converter</h1>
-				<p>
-					Upload your images, reorder them, choose layout options, and generate
-					a high-quality PDF.
-				</p>
-			</header>
 
-			<section aria-label="Image Upload">
-				<h2>Upload or Drag and Drop Images</h2>
+		<main class="container">
+			<h1>Advanced Image to PDF Converter</h1>
+			<p style="text-align: center">
+				Upload, preview, reorder, and convert images into a high-quality PDF
+				file.
+			</p>
+			<div id="dropZone" class="drop-zone">
+				Click or Drag & Drop images here
 				<input
 					type="file"
 					id="imageInput"
 					multiple
 					accept="image/*"
-					aria-label="Select images to convert to PDF"
+					style="display: none"
 				/>
-				<div id="dropZone" class="drop-zone" aria-label="Drop zone for images">
-					Drag and drop images here
-				</div>
-			</section>
+			</div>
 
-			<section aria-label="Preview and Reorder">
-				<h2>Image Preview & Reordering</h2>
-				<div id="preview" class="preview-container" aria-live="polite"></div>
-			</section>
+			<h3>Preview <span id="uploadCounter">0</span></h3>
+			<div id="preview" class="preview-container"></div>
 
-			<section aria-label="Conversion Settings">
-				<h2>Conversion Settings</h2>
-				<label for="compression">Compression Level:</label>
-				<input
-					type="range"
-					id="compression"
-					min="0"
-					max="100"
-					value="50"
-					aria-valuemin="0"
-					aria-valuemax="100"
-				/>
+			<section>
+				<label for="compression"
+					>Compression Level: <span id="compressionValue">50%</span></label
+				>
+				<input type="range" id="compression" min="0" max="100" value="50" />
 
 				<label for="layout">PDF Layout:</label>
-				<select id="layout" aria-label="Select layout">
+				<select id="layout">
 					<option value="portrait">Portrait</option>
 					<option value="landscape">Landscape</option>
 				</select>
 
 				<label for="pageSize">Page Size:</label>
-				<select id="pageSize" aria-label="Select page size">
+				<select id="pageSize">
 					<option value="a4">A4</option>
 					<option value="letter">Letter</option>
 					<option value="legal">Legal</option>
@@ -238,64 +208,55 @@
 				</select>
 			</section>
 
-			<section>
-				<button onclick="convertToPDF()" aria-label="Convert images to PDF">
-					Convert to PDF
-				</button>
-			</section>
-<script async="async" data-cfasync="false" src="//pl26323378.profitableratecpm.com/cbf1fdea3c8e0a0603fdc400df31f4df/invoke.js"></script>
-<div id="container-cbf1fdea3c8e0a0603fdc400df31f4df"></div>
-			<footer style="text-align: center; margin-top: 20px">
+			<button onclick="convertToPDF()">Convert to PDF</button>
+			<script
+				async="async"
+				data-cfasync="false"
+				src="//pl26323378.profitableratecpm.com/cbf1fdea3c8e0a0603fdc400df31f4df/invoke.js"
+			></script>
+			<div id="container-cbf1fdea3c8e0a0603fdc400df31f4df"></div>
+			<footer style="text-align: center; margin-top: 30px">
 				<p>&copy; 2025 MANJURUL.COM; All rights reserved.</p>
 			</footer>
 		</main>
 
 		<script>
-			// Global array to hold image objects
 			let imagesList = [];
 
-			// Get DOM elements
 			const imageInput = document.getElementById("imageInput");
 			const dropZone = document.getElementById("dropZone");
 			const previewContainer = document.getElementById("preview");
 			const compressionInput = document.getElementById("compression");
+			const compressionValue = document.getElementById("compressionValue");
 			const layoutSelect = document.getElementById("layout");
 			const pageSizeSelect = document.getElementById("pageSize");
+			const uploadCounter = document.getElementById("uploadCounter");
 
-			// Add event listeners for file input
-			imageInput.addEventListener("change", (e) => {
-				handleFiles(e.target.files);
-			});
-
-			// Drag and drop events for dropZone
+			imageInput.addEventListener("change", (e) => handleFiles(e.target.files));
 			dropZone.addEventListener("dragover", (e) => {
 				e.preventDefault();
 				dropZone.classList.add("dragover");
 			});
-
-			dropZone.addEventListener("dragleave", () => {
-				dropZone.classList.remove("dragover");
-			});
-
+			dropZone.addEventListener("dragleave", () =>
+				dropZone.classList.remove("dragover")
+			);
 			dropZone.addEventListener("drop", (e) => {
 				e.preventDefault();
 				dropZone.classList.remove("dragover");
 				handleFiles(e.dataTransfer.files);
 			});
+			compressionInput.addEventListener("input", () => {
+				compressionValue.textContent = `${compressionInput.value}%`;
+			});
 
-			// Function to handle files (from input or drop)
 			function handleFiles(files) {
 				Array.from(files).forEach((file) => {
 					if (!file.type.startsWith("image/")) return;
 
 					const reader = new FileReader();
 					reader.onload = (e) => {
-						// Create a unique id for each image
 						const id = Date.now() + Math.random();
-						const imgData = {
-							id: id,
-							src: e.target.result,
-						};
+						const imgData = { id, src: e.target.result };
 						imagesList.push(imgData);
 						renderPreviews();
 					};
@@ -303,7 +264,6 @@
 				});
 			}
 
-			// Function to render image previews
 			function renderPreviews() {
 				previewContainer.innerHTML = "";
 				imagesList.forEach((img, index) => {
@@ -321,128 +281,91 @@
 					removeBtn.innerHTML = "&times;";
 					removeBtn.onclick = () => removeImage(img.id);
 
-					// Drag events for reordering
+					previewItem.appendChild(imageEl);
+					previewItem.appendChild(removeBtn);
 					previewItem.addEventListener("dragstart", dragStart);
 					previewItem.addEventListener("dragover", dragOver);
 					previewItem.addEventListener("drop", drop);
 					previewItem.addEventListener("dragend", dragEnd);
 
-					previewItem.appendChild(imageEl);
-					previewItem.appendChild(removeBtn);
 					previewContainer.appendChild(previewItem);
 				});
+				uploadCounter.textContent = imagesList.length;
 			}
 
-			// Remove image by id
 			function removeImage(id) {
 				imagesList = imagesList.filter((img) => img.id !== id);
 				renderPreviews();
 			}
 
-			// Drag and drop reordering functions
 			let dragSrcEl = null;
-
 			function dragStart(e) {
 				dragSrcEl = this;
 				e.dataTransfer.effectAllowed = "move";
 				e.dataTransfer.setData("text/plain", this.dataset.index);
 				this.classList.add("dragging");
 			}
-
 			function dragOver(e) {
 				e.preventDefault();
 				e.dataTransfer.dropEffect = "move";
-				return false;
 			}
-
 			function drop(e) {
-				e.stopPropagation();
 				const srcIndex = Number(e.dataTransfer.getData("text/plain"));
 				const targetIndex = Number(this.dataset.index);
-
-				if (srcIndex === targetIndex) return;
-
-				// Swap positions in the imagesList array
-				[imagesList[srcIndex], imagesList[targetIndex]] = [
-					imagesList[targetIndex],
-					imagesList[srcIndex],
-				];
-				renderPreviews();
-				return false;
+				if (srcIndex !== targetIndex) {
+					[imagesList[srcIndex], imagesList[targetIndex]] = [
+						imagesList[targetIndex],
+						imagesList[srcIndex],
+					];
+					renderPreviews();
+				}
 			}
-
-			function dragEnd(e) {
+			function dragEnd() {
 				this.classList.remove("dragging");
 			}
 
-			// PDF conversion function using jsPDF
 			function convertToPDF() {
 				if (imagesList.length === 0) {
 					alert("Please add at least one image.");
 					return;
 				}
 
-				// Retrieve user selections
-				const compressionLevel = Number(compressionInput.value); // 0 to 100
-				const quality = compressionLevel / 100; // jsPDF quality is 0-1 for JPEG
-				const orientation =
-					layoutSelect.value === "landscape" ? "landscape" : "portrait";
-				const pageSize = pageSizeSelect.value; // e.g., 'a4', 'letter'
-
-				// Create a new jsPDF instance (using the jsPDF.umd module)
+				const quality = compressionInput.value / 100;
+				const orientation = layoutSelect.value;
+				const pageSize = pageSizeSelect.value;
 				const { jsPDF } = window.jspdf;
-				const doc = new jsPDF({
-					orientation: orientation,
-					format: pageSize,
-				});
+				const doc = new jsPDF({ orientation, format: pageSize });
 
-				// Counter to track loaded images
-				let loadedImages = 0;
+				let loaded = 0;
 
-				// For each image, add to PDF
-				imagesList.forEach((img, idx) => {
-					const imageElement = new Image();
-					imageElement.src = img.src;
-					imageElement.onload = () => {
-						// Calculate dimensions to maintain aspect ratio
-						const pageWidth = doc.internal.pageSize.getWidth();
-						const pageHeight = doc.internal.pageSize.getHeight();
+				imagesList.forEach((img, i) => {
+					const imageEl = new Image();
+					imageEl.src = img.src;
+					imageEl.onload = () => {
+						const pageW = doc.internal.pageSize.getWidth();
+						const pageH = doc.internal.pageSize.getHeight();
+						let { width, height } = imageEl;
 
-						let imgWidth = imageElement.width;
-						let imgHeight = imageElement.height;
+						const scale = Math.min(pageW / width, pageH / height);
+						width *= scale;
+						height *= scale;
+						const x = (pageW - width) / 2;
+						const y = (pageH - height) / 2;
 
-						const ratio = Math.min(
-							pageWidth / imgWidth,
-							pageHeight / imgHeight
-						);
-						imgWidth = imgWidth * ratio;
-						imgHeight = imgHeight * ratio;
-
-						const x = (pageWidth - imgWidth) / 2;
-						const y = (pageHeight - imgHeight) / 2;
-
-						// Add image to PDF (using JPEG and the selected quality)
 						doc.addImage(
-							img.src,
+							imageEl,
 							"JPEG",
 							x,
 							y,
-							imgWidth,
-							imgHeight,
+							width,
+							height,
 							undefined,
 							"FAST",
 							quality
 						);
 
-						loadedImages++;
-						// Add a new page if not the last image and all images have loaded so far
-						if (loadedImages < imagesList.length) {
-							doc.addPage();
-						}
-						// When last image is added, save the PDF
-						if (loadedImages === imagesList.length) {
-							doc.save("converted.pdf");
-						}
+						if (++loaded < imagesList.length) doc.addPage();
+						else doc.save("converted.pdf");
 					};
 				});
 			}
