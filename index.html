@@ -12,6 +12,16 @@
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://www.manjurul.com" />
     <meta property="og:image" content="https://www.manjurul.com/preview.png" />
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-ENjdO4Dr2bkBIFxQpeo5Py3Zc5siQ9HU5LkFwFmC94V7d1Pq+UrUC9i+STd0W1y"
+      crossorigin="anonymous"
+    />
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <!-- Google Analytics Script -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BT5Z6NFW4C"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -21,215 +31,207 @@
       gtag("js", new Date());
       gtag("config", "G-BT5Z6NFW4C");
     </script>
+    <!-- Custom Styles -->
     <style>
       body {
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-        margin: 0;
         background-color: #f7f9fc;
       }
-      nav {
-        background-color: #007bff;
-        color: #fff;
-        padding: 1rem 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        position: sticky;
-        top: 0;
-        z-index: 999;
-      }
-      nav .logo {
-        font-size: 1.5rem;
-        font-weight: bold;
-      }
-      nav .badge {
-        background: #ffc107;
-        color: #333;
-        padding: 5px 10px;
-        border-radius: 20px;
-        font-size: 0.85rem;
-        font-weight: bold;
-      }
-      main.container {
-        max-width: 900px;
-        margin: auto;
-        background: #fff;
-        padding: 2rem;
-        border-radius: 10px;
-        box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-      }
-      h1 {
-        text-align: center;
-        color: #333;
-      }
+      /* Enhanced Drop Zone */
       .drop-zone {
-        border: 2px dashed #007bff;
+        border: 3px dashed #0d6efd;
         border-radius: 10px;
-        padding: 2rem;
+        padding: 3rem;
         text-align: center;
-        color: #555;
-        cursor: pointer;
-        transition: background-color 0.3s ease;
-        margin-bottom: 1rem;
+        color: #6c757d;
+        background-color: #e9ecef;
+        transition: background-color 0.3s, transform 0.3s;
       }
-      .drop-zone:hover {
-        background-color: #e6f2ff;
+      .drop-zone:hover, .drop-zone.dragover {
+        background-color: #dee2e6;
+        transform: scale(1.02);
       }
-      .preview-container {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 15px;
-        margin-bottom: 20px;
+      .drop-zone i {
+        font-size: 2rem;
+        margin-bottom: 10px;
       }
-      .preview-item {
-        position: relative;
-        width: 120px;
-        height: 120px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-      }
-      .preview-item img {
+      /* Preview Card Styling */
+      .preview-card {
         width: 100%;
-        height: 100%;
+        border: none;
+        overflow: hidden;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      }
+      .preview-card img {
+        height: 100px;
         object-fit: cover;
+      }
+      .preview-card .card-body {
+        padding: 0.5rem;
+        text-align: center;
       }
       .remove-btn {
         position: absolute;
-        top: 5px;
-        right: 5px;
-        background: red;
-        color: white;
+        top: 0.2rem;
+        right: 0.2rem;
+        background: rgba(255, 0, 0, 0.8);
         border: none;
         border-radius: 50%;
-        width: 20px;
-        height: 20px;
-        font-size: 12px;
+        color: #fff;
+        width: 24px;
+        height: 24px;
+        line-height: 20px;
+        text-align: center;
         cursor: pointer;
+        font-size: 1rem;
       }
-      button {
+      /* Spinner overlay during PDF conversion */
+      #spinnerOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
         width: 100%;
-        padding: 12px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        font-size: 16px;
-        cursor: pointer;
-        margin-top: 20px;
-      }
-      button:hover {
-        background-color: #0056b3;
-      }
-      label {
-        display: block;
-        margin-top: 10px;
-        font-weight: bold;
-        color: #444;
-      }
-      input[type="range"],
-      select {
-        width: 100%;
-        padding: 8px;
-        margin-top: 5px;
-        border-radius: 5px;
-        border: 1px solid #ccc;
-      }
-      #uploadCounter {
-        background: red;
-        color: white;
-        border-radius: 999px;
-        padding: 2px 8px;
-        font-size: 12px;
-        margin-left: 8px;
-      }
-      hr {
-        margin: 1.5rem 0;
-        border-top: 1px solid #ddd;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        z-index: 1050;
+        display: none;
+        align-items: center;
+        justify-content: center;
       }
     </style>
+    <!-- jsPDF Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
   </head>
   <body>
-    <nav>
-      <div class="logo">MANJURUL.COM - PDF Tools</div>
-      <div class="badge">Image to PDF Converter</div>
-    </nav>
-    <div style="width: 728px; margin: 20px auto;">
-      <!-- Adsterra Ad -->
-      <script type="text/javascript">
-        atOptions = {
-          key: "7f3f40787769423d94fdeb40a441e51d",
-          format: "iframe",
-          height: 90,
-          width: 728,
-          params: {},
-        };
-      </script>
-      <script type="text/javascript" src="//www.highperformanceformat.com/7f3f40787769423d94fdeb40a441e51d/invoke.js"></script>
-    </div>
-    <main class="container">
-      <h1>Advanced Image to PDF Converter</h1>
-      <p style="text-align: center">
-        Upload, preview, reorder, and convert images into a high-quality PDF file.
-      </p>
-      <div id="dropZone" class="drop-zone">
-        Click or Drag & Drop images here
-        <input type="file" id="imageInput" multiple accept="image/*" style="display: none" />
+    <!-- Spinner overlay -->
+    <div id="spinnerOverlay">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Processing...</span>
       </div>
+    </div>
 
-      <h3>Preview <span id="uploadCounter">0</span></h3>
-      <div id="preview" class="preview-container"></div>
-
-      <section>
-        <label for="compression">Compression Level: <span id="compressionValue">50%</span></label>
-        <input type="range" id="compression" min="0" max="100" value="50" />
-
-        <label for="layout">PDF Layout:</label>
-        <select id="layout">
-          <option value="portrait">Portrait</option>
-          <option value="landscape">Landscape</option>
-        </select>
-
-        <label for="pageSize">Page Size:</label>
-        <select id="pageSize">
-          <option value="a4">A4</option>
-          <option value="letter">Letter</option>
-          <option value="legal">Legal</option>
-          <option value="a3">A3</option>
-          <option value="a5">A5</option>
-          <option value="tabloid">Tabloid</option>
-        </select>
-
-        <hr />
-        <label><input type="checkbox" id="enableResize" /> Enable Image Resizing</label>
-
-        <div id="resizeControls" style="display:none;">
-          <label for="resizeWidth">Width (px or %):</label>
-          <input type="text" id="resizeWidth" placeholder="e.g. 600 or 80%" />
-
-          <label for="resizeHeight">Height (px or %):</label>
-          <input type="text" id="resizeHeight" placeholder="e.g. 800 or auto" />
-
-          <label>
-            <input type="checkbox" id="keepAspect" checked />
-            Maintain Aspect Ratio
-          </label>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+      <div class="container">
+        <a class="navbar-brand" href="#">MANJURUL.COM - PDF Tools</a>
+        <span class="badge bg-warning text-dark">Image to PDF Converter</span>
+      </div>
+    </nav>
+    
+    <!-- Advertisement -->
+    <div class="container my-3" style="max-width: 728px;">
+      <div class="text-center">
+        <!-- Adsterra Ad -->
+        <script type="text/javascript">
+          atOptions = {
+            key: "7f3f40787769423d94fdeb40a441e51d",
+            format: "iframe",
+            height: 90,
+            width: 728,
+            params: {},
+          };
+        </script>
+        <script type="text/javascript" src="//www.highperformanceformat.com/7f3f40787769423d94fdeb40a441e51d/invoke.js"></script>
+      </div>
+    </div>
+    
+    <!-- Main Container -->
+    <main class="container my-4">
+      <div class="row">
+        <!-- Left Column: Dropzone and Preview -->
+        <div class="col-lg-8">
+          <div class="card mb-4">
+            <div class="card-body">
+              <!-- Drop Zone & File Input -->
+              <div id="dropZone" class="drop-zone mb-3">
+                <i class="bi bi-cloud-upload"></i>
+                <p class="mb-0">Click or Drag & Drop images here</p>
+                <input type="file" id="imageInput" multiple accept="image/*" class="d-none" />
+              </div>
+              <!-- Preview Section -->
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <h5 class="mb-0">Preview</h5>
+                <span id="uploadCounter" class="badge bg-danger">0</span>
+              </div>
+              <div id="preview" class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3"></div>
+            </div>
+          </div>
         </div>
-      </section>
-
-      <button onclick="convertToPDF()">Convert to PDF</button>
-      <div id="container-cbf1fdea3c8e0a0603fdc400df31f4df"></div>
-	    
-      <footer style="text-align: center; margin-top: 30px">
-        <p>&copy; 2025 MANJURUL.COM; All rights reserved.</p>
+        <!-- Right Column: Conversion Settings -->
+        <div class="col-lg-4">
+          <div class="card mb-4">
+            <div class="card-header">
+              <h6 class="mb-0">Conversion Settings</h6>
+            </div>
+            <div class="card-body">
+              <div class="mb-3">
+                <label for="compression" class="form-label">Compression Level: <span id="compressionValue">50%</span></label>
+                <input type="range" id="compression" min="0" max="100" value="50" class="form-range" />
+              </div>
+              <div class="mb-3">
+                <label for="layout" class="form-label">PDF Layout:</label>
+                <select id="layout" class="form-select">
+                  <option value="portrait">Portrait</option>
+                  <option value="landscape">Landscape</option>
+                </select>
+              </div>
+              <div class="mb-3">
+                <label for="pageSize" class="form-label">Page Size:</label>
+                <select id="pageSize" class="form-select">
+                  <option value="a4">A4</option>
+                  <option value="letter">Letter</option>
+                  <option value="legal">Legal</option>
+                  <option value="a3">A3</option>
+                  <option value="a5">A5</option>
+                  <option value="tabloid">Tabloid</option>
+                </select>
+              </div>
+              <hr />
+              <div class="form-check mb-3">
+                <input type="checkbox" id="enableResize" class="form-check-input" />
+                <label for="enableResize" class="form-check-label">Enable Image Resizing</label>
+              </div>
+              <div id="resizeControls" class="mb-3" style="display:none;">
+                <div class="mb-2">
+                  <label for="resizeWidth" class="form-label">Width (px or %):</label>
+                  <input type="text" id="resizeWidth" placeholder="e.g. 600 or 80%" class="form-control" />
+                </div>
+                <div class="mb-2">
+                  <label for="resizeHeight" class="form-label">Height (px or %):</label>
+                  <input type="text" id="resizeHeight" placeholder="e.g. 800 or auto" class="form-control" />
+                </div>
+                <div class="form-check">
+                  <input type="checkbox" id="keepAspect" class="form-check-input" checked />
+                  <label for="keepAspect" class="form-check-label">Maintain Aspect Ratio</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Convert Button -->
+          <button onclick="convertToPDF()" class="btn btn-primary btn-lg w-100">
+            Convert to PDF
+          </button>
+          <!-- Alert for feedback -->
+          <div id="alertPlaceholder" class="mt-3"></div>
+        </div>
+      </div>
+      
+      <!-- Footer -->
+      <footer class="text-center mt-4">
+        <p class="small mb-0">&copy; 2025 MANJURUL.COM; All rights reserved.</p>
       </footer>
     </main>
-
+    
+    <!-- Bootstrap Bundle with Popper -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-qENqe+JC1NCoPpVE1sW3T6c+V6PxMw3eKjO4F6B7zqrqyaTFyjdjgrt63plwZ8M+"
+      crossorigin="anonymous"
+    ></script>
+    
+    <!-- Custom Script -->
     <script>
       let imagesList = [];
-
+      
       const imageInput = document.getElementById("imageInput");
       const dropZone = document.getElementById("dropZone");
       const previewContainer = document.getElementById("preview");
@@ -238,89 +240,127 @@
       const layoutSelect = document.getElementById("layout");
       const pageSizeSelect = document.getElementById("pageSize");
       const uploadCounter = document.getElementById("uploadCounter");
+      const alertPlaceholder = document.getElementById("alertPlaceholder");
 
       const enableResize = document.getElementById("enableResize");
       const resizeControls = document.getElementById("resizeControls");
       const resizeWidth = document.getElementById("resizeWidth");
       const resizeHeight = document.getElementById("resizeHeight");
       const keepAspect = document.getElementById("keepAspect");
+      const spinnerOverlay = document.getElementById("spinnerOverlay");
 
+      // File input change event
       imageInput.addEventListener("change", (e) => handleFiles(e.target.files));
+      
+      // Open file picker on drop zone click
+      dropZone.addEventListener("click", () => imageInput.click());
+      
+      // Drag & drop events
       dropZone.addEventListener("dragover", (e) => {
         e.preventDefault();
         dropZone.classList.add("dragover");
       });
-      dropZone.addEventListener("dragleave", () =>
-        dropZone.classList.remove("dragover")
-      );
+      dropZone.addEventListener("dragleave", () => {
+        dropZone.classList.remove("dragover");
+      });
       dropZone.addEventListener("drop", (e) => {
         e.preventDefault();
         dropZone.classList.remove("dragover");
         handleFiles(e.dataTransfer.files);
       });
+      
+      // Update compression value text
       compressionInput.addEventListener("input", () => {
         compressionValue.textContent = `${compressionInput.value}%`;
       });
-
+      
+      // Toggle resizing controls
       enableResize.addEventListener("change", () => {
         resizeControls.style.display = enableResize.checked ? "block" : "none";
       });
-
+      
+      // Function to display an alert message
+      function showAlert(message, type="danger") {
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = `
+          <div class="alert alert-${type} alert-dismissible" role="alert">
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        `;
+        alertPlaceholder.innerHTML = "";
+        alertPlaceholder.append(wrapper);
+      }
+      
+      // Handle file(s) selection
       function handleFiles(files) {
         Array.from(files).forEach((file) => {
           if (!file.type.startsWith("image/")) return;
-
           const reader = new FileReader();
           reader.onload = (e) => {
             const id = Date.now() + Math.random();
-            const imgData = { id, src: e.target.result };
-            imagesList.push(imgData);
+            imagesList.push({ id, src: e.target.result });
             renderPreviews();
           };
           reader.readAsDataURL(file);
         });
       }
-
+      
+      // Render preview images using cards
       function renderPreviews() {
         previewContainer.innerHTML = "";
         imagesList.forEach((img, index) => {
-          const previewItem = document.createElement("div");
-          previewItem.classList.add("preview-item");
-          previewItem.setAttribute("draggable", "true");
-          previewItem.dataset.id = img.id;
-          previewItem.dataset.index = index;
-
-          const imageEl = document.createElement("img");
-          imageEl.src = img.src;
-
+          const col = document.createElement("div");
+          col.className = "col";
+          
+          const card = document.createElement("div");
+          card.className = "card preview-card position-relative";
+          card.setAttribute("draggable", "true");
+          card.dataset.id = img.id;
+          card.dataset.index = index;
+          
+          const imgEl = document.createElement("img");
+          imgEl.src = img.src;
+          imgEl.className = "card-img-top";
+          
+          const cardBody = document.createElement("div");
+          cardBody.className = "card-body p-1";
+          
+          // Remove button
           const removeBtn = document.createElement("button");
-          removeBtn.classList.add("remove-btn");
+          removeBtn.className = "remove-btn";
           removeBtn.innerHTML = "&times;";
           removeBtn.onclick = () => removeImage(img.id);
-
-          previewItem.appendChild(imageEl);
-          previewItem.appendChild(removeBtn);
-          previewItem.addEventListener("dragstart", dragStart);
-          previewItem.addEventListener("dragover", dragOver);
-          previewItem.addEventListener("drop", drop);
-          previewItem.addEventListener("dragend", dragEnd);
-
-          previewContainer.appendChild(previewItem);
+          
+          cardBody.appendChild(removeBtn);
+          card.appendChild(imgEl);
+          card.appendChild(cardBody);
+          
+          // Drag events on the card
+          card.addEventListener("dragstart", dragStart);
+          card.addEventListener("dragover", dragOver);
+          card.addEventListener("drop", drop);
+          card.addEventListener("dragend", dragEnd);
+          
+          col.appendChild(card);
+          previewContainer.appendChild(col);
         });
         uploadCounter.textContent = imagesList.length;
       }
-
+      
+      // Remove image from preview
       function removeImage(id) {
         imagesList = imagesList.filter((img) => img.id !== id);
         renderPreviews();
       }
-
+      
+      // Drag and drop logic for preview reordering
       let dragSrcEl = null;
       function dragStart(e) {
         dragSrcEl = this;
         e.dataTransfer.effectAllowed = "move";
         e.dataTransfer.setData("text/plain", this.dataset.index);
-        this.classList.add("dragging");
+        this.classList.add("opacity-50");
       }
       function dragOver(e) {
         e.preventDefault();
@@ -330,68 +370,52 @@
         const srcIndex = Number(e.dataTransfer.getData("text/plain"));
         const targetIndex = Number(this.dataset.index);
         if (srcIndex !== targetIndex) {
-          [imagesList[srcIndex], imagesList[targetIndex]] = [
-            imagesList[targetIndex],
-            imagesList[srcIndex],
-          ];
+          [imagesList[srcIndex], imagesList[targetIndex]] = [imagesList[targetIndex], imagesList[srcIndex]];
           renderPreviews();
         }
       }
       function dragEnd() {
-        this.classList.remove("dragging");
+        this.classList.remove("opacity-50");
       }
-
+      
+      // Convert images to PDF using jsPDF with spinner overlay
       function convertToPDF() {
         if (imagesList.length === 0) {
-          alert("Please add at least one image.");
+          showAlert("Please add at least one image to convert.", "warning");
           return;
         }
-
+        spinnerOverlay.style.display = "flex";
         const quality = compressionInput.value / 100;
         const orientation = layoutSelect.value;
         const pageSize = pageSizeSelect.value;
         const { jsPDF } = window.jspdf;
         const doc = new jsPDF({ orientation, format: pageSize });
-
         let loaded = 0;
-
+        
         imagesList.forEach((img, i) => {
           const imageEl = new Image();
           imageEl.src = img.src;
           imageEl.onload = () => {
             const pageW = doc.internal.pageSize.getWidth();
             const pageH = doc.internal.pageSize.getHeight();
-
             let width = imageEl.width;
             let height = imageEl.height;
-
+            
             // Resizing logic
             if (enableResize.checked) {
               let w = resizeWidth.value.trim();
               let h = resizeHeight.value.trim();
               const isPercent = (val) => val.endsWith("%");
-
               if (w) {
                 const wVal = parseFloat(w);
-                if (isPercent(w)) {
-                  width = (pageW * wVal) / 100;
-                } else {
-                  width = wVal;
-                }
-
+                width = isPercent(w) ? (pageW * wVal) / 100 : wVal;
                 if (keepAspect.checked && !h) {
                   height = (width * imageEl.height) / imageEl.width;
                 }
               }
-
               if (h) {
                 const hVal = parseFloat(h);
-                if (isPercent(h)) {
-                  height = (pageH * hVal) / 100;
-                } else {
-                  height = hVal;
-                }
-
+                height = isPercent(h) ? (pageH * hVal) / 100 : hVal;
                 if (keepAspect.checked && !w) {
                   width = (height * imageEl.width) / imageEl.height;
                 }
@@ -401,17 +425,16 @@
               width *= scale;
               height *= scale;
             }
-
+            
             const x = (pageW - width) / 2;
             const y = (pageH - height) / 2;
-
             doc.addImage(imageEl, "JPEG", x, y, width, height);
             if (i < imagesList.length - 1) {
               doc.addPage();
             }
-
             loaded++;
             if (loaded === imagesList.length) {
+              spinnerOverlay.style.display = "none";
               doc.save("images.pdf");
             }
           };
