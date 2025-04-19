@@ -1,264 +1,784 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Manjurul.com | Free Image to PDF Converter - Convert Multiple Images to PDF Online</title>
-    <meta name="description" content="Convert images to PDF for free with our online tool. Drag and drop images, adjust settings like page size and orientation, and create PDFs quickly.">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>
+			Manjurul.com | Free Image to PDF Converter – Fast & Secure Tool
+		</title>
+		<meta
+			name="description"
+			content="Convert images to PDF online for free. Drag-and-drop images, reorder, adjust compression, custom page sizes, and generate PDFs instantly."
+		/>
+		<meta
+			name="keywords"
+			content="Image to PDF, PDF Converter, Online PDF Tool, Drag and Drop, PDF Compression, Custom Page Size"
+		/>
+		<meta name="author" content="Manjurul Haque" />
 
-    <!-- Open Graph Tags -->
-    <meta property="og:title" content="Image to PDF Converter">
-    <meta property="og:description" content="Convert images to PDF for free with our easy-to-use online tool.">
-    <meta property="og:image" content="https://manjurul.com/preview-image.jpg">
-    <meta property="og:url" content="https://manjurul.com/index.html">
+		<!-- Open Graph -->
+		<meta property="og:title" content="Free Image to PDF Converter" />
+		<meta
+			property="og:description"
+			content="Convert images to PDF for free with our easy-to-use online tool with compression control."
+		/>
+		<meta property="og:image" content="https://www.manjurul.com/preview.png" />
+		<meta property="og:url" content="https://www.manjurul.com/" />
 
-    <!-- Twitter Card Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Image to PDF Converter">
-    <meta name="twitter:description" content="Convert images to PDF online for free.">
-    <meta name="twitter:image" content="https://manjurul.com/preview-image.jpg">
+		<!-- Twitter Card -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content="Free Image to PDF Converter" />
+		<meta
+			name="twitter:description"
+			content="Instantly convert and download PDF from images with drag-and-drop, compression, and custom sizes."
+		/>
+		<meta name="twitter:image" content="https://www.manjurul.com/preview.png" />
 
-    <!-- Structured Data (JSON-LD) -->
-    <script type="application/ld+json">
-    {
-        "@context": "https://schema.org",
-        "@type": "WebApplication",
-        "name": "Image to PDF Converter",
-        "url": "https://manjurul.com",
-        "description": "A free online tool to convert images to PDF. Drag and drop multiple images, customize the PDF page size, and orientation.",
-        "operatingSystem": "Web-based",
-        "browserRequirements": "Any modern browser",
-        "author": {
-            "@type": "Organization",
-            "name": "Your Brand Name"
-        },
-        "applicationCategory": "Utility",
-        "mainEntityOfPage": "https://manjurul.com/index.html"
-    }
-    </script>
+		<!-- JSON-LD Structured Data -->
 
-<!-- Google Analytics Script -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BT5Z6NFW4C"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      gtag("js", new Date());
-      gtag("config", "G-BT5Z6NFW4C");
-    </script>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <style>
-        body {
-            padding-top: 30px;
-            background-color: #f8f9fa;
-        }
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebPage",
+				"name": "Image to PDF Converter | Manjurul.com",
+				"url": "https://www.manjurul.com/",
+				"description": "Convert images to high-quality PDFs online with drag-and-drop, image reordering, layout selection, and compression. Fast, free, and user-friendly.",
+				"author": {
+					"@type": "Person",
+					"name": "Manjurul Haque",
+					"url": "https://www.manjurul.com"
+				},
+				"publisher": {
+					"@type": "Organization",
+					"name": "Manjurul.com",
+					"url": "https://www.manjurul.com",
+					"logo": {
+						"@type": "ImageObject",
+						"url": "https://www.manjurul.com/logo.png"
+					}
+				},
+				"mainEntity": {
+					"@type": "SoftwareApplication",
+					"name": "Image to PDF Converter",
+					"applicationCategory": "Utility",
+					"operatingSystem": "All",
+					"browserRequirements": "Requires JavaScript. Works best in modern browsers.",
+					"offers": {
+						"@type": "Offer",
+						"price": "0",
+						"priceCurrency": "USD"
+					}
+				}
+			}
+		</script>
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "FAQPage",
+				"mainEntity": [
+					{
+						"@type": "Question",
+						"name": "Is this tool free to use?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Yes, it is completely free with no hidden charges."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Can I reorder images?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Yes, drag-and-drop reordering is supported."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Are my files stored on a server?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "No. All processing happens locally in your browser."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "What image formats are supported?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Supports JPG, PNG, GIF, BMP, WebP, and TIFF formats."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Can I resize images before conversion?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Yes, enable the resize option and set width/height in px or % while maintaining aspect ratio if desired."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Is there a limit to the number of images?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Practically no limit, but very large numbers or file sizes may affect browser performance."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "Can I add captions to images?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "Caption support is coming soon. For now, use our upcoming feature to annotate images before conversion."
+						}
+					},
+					{
+						"@type": "Question",
+						"name": "What if I want to change PDF layout?",
+						"acceptedAnswer": {
+							"@type": "Answer",
+							"text": "You can select page size (A4, Letter, Legal, or custom) and orientation (portrait or landscape)."
+						}
+					}
+				]
+			}
+		</script>
 
-        .container {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 800px;
-            margin: 0 auto;
-        }
+		<!-- Styles and Libraries -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7"
+			crossorigin="anonymous"
+		/>
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.0/Sortable.min.js"></script>
 
-        .drop-area {
-            background: #f0f0f0;
-            padding: 30px;
-            border: 2px dashed #007bff;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background 0.3s ease;
-        }
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.1/jspdf.umd.min.js"></script>
 
-        .drop-area:hover {
-            background: #e6f2ff;
-        }
+		<script
+			src="https://kit.fontawesome.com/a076d05399.js"
+			crossorigin="anonymous"
+		></script>
+		<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-BT5Z6NFW4C"
+		></script>
+		<script>
+			window.dataLayer = window.dataLayer || [];
+			function gtag() {
+				dataLayer.push(arguments);
+			}
+			gtag("js", new Date());
+			gtag("config", "G-BT5Z6NFW4C");
+		</script>
+		<style>
+			body {
+				background: #f8f9fa;
+			}
+			.drop-area {
+				border: 2px dashed #007bff;
+				padding: 30px;
+				text-align: center;
+				background: #fff;
+				border-radius: 8px;
+				cursor: pointer;
+				transition: background 0.3s;
+			}
+			.drop-area.dragover {
+				background: #e9f5ff;
+			}
+			.preview-item {
+				position: relative;
+				display: inline-block;
+				margin: 10px;
+			}
+			.preview-item img {
+				width: 150px;
+				border-radius: 5px;
+			}
+			.remove-btn {
+				position: absolute;
+				top: -5px;
+				right: -5px;
+				background: red;
+				color: #fff;
+				border: none;
+				border-radius: 50%;
+				width: 24px;
+				height: 24px;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Navigation -->
+		<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+			<div class="container-fluid">
+				<a class="navbar-brand" href="#">Manjurul.com</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+				<div class="collapse navbar-collapse" id="navbarNav">
+					<ul class="navbar-nav ms-auto">
+						<li class="nav-item">
+							<a class="nav-link active" href="#home">Home</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#how-it-works">How It Works</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#features">Features</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#formats">Formats</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#testimonials">Testimonials</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#security">Security</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#accordionFAQ">FAQ</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+		<!-- Adsterra Ad -->
+		<div style="width: 728px; margin: 20px auto">
+			<script type="text/javascript">
+				atOptions = {
+					key: "7f3f40787769423d94fdeb40a441e51d",
+					format: "iframe",
+					height: 90,
+					width: 728,
+					params: {},
+				};
+			</script>
+			<script
+				type="text/javascript"
+				src="//www.highperformanceformat.com/7f3f40787769423d94fdeb40a441e51d/invoke.js"
+			></script>
+		</div>
+		<!-- Main -->
 
-        .file-list {
-            margin-top: 20px;
-            list-style: none;
-            padding: 0;
-        }
+		<div class="container my-5" id="home">
+			<section class="text-center mb-5">
+				<h1 class="fw-bold">Convert Images to PDF Instantly</h1>
+				<p class="lead">
+					Upload, reorder, resize, adjust compression, and download your PDF in
+					seconds—no signup required.
+				</p>
+			</section>
+			<section class="mb-5">
+				<div id="drop-area" class="drop-area mb-3">
+					<p>Click or drag & drop images here</p>
+					<input
+						type="file"
+						id="imageUpload"
+						multiple
+						accept="image/*"
+						style="display: none"
+					/>
+				</div>
+				<div id="previewArea" class="mb-4"></div>
+				<div class="row g-3 mb-4">
+					<div class="col-md-3">
+						<label for="compressionSlider" class="form-label"
+							>Compression: <span id="compressionValue">80%</span></label
+						><input
+							type="range"
+							id="compressionSlider"
+							class="form-range"
+							min="0"
+							max="100"
+							value="80"
+						/>
+					</div>
+					<div class="col-md-3">
+						<label class="form-label d-block"
+							><input
+								type="checkbox"
+								id="enableResize"
+								class="form-check-input me-2"
+							/>Enable Resize</label
+						>
+					</div>
+					<div class="col-md-3" id="resizeControls" style="display: none">
+						<input
+							type="text"
+							id="resizeWidth"
+							class="form-control mb-2"
+							placeholder="Width px or %"
+						/><input
+							type="text"
+							id="resizeHeight"
+							class="form-control"
+							placeholder="Height px or %"
+						/>
+						<div class="form-check mt-1">
+							<input
+								type="checkbox"
+								id="keepAspect"
+								class="form-check-input"
+								checked
+							/><label for="keepAspect" class="form-check-label"
+								>Maintain Aspect Ratio</label
+							>
+						</div>
+					</div>
+					<div class="col-md-3">
+						<label for="pageSize" class="form-label">Page Size</label
+						><select id="pageSize" class="form-select">
+							<option value="a4">A4</option>
+							<option value="letter">Letter</option>
+							<option value="legal">Legal</option>
+							<option value="custom">Custom</option>
+						</select>
+					</div>
+				</div>
+				<div id="customSizeOptions" class="row g-3 mb-4" style="display: none">
+					<div class="col-md-6">
+						<input
+							type="number"
+							id="customWidth"
+							class="form-control"
+							placeholder="Width (mm)"
+						/>
+					</div>
+					<div class="col-md-6">
+						<input
+							type="number"
+							id="customHeight"
+							class="form-control"
+							placeholder="Height (mm)"
+						/>
+					</div>
+				</div>
+				<div class="row g-3 mb-4">
+					<div class="col-md-4">
+						<label for="orientation" class="form-label">Orientation</label
+						><select id="orientation" class="form-select">
+							<option value="portrait">Portrait</option>
+							<option value="landscape">Landscape</option>
+						</select>
+					</div>
+					<div class="col-md-8 text-center">
+						<button id="generatePDF" class="btn btn-success btn-lg mt-4">
+							Generate PDF
+						</button>
+					</div>
+				</div>
+				<div id="pdfPreviewArea" style="display: none" class="mt-4 text-center">
+					<h3>PDF Preview</h3>
+					<iframe
+						id="pdfPreviewIframe"
+						style="width: 100%; height: 400px"
+						frameborder="0"
+					></iframe>
+				</div>
+			</section>
+			<section id="how-it-works" class="mb-5">
+				<h2>How It Works</h2>
+				<div class="row text-center mt-4">
+					<div class="col-md-4 mb-3">
+						<i class="fas fa-upload fa-2x text-primary"></i>
+						<h5 class="mt-2">Upload</h5>
+						<p>Drag or click to add images.</p>
+					</div>
+					<div class="col-md-4 mb-3">
+						<i class="fas fa-arrows-alt fa-2x text-primary"></i>
+						<h5 class="mt-2">Reorder</h5>
+						<p>Drag and drop to rearrange.</p>
+					</div>
+					<div class="col-md-4 mb-3">
+						<i class="fas fa-file-download fa-2x text-primary"></i>
+						<h5 class="mt-2">Download</h5>
+						<p>Generate and preview PDF.</p>
+					</div>
+				</div>
+			</section>
+			<section id="features" class="mb-5">
+				<h2>Features</h2>
+				<ul class="list-group list-group-flush mt-3">
+					<li class="list-group-item">Adjustable Compression via Slider</li>
+					<li class="list-group-item">
+						Image Resizing with Width/Height & Aspect Ratio
+					</li>
+					<li class="list-group-item">Custom Page Sizes & Orientation</li>
+					<li class="list-group-item">100% Client-Side – No Uploads</li>
+					<li class="list-group-item">Drag-and-Drop with Live Preview</li>
+					<li class="list-group-item">Supports Multiple Image Formats</li>
+				</ul>
+			</section>
+			<section id="formats" class="mb-5">
+				<h2>Supported File Formats</h2>
+				<ul>
+					<li>JPG / JPEG</li>
+					<li>PNG</li>
+					<li>GIF</li>
+					<li>BMP</li>
+					<li>WebP</li>
+					<li>TIFF</li>
+				</ul>
+			</section>
+			<section id="testimonials" class="mb-5">
+				<h2>What Our Users Say</h2>
+				<div class="row mt-4">
+					<div class="col-md-6 mb-3">
+						<blockquote class="blockquote p-3 bg-white rounded shadow">
+							<p class="mb-0">
+								"This tool saved me hours of work! Super easy and fast."
+							</p>
+							<footer class="blockquote-footer">Jane Doe</footer>
+						</blockquote>
+					</div>
+					<div class="col-md-6 mb-3">
+						<blockquote class="blockquote p-3 bg-white rounded shadow">
+							<p class="mb-0">
+								"Image resizing is a lifesaver. Perfect quality every time."
+							</p>
+							<footer class="blockquote-footer">John Smith</footer>
+						</blockquote>
+					</div>
+				</div>
+			</section>
+			<section id="security" class="mb-5">
+				<h2>Security & Privacy</h2>
+				<p>
+					All processing happens locally in your browser. No files are uploaded
+					or stored.
+				</p>
+			</section>
+			<script
+				async="async"
+				data-cfasync="false"
+				src="//pl26323378.profitableratecpm.com/cbf1fdea3c8e0a0603fdc400df31f4df/invoke.js"
+			></script>
+			<div id="container-cbf1fdea3c8e0a0603fdc400df31f4df"></div>
+			<section id="accordionFAQ" class="mb-5">
+				<h2>Frequently Asked Questions</h2>
+				<div class="accordion" id="faqAccordion">
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq1">
+							<button
+								class="accordion-button"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse1"
+							>
+								Is this tool free to use?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse1"
+							class="accordion-collapse collapse show"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								Yes, it is completely free with no hidden charges.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq2">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse2"
+							>
+								Can I reorder images?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse2"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								Yes, drag-and-drop reordering is supported.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq3">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse3"
+							>
+								Are my files stored on a server?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse3"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								No. All processing happens locally in your browser.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq4">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse4"
+							>
+								What image formats are supported?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse4"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								Supports JPG, PNG, GIF, BMP, WebP, and TIFF formats.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq5">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse5"
+							>
+								Can I resize images before conversion?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse5"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								Yes, enable the resize option and specify width/height in px or
+								%.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq6">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse6"
+							>
+								Is there a limit to the number of images?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse6"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								No strict limit, but very large numbers may impact performance.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq7">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse7"
+							>
+								Can I add captions to images?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse7"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								Caption feature coming soon in a future update.
+							</div>
+						</div>
+					</div>
+					<div class="accordion-item">
+						<h2 class="accordion-header" id="faq8">
+							<button
+								class="accordion-button collapsed"
+								type="button"
+								data-bs-toggle="collapse"
+								data-bs-target="#faqCollapse8"
+							>
+								How do I change page layout?
+							</button>
+						</h2>
+						<div
+							id="faqCollapse8"
+							class="accordion-collapse collapse"
+							data-bs-parent="#faqAccordion"
+						>
+							<div class="accordion-body">
+								Use the page size and orientation selectors above the Generate
+								button.
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+		<!-- Footer -->
+		<footer id="footer" class="bg-dark text-light">
+			<div class="container py-4 text-center">
+				<!-- <div class="mb-3">
+					<a href="/privacy" class="text-light mx-3">Privacy Policy</a>
+					<a href="/terms" class="text-light mx-3">Terms of Service</a>
+					<a href="/contact" class="text-light mx-3">Contact Us</a>
+				</div> -->
+				<!-- <div class="mb-3">
+					<a href="https://twitter.com/yourhandle" class="text-light mx-3"
+						><i class="fab fa-twitter"></i
+					></a>
+					<a href="https://facebook.com/yourpage" class="text-light mx-3"
+						><i class="fab fa-facebook-f"></i
+					></a>
+					<a
+						href="https://linkedin.com/company/yourcompany"
+						class="text-light mx-3"
+						><i class="fab fa-linkedin-in"></i
+					></a>
+				</div> -->
+				<div>&copy; 2025 Manjurul.com. All rights reserved.</div>
+			</div>
+		</footer>
 
-        .file-list li {
-            margin: 10px 0;
-            padding: 10px;
-            background: #e9ecef;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+		<script>
+			// Compression slider
+			const compressionSlider = document.getElementById("compressionSlider");
+			const compressionValue = document.getElementById("compressionValue");
+			compressionSlider.addEventListener(
+				"input",
+				() => (compressionValue.textContent = compressionSlider.value + "%")
+			);
 
-        .file-list li .btn-danger {
-            margin-left: 10px;
-        }
+			// File and drop handling
+			const dropArea = document.getElementById("drop-area");
+			const fileInput = document.getElementById("imageUpload");
+			const previewArea = document.getElementById("previewArea");
+			const pageSizeSel = document.getElementById("pageSize");
+			const customOpts = document.getElementById("customSizeOptions");
+			const orientationSel = document.getElementById("orientation");
+			let imagesList = [];
 
-        .footer {
-            text-align: center;
-            margin-top: 40px;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-<div style="width: 728px; margin: 20px auto;">
-  <!-- Adsterra Ad -->
-    <script type="text/javascript">
-          atOptions = {
-            key: "7f3f40787769423d94fdeb40a441e51d",
-            format: "iframe",
-            height: 90,
-            width: 728,
-            params: {},
-          };
-        </script>
-        <script type="text/javascript" src="//www.highperformanceformat.com/7f3f40787769423d94fdeb40a441e51d/invoke.js"></script>
-</div>
-    
+			dropArea.addEventListener("click", () => fileInput.click());
+			dropArea.addEventListener("dragover", (e) => {
+				e.preventDefault();
+				dropArea.classList.add("dragover");
+			});
+			dropArea.addEventListener("dragleave", () =>
+				dropArea.classList.remove("dragover")
+			);
+			dropArea.addEventListener("drop", (e) => {
+				e.preventDefault();
+				dropArea.classList.remove("dragover");
+				handleFiles(e.dataTransfer.files);
+			});
+			fileInput.addEventListener("change", (e) => handleFiles(e.target.files));
 
-<div class="container">
-    <div class="header">
-        <h1>Free Image to PDF Converter</h1>
-        <p>Convert your images into PDFs for free. Drag and drop images, adjust page settings, and generate your PDF!</p>
-    </div>
+			pageSizeSel.addEventListener(
+				"change",
+				() =>
+					(customOpts.style.display =
+						pageSizeSel.value === "custom" ? "block" : "none")
+			);
 
-    <!-- Drop Area -->
-    <div class="drop-area" id="drop-area">
-        <p>Drag and drop images here or click to select files</p>
-        <input type="file" id="file-input" multiple style="display: none;">
-    </div>
+			function handleFiles(files) {
+				Array.from(files).forEach((file) => {
+					if (!file.type.startsWith("image/")) return;
+					const reader = new FileReader();
+					reader.onload = (e) => {
+						imagesList.push({ src: e.target.result });
+						renderPreviews();
+					};
+					reader.readAsDataURL(file);
+				});
+			}
 
-    <!-- Selected Files -->
-    <ul id="file-list" class="file-list"></ul>
+			function renderPreviews() {
+				previewArea.innerHTML = "";
+				imagesList.forEach((img, i) => {
+					const div = document.createElement("div");
+					div.className = "preview-item";
+					div.draggable = true;
+					div.dataset.index = i;
+					div.innerHTML = `<img src="${img.src}" alt="Image ${
+						i + 1
+					}"><button class="remove-btn" onclick="removeImage(${i})">&times;</button>`;
+					previewArea.appendChild(div);
+				});
+				new Sortable(previewArea, { animation: 150 });
+			}
 
-    <!-- Settings -->
-    <div class="form-group">
-        <label for="page-size">Select Page Size:</label>
-        <select id="page-size" class="form-select">
-            <option value="A4">A4</option>
-            <option value="Letter">Letter</option>
-            <option value="Legal">Legal</option>
-        </select>
-    </div>
+			function removeImage(i) {
+				imagesList.splice(i, 1);
+				renderPreviews();
+			}
 
-    <div class="form-group">
-        <label for="orientation">Select Orientation:</label>
-        <select id="orientation" class="form-select">
-            <option value="portrait">Portrait</option>
-            <option value="landscape">Landscape</option>
-        </select>
-    </div>
-
-    <!-- Generate PDF Button -->
-    <button class="btn btn-primary" id="generate-pdf">Generate PDF</button>
-
-    <div class="footer">
-        <p>&copy; 2025 Manjurul.com. All rights reserved.</p>
-    </div>
-</div>
-
-<!-- Bootstrap JS, Popper.js -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
-
-<!-- PDF.js and JSZip (for PDF generation) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
-
-<script>
-    // Handling Drag and Drop
-    const dropArea = document.getElementById('drop-area');
-    const fileInput = document.getElementById('file-input');
-    const fileList = document.getElementById('file-list');
-    let files = [];
-
-    dropArea.addEventListener('click', () => fileInput.click());
-
-    dropArea.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        dropArea.style.background = "#e6f2ff";
-    });
-
-    dropArea.addEventListener('dragleave', () => {
-        dropArea.style.background = "#f0f0f0";
-    });
-
-    dropArea.addEventListener('drop', (e) => {
-        e.preventDefault();
-        dropArea.style.background = "#f0f0f0";
-        handleFiles(e.dataTransfer.files);
-    });
-
-    fileInput.addEventListener('change', () => handleFiles(fileInput.files));
-
-    function handleFiles(selectedFiles) {
-        files = Array.from(selectedFiles);
-        updateFileList();
-    }
-
-    function updateFileList() {
-        fileList.innerHTML = '';
-        files.forEach((file, index) => {
-            const li = document.createElement('li');
-            li.textContent = file.name;
-            const removeBtn = document.createElement('button');
-            removeBtn.textContent = 'Remove';
-            removeBtn.classList.add('btn', 'btn-danger');
-            removeBtn.onclick = () => removeFile(index);
-            li.appendChild(removeBtn);
-            fileList.appendChild(li);
-        });
-    }
-
-    function removeFile(index) {
-        files.splice(index, 1);
-        updateFileList();
-    }
-
-    // Generate PDF Logic
-    document.getElementById('generate-pdf').addEventListener('click', async () => {
-        if (files.length === 0) {
-            alert('Please upload at least one image.');
-            return;
-        }
-
-        const pageSize = document.getElementById('page-size').value;
-        const orientation = document.getElementById('orientation').value;
-        const pdfDoc = await PDFLib.PDFDocument.create();
-        
-        for (const file of files) {
-            const reader = new FileReader();
-            reader.onload = async (e) => {
-                const img = await pdfDoc.embedJpg(e.target.result);
-                const page = pdfDoc.addPage([img.width, img.height]);
-                page.drawImage(img, {
-                    x: 0,
-                    y: 0,
-                    width: img.width,
-                    height: img.height
-                });
-                const pdfBytes = await pdfDoc.save();
-                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = 'converted.pdf';
-                link.click();
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
-
-</body>
+			document.getElementById("generatePDF").addEventListener("click", () => {
+				if (!imagesList.length) return alert("Please upload images first");
+				const { jsPDF } = window.jspdf;
+				const orient = orientationSel.value;
+				const size = pageSizeSel.value;
+				const format =
+					size === "custom"
+						? [
+								parseFloat(document.getElementById("customWidth").value),
+								parseFloat(document.getElementById("customHeight").value),
+						  ]
+						: size;
+				const pdf = new jsPDF({ orientation: orient, unit: "mm", format });
+				let loaded = 0;
+				const quality = parseInt(compressionSlider.value) / 100;
+				imagesList.forEach((img, i) => {
+					const image = new Image();
+					image.src = img.src;
+					image.onload = () => {
+						const canvas = document.createElement("canvas");
+						canvas.width = image.width;
+						canvas.height = image.height;
+						canvas.getContext("2d").drawImage(image, 0, 0);
+						const dataURL = canvas.toDataURL("image/jpeg", quality);
+						const pw = pdf.internal.pageSize.getWidth(),
+							ph = pdf.internal.pageSize.getHeight();
+						const scale = Math.min(pw / image.width, ph / image.height);
+						const w = image.width * scale,
+							h = image.height * scale;
+						const x = (pw - w) / 2,
+							y = (ph - h) / 2;
+						if (i > 0) pdf.addPage();
+						pdf.addImage(dataURL, "JPEG", x, y, w, h);
+						loaded++;
+						if (loaded === imagesList.length) {
+							document.getElementById("pdfPreviewArea").style.display = "block";
+							document.getElementById("pdfPreviewIframe").src =
+								URL.createObjectURL(pdf.output("blob"));
+						}
+					};
+				});
+			});
+		</script>
+	</body>
 </html>
