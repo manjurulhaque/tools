@@ -1,385 +1,294 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Advanced Passport Photo Maker</title>
-		<!-- Bootstrap CSS & Icons -->
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
-			rel="stylesheet"
-		/>
-		<link
-			href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
-			rel="stylesheet"
-		/>
-		<style>
-			body {
-				background-color: #f8f9fa;
-			}
-			#canvas-container {
-				position: relative;
-				width: 100%;
-				background: #000;
-				border-radius: 0.5rem;
-				overflow: hidden;
-			}
-			#canvas-container img {
-				width: 100%;
-				display: block;
-			}
-			#guide {
-				position: absolute;
-				border: 2px dashed rgba(255, 255, 255, 0.8);
-				pointer-events: none;
-			}
-			.preview-card {
-				height: 200px;
-			}
-			.preview-canvas {
-				width: auto;
-				height: 100%;
-				display: block;
-				margin: 0 auto;
-			}
-		</style>
-	</head>
-	<body>
-		<nav class="navbar navbar-light bg-white shadow-sm mb-4">
-			<div class="container-fluid">
-				<a class="navbar-brand"
-					><i class="bi bi-camera-reels-fill me-2"></i>Passport Photo Maker</a
-				>
-			</div>
-		</nav>
-		<!-- Image Upload Below Navbar -->
-		<div class="container mb-3">
-			<input
-				type="file"
-				id="photoInput"
-				accept="image/*"
-				class="form-control"
-			/>
-		</div>
-		<div class="container">
-			<div class="row g-4">
-				<div class="col-lg-7">
-					<div id="canvas-container" class="mb-3">
-						<img id="image" style="visibility: hidden" />
-						<div id="guide"></div>
-					</div>
-					<div class="d-flex gap-2 mb-3">
-						<button id="cropBtn" class="btn btn-primary flex-fill" disabled>
-							<i class="bi bi-scissors me-1"></i> Crop & Generate
-						</button>
-						<button id="printBtn" class="btn btn-secondary flex-fill" disabled>
-							<i class="bi bi-printer me-1"></i> Print
-						</button>
-						<button id="downloadBtn" class="btn btn-success flex-fill" disabled>
-							<i class="bi bi-download me-1"></i> Download
-						</button>
-					</div>
-				</div>
-				<div class="col-lg-5">
-					<div class="card shadow-sm">
-						<div class="card-header">
-							<i class="bi bi-sliders me-2"></i>Settings & Preview
-						</div>
-						<div class="card-body">
-							<form id="settingsForm" class="row g-3">
-								<div class="col-12">
-									<label class="form-label">Preset Size</label
-									><select id="presetSelect" class="form-select">
-										<option value="35x45">India 35×45</option>
-										<option value="50x50">USA 50×50</option>
-										<option value="35x40">UK 35×40</option>
-										<option value="30x40">EU 30×40</option>
-										<option value="33x48">China 33×48</option>
-										<option value="custom">Custom</option>
-									</select>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Width (mm)</label
-									><input
-										type="number"
-										id="photoWidth"
-										class="form-control"
-										value="35"
-										step="0.1"
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Height (mm)</label
-									><input
-										type="number"
-										id="photoHeight"
-										class="form-control"
-										value="45"
-										step="0.1"
-									/>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Layout</label
-									><select id="layoutSelect" class="form-select">
-										<option value="1_1">1×1</option>
-										<option value="2_2">2×2</option>
-										<option value="2_3">2×3</option>
-										<option value="2_4">2×4</option>
-										<option value="3_4">3×4</option>
-										<option value="3_3">3×3</option>
-										<option value="4_4">4×4</option>
-										<option value="4_6">4×6</option>
-										<option value="5_7">5×7</option>
-										<option value="6_8">6×8</option>
-									</select>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">DPI</label>
-									<div class="input-group">
-										<input
-											type="number"
-											id="dpiInput"
-											class="form-control"
-											value="300"
-											min="72"
-											max="1200"
-										/><span class="input-group-text">dpi</span>
-									</div>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Margin (mm)</label>
-									<div class="input-group">
-										<input
-											type="number"
-											id="marginInput"
-											class="form-control"
-											value="2"
-											step="0.1"
-										/><span class="input-group-text">mm</span>
-									</div>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Bleed (mm)</label>
-									<div class="input-group">
-										<input
-											type="number"
-											id="bleedInput"
-											class="form-control"
-											value="3"
-											step="0.1"
-										/><span class="input-group-text">mm</span>
-									</div>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Fill Page</label>
-									<div class="form-check form-switch">
-										<input
-											class="form-check-input"
-											type="checkbox"
-											id="fillPage"
-											checked
-										/><label class="form-check-label" for="fillPage"
-											>Auto-fill</label
-										>
-									</div>
-								</div>
-								<div class="col-md-6">
-									<label class="form-label">Background</label
-									><select id="backgroundSelect" class="form-select">
-										<option value="#FFF">White</option>
-										<option value="#EEE">Gray</option>
-										<option value="#ADD8E6">Blue</option>
-									</select>
-								</div>
-								<div class="col-12">
-									<label class="form-label">Paper Size</label
-									><select id="paperSelect" class="form-select">
-										<option value="A4">A4</option>
-										<option value="Letter">Letter</option>
-										<option value="customPaper">Custom</option>
-									</select>
-								</div>
-								<div class="col-md-6 d-none" id="paperWgrp">
-									<label class="form-label">Paper Width (mm)</label
-									><input
-										type="number"
-										id="paperWidth"
-										class="form-control"
-										value="210"
-									/>
-								</div>
-								<div class="col-md-6 d-none" id="paperHgrp">
-									<label class="form-label">Paper Height (mm)</label
-									><input
-										type="number"
-										id="paperHeight"
-										class="form-control"
-										value="297"
-									/>
-								</div>
-							</form>
-							<div class="mt-4">
-								<h6><i class="bi bi-image me-1"></i>Preview</h6>
-								<div class="card preview-card shadow-sm">
-									<canvas
-										id="sheetPreviewCanvas"
-										class="preview-canvas"
-									></canvas>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-		<script
-			defer
-			src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"
-		></script>
-		<script>
-			(async () => {
-				await faceapi.nets.tinyFaceDetector.loadFromUri(
-					"https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/"
-				);
-			})();
-			const photoInput = document.getElementById("photoInput"),
-				image = document.getElementById("image"),
-				guide = document.getElementById("guide");
-			const cropBtn = document.getElementById("cropBtn"),
-				printBtn = document.getElementById("printBtn"),
-				downloadBtn = document.getElementById("downloadBtn");
-			const wIn = document.getElementById("photoWidth"),
-				hIn = document.getElementById("photoHeight"),
-				presetSel = document.getElementById("presetSelect");
-			const layoutSel = document.getElementById("layoutSelect"),
-				dpiIn = document.getElementById("dpiInput"),
-				marginIn = document.getElementById("marginInput");
-			const bleedIn = document.getElementById("bleedInput"),
-				fillChk = document.getElementById("fillPage"),
-				bgSel = document.getElementById("backgroundSelect");
-			const paperSel = document.getElementById("paperSelect"),
-				pWgrp = document.getElementById("paperWgrp"),
-				pHgrp = document.getElementById("paperHgrp");
-			const pWin = document.getElementById("paperWidth"),
-				pHin = document.getElementById("paperHeight"),
-				preview = document.getElementById("sheetPreviewCanvas");
-			let cropper;
-			presetSel.onchange = () => {
-				if (presetSel.value !== "custom") {
-					[wIn.value, hIn.value] = presetSel.value.split("x");
-				}
-			};
-			paperSel.onchange = () => {
-				if (paperSel.value === "customPaper")
-					pWgrp.classList.remove("d-none"), pHgrp.classList.remove("d-none");
-				else pWgrp.classList.add("d-none"), pHgrp.classList.add("d-none");
-			};
-			photoInput.onchange = async (e) => {
-				const f = e.target.files[0];
-				if (!f) return;
-				image.src = URL.createObjectURL(f);
-				image.style.visibility = "visible";
-				await new Promise((r) => (image.onload = r));
-				cropper && cropper.destroy();
-				const ar = wIn.value / hIn.value;
-				cropper = new Cropper(image, {
-					aspectRatio: ar,
-					viewMode: 1,
-					autoCropArea: 0.8,
-					ready: async () => {
-						const det = await faceapi.detectSingleFace(
-							image,
-							new faceapi.TinyFaceDetectorOptions()
-						);
-						if (det) {
-							const b = det.box,
-								d = cropper.getImageData(),
-								sX = d.naturalWidth / d.width,
-								sY = d.naturalHeight / d.height,
-								p = 20;
-							cropper.setData({
-								x: b.x * sX - p,
-								y: b.y * sY - p,
-								width: b.width * sX + 2 * p,
-								height: b.height * sY + 2 * p,
-							});
-						}
-						const r = image.getBoundingClientRect(),
-							w = r.width * 0.7,
-							h = r.height * 0.8;
-						guide.style.cssText = `width:${w}px;height:${h}px;left:${
-							(r.width - w) / 2
-						}px;top:${(r.height - h) / 2}px;`;
-						cropBtn.disabled = false;
-					},
-				});
-			};
-			cropBtn.onclick = () => {
-				const mm2in = 1 / 25.4,
-					dpi = +dpiIn.value,
-					pw = +wIn.value * mm2in * dpi,
-					ph = +hIn.value * mm2in * dpi,
-					bleed = +bleedIn.value * mm2in * dpi,
-					margin = +marginIn.value * mm2in * dpi,
-					fill = fillChk.checked,
-					bg = bgSel.value;
-				const pW = +pWin.value * mm2in * dpi,
-					pH = +pHin.value * mm2in * dpi;
-				const trimmed = cropper.getCroppedCanvas({ width: pw, height: ph });
-				const tW = pw + 2 * bleed,
-					tH = ph + 2 * bleed;
-				const single = document.createElement("canvas");
-				single.width = tW;
-				single.height = tH;
-				const c1 = single.getContext("2d");
-				c1.fillStyle = bg;
-				c1.fillRect(0, 0, tW, tH);
-				c1.drawImage(trimmed, bleed, bleed);
-				let [cols, rows] = layoutSel.value.split("_").map(Number);
-				if (fill) {
-					cols = Math.floor(pW / tW);
-					rows = Math.floor(pH / tH);
-				}
-				const sheet = document.createElement("canvas");
-				sheet.width = pW;
-				sheet.height = pH;
-				const ctx = sheet.getContext("2d");
-				ctx.fillStyle = bg;
-				ctx.fillRect(0, 0, pW, pH);
-				const xOffset = fill ? 0 : (pW - cols * tW - margin * (cols - 1)) / 2,
-					yOffset = fill ? 0 : (pH - rows * tH - margin * (rows - 1)) / 2;
-				for (let y = 0; y < rows; y++)
-					for (let x = 0; x < cols; x++)
-						ctx.drawImage(
-							single,
-							xOffset + x * (tW + margin),
-							yOffset + y * (tH + margin)
-						);
-				preview.width = sheet.width;
-				preview.height = sheet.height;
-				preview.getContext("2d").drawImage(sheet, 0, 0);
-				downloadBtn.disabled = false;
-				printBtn.disabled = false;
-				downloadBtn.dataset.url = sheet.toDataURL("image/jpeg");
-			};
-			downloadBtn.onclick = () => {
-				const a = document.createElement("a");
-				a.href = downloadBtn.dataset.url;
-				a.download = "passport_sheet.jpg";
-				a.click();
-			};
-			printBtn.onclick = () => {
-				const win = window.open("");
-				win.document.write(
-					`<img src="${downloadBtn.dataset.url}" onload="window.print();window.close();"/>`
-				);
-			};
-		</script>
-	</body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advanced Passport Photo Maker</title>
+  <!-- Bootstrap CSS & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
+  <style>
+    body { background-color: #f8f9fa; }
+    #canvas-container { position: relative; width: 100%; background: #000; border-radius: .5rem; overflow: hidden; }
+    #canvas-container img { width: 100%; display: block; }
+    #guide { position: absolute; border: 2px dashed rgba(255,255,255,0.8); pointer-events: none; }
+    .preview-card { height: 200px; }
+    .preview-canvas { width: auto; height: 100%; display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-light bg-white shadow-sm mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand"><i class="bi bi-camera-reels-fill me-2"></i>Passport Photo Maker</a>
+    </div>
+  </nav>
+  <!-- Image Upload -->
+  <div class="container mb-3">
+    <input type="file" id="photoInput" accept="image/*" class="form-control">
+  </div>
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-7">
+        <div id="canvas-container" class="mb-3">
+          <img id="image" style="visibility:hidden;" alt="Upload">
+          <div id="guide"></div>
+        </div>
+        <div class="d-flex gap-2 mb-3">
+          <button id="cropBtn" class="btn btn-primary flex-fill" disabled><i class="bi bi-scissors me-1"></i> Crop & Generate</button>
+          <button id="printBtn" class="btn btn-secondary flex-fill" disabled><i class="bi bi-printer me-1"></i> Print</button>
+          <button id="downloadBtn" class="btn btn-success flex-fill" disabled><i class="bi bi-download me-1"></i> Download</button>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="card shadow-sm">
+          <div class="card-header"><i class="bi bi-sliders me-2"></i>Settings & Preview</div>
+          <div class="card-body">
+            <form id="settingsForm" class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Preset Size</label>
+                <select id="presetSelect" class="form-select">
+                  <option value="35x45">India 35×45</option>
+                  <option value="50x50">USA 50×50</option>
+                  <option value="35x40">UK 35×40</option>
+                  <option value="30x40">EU 30×40</option>
+                  <option value="33x48">China 33×48</option>
+                  <option value="custom">Custom</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Width (mm)</label>
+                <input type="number" id="photoWidth" class="form-control" value="35" step="0.1">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Height (mm)</label>
+                <input type="number" id="photoHeight" class="form-control" value="45" step="0.1">
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Layout</label>
+                <select id="layoutSelect" class="form-select">
+                  <option value="1_1">1×1</option>
+                  <option value="2_2">2×2</option>
+                  <option value="2_3">2×3</option>
+                  <option value="2_4">2×4</option>
+                  <option value="3_4">3×4</option>
+                  <option value="3_3">3×3</option>
+                  <option value="4_4">4×4</option>
+                  <option value="4_6">4×6</option>
+                  <option value="5_7">5×7</option>
+                  <option value="6_8">6×8</option>
+                </select>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">DPI</label>
+                <div class="input-group">
+                  <input type="number" id="dpiInput" class="form-control" value="300" min="72" max="1200">
+                  <span class="input-group-text">dpi</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Margin (mm)</label>
+                <div class="input-group">
+                  <input type="number" id="marginInput" class="form-control" value="2" step="0.1">
+                  <span class="input-group-text">mm</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Bleed (mm)</label>
+                <div class="input-group">
+                  <input type="number" id="bleedInput" class="form-control" value="3" step="0.1">
+                  <span class="input-group-text">mm</span>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Fill Page</label>
+                <div class="form-check form-switch">
+                  <input class="form-check-input" type="checkbox" id="fillPage" checked>
+                  <label class="form-check-label" for="fillPage">Auto-fill</label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <label class="form-label">Background</label>
+                <select id="backgroundSelect" class="form-select">
+                  <option value="#FFF">White</option>
+                  <option value="#EEE">Gray</option>
+                  <option value="#ADD8E6">Blue</option>
+                </select>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Paper Size</label>
+                <select id="paperSelect" class="form-select">
+                  <option value="A4">A4</option>
+                  <option value="Letter">Letter</option>
+                  <option value="customPaper">Custom</option>
+                </select>
+              </div>
+              <div class="col-md-6 d-none" id="paperWgrp">
+                <label class="form-label">Paper Width (mm)</label>
+                <input type="number" id="paperWidth" class="form-control" value="210">
+              </div>
+              <div class="col-md-6 d-none" id="paperHgrp">
+                <label class="form-label">Paper Height (mm)</label>
+                <input type="number" id="paperHeight" class="form-control" value="297">
+              </div>
+            </form>
+            <div class="mt-4">
+              <h6><i class="bi bi-image me-1"></i>Preview</div>
+              <div class="card preview-card shadow-sm">
+                <canvas id="sheetPreviewCanvas" class="preview-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api/dist/face-api.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Load model
+      faceapi.nets.tinyFaceDetector.loadFromUri('https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/');
+      // Refs
+      const photoInput = document.getElementById('photoInput'),
+            image = document.getElementById('image'),
+            guide = document.getElementById('guide'),
+            cropBtn = document.getElementById('cropBtn'),
+            printBtn = document.getElementById('printBtn'),
+            downloadBtn = document.getElementById('downloadBtn'),
+            wIn = document.getElementById('photoWidth'),
+            hIn = document.getElementById('photoHeight'),
+            preset = document.getElementById('presetSelect'),
+            layoutSel = document.getElementById('layoutSelect'),
+            dpiIn = document.getElementById('dpiInput'),
+            marginIn = document.getElementById('marginInput'),
+            bleedIn = document.getElementById('bleedInput'),
+            fillChk = document.getElementById('fillPage'),
+            bgSel = document.getElementById('backgroundSelect'),
+            paperSel = document.getElementById('paperSelect'),
+            pWgrp = document.getElementById('paperWgrp'),
+            pHgrp = document.getElementById('paperHgrp'),
+            pWin = document.getElementById('paperWidth'),
+            pHin = document.getElementById('paperHeight'),
+            preview = document.getElementById('sheetPreviewCanvas');
+      let cropper;
+      preset.onchange = () => {
+        if (preset.value !== 'custom') {
+          const [w, h] = preset.value.split('x');
+          wIn.value = w; hIn.value = h;
+        }
+      };
+      paperSel.onchange = () => {
+        if (paperSel.value === 'customPaper') {
+          pWgrp.classList.remove('d-none');
+          pHgrp.classList.remove('d-none');
+        } else {
+          pWgrp.classList.add('d-none');
+          pHgrp.classList.add('d-none');
+        }
+      };
+      photoInput.addEventListener('change', async e => {
+        const f = e.target.files[0]; if (!f) return;
+        image.src = URL.createObjectURL(f);
+        image.style.visibility = 'visible';
+        await new Promise(r => image.onload = r);
+        cropper && cropper.destroy();
+        const ar = parseFloat(wIn.value) / parseFloat(hIn.value);
+        cropper = new Cropper(image, {
+          aspectRatio: ar,
+          viewMode: 1,
+          autoCropArea: 0.8,
+          ready: async () => {
+            const det = await faceapi.detectSingleFace(image, new faceapi.TinyFaceDetectorOptions());
+            if (det) {
+              const b = det.box, d = cropper.getImageData();
+              const sX = d.naturalWidth / d.width, sY = d.naturalHeight / d.height, pad = 20;
+              cropper.setData({
+                x: b.x * sX - pad,
+                y: b.y * sY - pad,
+                width: b.width * sX + pad * 2,
+                height: b.height * sY + pad * 2
+              });
+            }
+            const r = image.getBoundingClientRect();
+            const w = r.width * 0.7, h = r.height * 0.8;
+            guide.style.cssText = `width:${w}px;height:${h}px;left:${(r.width - w)/2}px;top:${(r.height - h)/2}px;`;
+            cropBtn.disabled = false;
+          }
+        });
+      });
+      cropBtn.addEventListener('click', () => {
+        // Full sheet generation logic
+        const mm2in = 1/25.4;
+        const dpi = parseInt(dpiIn.value, 10);
+        const pw = parseFloat(wIn.value) * mm2in * dpi;
+        const ph = parseFloat(hIn.value) * mm2in * dpi;
+        const bleed = parseFloat(bleedIn.value) * mm2in * dpi;
+        const margin = parseFloat(marginIn.value) * mm2in * dpi;
+        const bg = bgSel.value;
+
+        // Paper dimensions
+        let paperW = parseFloat(pWin.value) * mm2in * dpi;
+        let paperH = parseFloat(pHin.value) * mm2in * dpi;
+        const paperSizeMap = { A4: [210, 297], Letter: [216, 279] };
+        if (paperSel.value !== 'customPaper') {
+          [paperW, paperH] = paperSizeMap[paperSel.value].map(mm => mm * mm2in * dpi);
+        }
+
+        // Create trimmed canvas
+        const trimmed = cropper.getCroppedCanvas({ width: pw, height: ph });
+        const totalW = pw + 2 * bleed;
+        const totalH = ph + 2 * bleed;
+        const single = document.createElement('canvas');
+        single.width = totalW;
+        single.height = totalH;
+        const ctx1 = single.getContext('2d');
+        ctx1.fillStyle = bg;
+        ctx1.fillRect(0, 0, totalW, totalH);
+        ctx1.drawImage(trimmed, bleed, bleed);
+
+        // Determine grid
+        let [cols, rows] = layoutSel.value.split('_').map(Number);
+        if (fillChk.checked) {
+          cols = Math.floor(paperW / totalW);
+          rows = Math.floor(paperH / totalH);
+        }
+
+        // Create sheet
+        const sheet = document.createElement('canvas');
+        sheet.width = paperW;
+        sheet.height = paperH;
+        const ctx = sheet.getContext('2d');
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, paperW, paperH);
+
+        // Center offsets when not filling
+        const xOffset = fillChk.checked ? 0 : (paperW - cols * totalW - (cols - 1) * margin) / 2;
+        const yOffset = fillChk.checked ? 0 : (paperH - rows * totalH - (rows - 1) * margin) / 2;
+
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            ctx.drawImage(single, xOffset + x * (totalW + margin), yOffset + y * (totalH + margin));
+          }
+        }
+
+        // Preview
+        preview.width = sheet.width;
+        preview.height = sheet.height;
+        preview.getContext('2d').drawImage(sheet, 0, 0);
+
+        // Enable download and print
+        const dataUrl = sheet.toDataURL('image/jpeg');
+        downloadBtn.disabled = false;
+        downloadBtn.dataset.url = dataUrl;
+        printBtn.disabled = false;
+      });
+      downloadBtn.addEventListener('click', () => {});
+      printBtn.addEventListener('click', () => {});
+    });
+  </script>
+</body>
 </html>
