@@ -54,14 +54,17 @@
 				<a class="navbar-brand"
 					><i class="bi bi-camera-reels-fill me-2"></i>Passport Photo Maker</a
 				>
-				<input
-					type="file"
-					id="photoInput"
-					accept="image/*"
-					class="form-control w-25"
-				/>
 			</div>
 		</nav>
+		<!-- Image Upload Below Navbar -->
+		<div class="container mb-3">
+			<input
+				type="file"
+				id="photoInput"
+				accept="image/*"
+				class="form-control"
+			/>
+		</div>
 		<div class="container">
 			<div class="row g-4">
 				<div class="col-lg-7">
@@ -180,7 +183,7 @@
 											id="fillPage"
 											checked
 										/><label class="form-check-label" for="fillPage"
-											>Auto-fit</label
+											>Auto-fill</label
 										>
 									</div>
 								</div>
@@ -253,8 +256,8 @@
 				downloadBtn = document.getElementById("downloadBtn");
 			const wIn = document.getElementById("photoWidth"),
 				hIn = document.getElementById("photoHeight"),
-				preset = document.getElementById("presetSelect");
-			const layout = document.getElementById("layoutSelect"),
+				presetSel = document.getElementById("presetSelect");
+			const layoutSel = document.getElementById("layoutSelect"),
 				dpiIn = document.getElementById("dpiInput"),
 				marginIn = document.getElementById("marginInput");
 			const bleedIn = document.getElementById("bleedInput"),
@@ -267,9 +270,9 @@
 				pHin = document.getElementById("paperHeight"),
 				preview = document.getElementById("sheetPreviewCanvas");
 			let cropper;
-			preset.onchange = () => {
-				if (preset.value !== "custom") {
-					[wIn.value, hIn.value] = preset.value.split("x");
+			presetSel.onchange = () => {
+				if (presetSel.value !== "custom") {
+					[wIn.value, hIn.value] = presetSel.value.split("x");
 				}
 			};
 			paperSel.onchange = () => {
@@ -338,7 +341,7 @@
 				c1.fillStyle = bg;
 				c1.fillRect(0, 0, tW, tH);
 				c1.drawImage(trimmed, bleed, bleed);
-				let [cols, rows] = layout.value.split("_").map(Number);
+				let [cols, rows] = layoutSel.value.split("_").map(Number);
 				if (fill) {
 					cols = Math.floor(pW / tW);
 					rows = Math.floor(pH / tH);
@@ -372,10 +375,9 @@
 				a.click();
 			};
 			printBtn.onclick = () => {
-				const dataUrl = downloadBtn.dataset.url;
-				const w = window.open("");
-				w.document.write(
-					`<img src="${dataUrl}" onload="window.print();window.close();"/>`
+				const win = window.open("");
+				win.document.write(
+					`<img src="${downloadBtn.dataset.url}" onload="window.print();window.close();"/>`
 				);
 			};
 		</script>
