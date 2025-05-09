@@ -16,24 +16,26 @@
 				--hero-text-color: #212529;
 			}
 
+			body {
+				padding-top: 76px; /* Added padding for fixed navbar */
+			}
+
 			.navbar {
 				box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
 				background-color: rgba(255, 255, 255, 0.95) !important;
 				backdrop-filter: blur(10px);
 			}
-
 			.hero-section {
 				background: linear-gradient(
 						rgba(255, 255, 255, 0.2),
-						rgba(214, 15, 15, 0.2)
+						rgba(80, 132, 211, 0.2)
 					),
 					url("https://source.unsplash.com/random/1920x1080?technology")
 						center/cover;
-				min-height: 40vh;
+				min-height: 40vh; /* Reduced from 100vh */
 				display: flex;
 				align-items: center;
 				position: relative;
-				margin-top: 76px;
 			}
 
 			.hero-content {
@@ -78,6 +80,55 @@
 			.feature-card:hover {
 				transform: translateY(-10px);
 			}
+			.category-title {
+				font-size: 1.75rem;
+				font-weight: 600;
+				color: #2c3e50;
+				padding-bottom: 0.5rem;
+				border-bottom: 3px solid #3498db;
+				display: inline-block;
+			}
+
+			.category-group {
+				padding: 2rem 0;
+			}
+
+			.clickable-card {
+				transition: transform 0.3s ease, box-shadow 0.3s ease;
+				text-decoration: none !important;
+				color: inherit;
+				/* min-height: 200px; Added for better card proportions */
+			}
+
+			.clickable-card:hover {
+				transform: translateY(-5px);
+				box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+			}
+
+			.card-body h4 {
+				margin-bottom: 1rem;
+				color: #2c3e50;
+			}
+
+			.section-title {
+				font-size: 2.5rem;
+				font-weight: 700;
+				margin-bottom: 3rem;
+			}
+
+			.team-card img {
+				height: 200px;
+				object-fit: cover;
+				border-radius: 50%;
+				margin-bottom: 1.5rem;
+			}
+			.cta-section {
+				background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
+					url("https://source.unsplash.com/random/1920x1080?meeting")
+						center/cover;
+				color: white;
+				padding: 6rem 0;
+			}
 
 			footer {
 				background-color: #f8f9fa;
@@ -92,6 +143,9 @@
 			}
 
 			@media (max-width: 768px) {
+				.hero-section {
+					min-height: 60vh; /* Adjusted mobile height */
+				}
 				.hero-title {
 					font-size: 2.5rem;
 				}
@@ -105,7 +159,7 @@
 		<!-- Navigation -->
 		<nav class="navbar navbar-expand-lg navbar-light fixed-top">
 			<div class="container">
-				<a class="navbar-brand fw-bold" href="#">TechSolutions</a>
+				<a class="navbar-brand fw-bold" href="index.html">Manjurul.com</a>
 				<button
 					class="navbar-toggler"
 					type="button"
@@ -117,7 +171,7 @@
 				<div class="collapse navbar-collapse" id="navbarNav">
 					<ul class="navbar-nav ms-auto">
 						<li class="nav-item">
-							<a class="nav-link active" href="#">Home</a>
+							<a class="nav-link active" href="index.html">Home</a>
 						</li>
 
 						<li class="nav-item dropdown">
@@ -127,7 +181,7 @@
 								role="button"
 								data-bs-toggle="dropdown"
 							>
-								Services
+								Tools
 							</a>
 							<ul class="dropdown-menu">
 								<li><a class="dropdown-item" href="#">Web Development</a></li>
@@ -154,7 +208,7 @@
 							</ul>
 						</li>
 
-						<li class="nav-item"><a class="nav-link" href="#">Pricing</a></li>
+						<li class="nav-item"><a class="nav-link" href="#">Contact</a></li>
 						<!-- <li class="nav-item">
 							<a class="btn btn-primary ms-2" href="#">Get Started</a>
 						</li> -->
@@ -206,59 +260,189 @@
 				</div>
 			</div>
 		</section>
-
-		<!-- Footer -->
-		<footer class="py-5">
+		<!-- Services Section -->
+		<section id="services" class="py-5">
 			<div class="container">
-				<div class="row g-4">
-					<div class="col-md-4">
-						<h5 class="fw-bold mb-3">TechSolutions</h5>
-						<p class="text-muted">
-							Innovating technology solutions for tomorrow's challenges
-						</p>
-					</div>
-					<div class="col-md-2">
-						<h6 class="fw-bold mb-3">Products</h6>
-						<ul class="list-unstyled">
-							<li>
-								<a href="#" class="text-muted text-decoration-none">Platform</a>
-							</li>
-							<li>
-								<a href="#" class="text-muted text-decoration-none">Pricing</a>
-							</li>
-							<li>
-								<a href="#" class="text-muted text-decoration-none"
-									>Documentation</a
-								>
-							</li>
-						</ul>
-					</div>
-					<div class="col-md-2">
-						<h6 class="fw-bold mb-3">Company</h6>
-						<ul class="list-unstyled">
-							<li>
-								<a href="#" class="text-muted text-decoration-none">About</a>
-							</li>
-							<li>
-								<a href="#" class="text-muted text-decoration-none">Blog</a>
-							</li>
-							<li>
-								<a href="#" class="text-muted text-decoration-none">Careers</a>
-							</li>
-						</ul>
-					</div>
-					<div class="col-md-4">
-						<h6 class="fw-bold mb-3">Contact</h6>
-						<ul class="list-unstyled">
-							<li class="text-muted">Email: info@techsolutions.com</li>
-							<li class="text-muted">Phone: (555) 123-4567</li>
-							<li class="text-muted">New York, NY</li>
-						</ul>
+				<h2 class="section-title text-center mb-5">Our Services</h2>
+
+				<!-- Development Services -->
+				<div class="category-group mb-5">
+					<h3 class="category-title mb-4">Development Solutions</h3>
+					<div class="row g-4">
+						<!-- Web Development -->
+						<div class="col-md-6 col-lg-4">
+							<a
+								href="web-development.html"
+								class="card clickable-card h-100 shadow"
+							>
+								<div class="card-body text-center">
+									<h4>Web Development</h4>
+									<p class="text-muted">
+										Full-stack development services for modern web applications
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<!-- Mobile Development -->
+						<div class="col-md-6 col-lg-4">
+							<a
+								href="mobile-development.html"
+								class="card clickable-card h-100 shadow"
+							>
+								<div class="card-body text-center">
+									<h4>Mobile Development</h4>
+									<p class="text-muted">
+										Native and cross-platform mobile app development
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<!-- API Development -->
+						<div class="col-md-6 col-lg-4">
+							<a
+								href="api-development.html"
+								class="card clickable-card h-100 shadow"
+							>
+								<div class="card-body text-center">
+									<h4>API Development</h4>
+									<p class="text-muted">
+										RESTful API development and integration services
+									</p>
+								</div>
+							</a>
+						</div>
 					</div>
 				</div>
-				<hr class="my-5" />
-				<div class="text-center text-muted">
-					<p>&copy; 2023 TechSolutions. All rights reserved.</p>
+
+				<!-- Cloud & Infrastructure -->
+				<div class="category-group mb-5 bg-light p-4 rounded-3">
+					<h3 class="category-title mb-4">Cloud & Infrastructure</h3>
+					<div class="row g-4">
+						<!-- Cloud Solutions -->
+						<div class="col-md-6 col-lg-4">
+							<a
+								href="cloud-solutions.html"
+								class="card clickable-card h-100 shadow"
+							>
+								<div class="card-body text-center">
+									<h4>Cloud Solutions</h4>
+									<p class="text-muted">
+										Cloud migration, management, and optimization
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<!-- DevOps Services -->
+						<div class="col-md-6 col-lg-4">
+							<a href="devops.html" class="card clickable-card h-100 shadow">
+								<div class="card-body text-center">
+									<h4>DevOps Services</h4>
+									<p class="text-muted">
+										CI/CD pipelines and infrastructure automation
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<!-- Database Management -->
+						<div class="col-md-6 col-lg-4">
+							<a href="database.html" class="card clickable-card h-100 shadow">
+								<div class="card-body text-center">
+									<h4>Database Management</h4>
+									<p class="text-muted">
+										Database design, optimization, and maintenance
+									</p>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+
+				<!-- Design & Security -->
+				<div class="category-group mb-5">
+					<h3 class="category-title mb-4">Design & Security</h3>
+					<div class="row g-4">
+						<!-- UI/UX Design -->
+						<div class="col-md-6 col-lg-4">
+							<a href="ui-ux.html" class="card clickable-card h-100 shadow">
+								<div class="card-body text-center">
+									<h4>UI/UX Design</h4>
+									<p class="text-muted">
+										User-centered interface design and prototyping
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<!-- Cybersecurity -->
+						<div class="col-md-6 col-lg-4">
+							<a
+								href="cybersecurity.html"
+								class="card clickable-card h-100 shadow"
+							>
+								<div class="card-body text-center">
+									<h4>Cybersecurity</h4>
+									<p class="text-muted">
+										Comprehensive digital protection solutions
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<!-- Quality Assurance -->
+						<div class="col-md-6 col-lg-4">
+							<a href="qa.html" class="card clickable-card h-100 shadow">
+								<div class="card-body text-center">
+									<h4>Quality Assurance</h4>
+									<p class="text-muted">
+										Automated testing and quality control
+									</p>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
+		<!-- Simplified Inline Footer -->
+		<footer class="py-4">
+			<div class="container">
+				<div class="row justify-content-center mb-2">
+					<div class="col-auto">
+						<div class="d-flex flex-wrap justify-content-center gap-3">
+							<a
+								href="disclaimer.html"
+								class="text-muted text-decoration-none small pe-3 border-end"
+								>Disclaimer</a
+							>
+							<a
+								href="privacy.html"
+								class="text-muted text-decoration-none small pe-3 border-end"
+								>Privacy Policy</a
+							>
+							<a
+								href="terms.html"
+								class="text-muted text-decoration-none small pe-3 border-end"
+								>Terms of Service</a
+							>
+
+							<a
+								href="cookie.html"
+								class="text-muted text-decoration-none small"
+								>Cookie Policy</a
+							>
+						</div>
+					</div>
+				</div>
+				<div class="row justify-content-center border-top pt-3 mt-3">
+					<div class="col-auto">
+						<p class="text-muted small mb-0">
+							&copy; 2023 Your Company Name. All rights reserved.
+						</p>
+					</div>
 				</div>
 			</div>
 		</footer>
