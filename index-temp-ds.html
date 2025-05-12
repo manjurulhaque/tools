@@ -27,141 +27,104 @@
 			}
 
 			/* Hero Section Styles */
-
 			.hero-section {
-				height: 50vh;
-				min-height: 400px;
-				background: linear-gradient(-45deg, #3a7bd5, #00d2ff, #3a6073, #16222a);
-				background-size: 400% 400%;
-				position: relative;
-				overflow: hidden;
+				height: 100vh;
 				display: flex;
 				align-items: center;
-				animation: gradientFlow 15s ease infinite;
-			}
-			.hero-content {
-				height: 100%;
-				display: flex;
-				flex-direction: column;
 				justify-content: center;
-				transform: translateY(-5%); /* Fine-tune vertical position */
+				background: linear-gradient(45deg, #3a7bd5, #00d2ff);
+				position: relative;
+				overflow: hidden;
 			}
-			/* Dynamic background animation */
-			@keyframes gradientFlow {
-				0% {
-					background-position: 0% 50%;
-				}
-				50% {
-					background-position: 100% 50%;
-				}
-				100% {
-					background-position: 0% 50%;
-				}
-			}
-
-			/* Floating particles effect */
-			.hero-section::before {
-				content: "";
-				position: absolute;
-				width: 200%;
-				height: 200%;
-				background: radial-gradient(
-					circle,
-					rgba(255, 255, 255, 0.1) 10%,
-					transparent 20%
-				);
-				animation: float 20s linear infinite;
-				opacity: 0.3;
-			}
-
-			@keyframes float {
-				from {
-					transform: translateY(0) translateX(0);
-				}
-				to {
-					transform: translateY(-50%) translateX(-50%);
-				}
-			}
-
-			/* Text animations */
-			.animate-title {
+			.glass-card {
+				background: rgba(255, 255, 255, 0.15);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				border-radius: 20px;
+				padding: 4rem 6rem;
+				text-align: center;
+				position: relative;
+				border: 1px solid rgba(255, 255, 255, 0.2);
+				box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+				animation: cardEntrance 1s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+				transform: scale(0.9);
 				opacity: 0;
-				transform: translateY(30px);
-				animation: textReveal 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-				animation-delay: 0.3s;
 			}
 
-			.animate-subtitle {
+			@keyframes cardEntrance {
+				to {
+					transform: scale(1);
+					opacity: 1;
+				}
+			}
+
+			.hero-title {
+				font-size: 3.5rem;
+				color: white;
+				margin-bottom: 1.5rem;
+				text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+				animation: textSlideUp 0.8s 0.3s ease-out forwards;
 				opacity: 0;
 				transform: translateY(20px);
-				animation: textReveal 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-				animation-delay: 0.6s;
 			}
 
-			.animate-cta {
+			.hero-subtitle {
+				font-size: 1.25rem;
+				color: rgba(255, 255, 255, 0.9);
+				margin-bottom: 3rem;
+				animation: textSlideUp 0.8s 0.5s ease-out forwards;
 				opacity: 0;
-				transform: translateY(10px);
-				animation: textReveal 0.8s cubic-bezier(0.215, 0.61, 0.355, 1) forwards;
-				animation-delay: 0.9s;
+				transform: translateY(20px);
 			}
 
-			@keyframes textReveal {
+			.glass-button {
+				display: inline-block;
+				padding: 1rem 2.5rem;
+				border-radius: 50px;
+				background: rgba(255, 255, 255, 0.2);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				color: white;
+				text-decoration: none;
+				font-weight: 500;
+				transition: all 0.3s ease;
+				backdrop-filter: blur(5px);
+				animation: buttonEntrance 0.8s 0.7s ease-out forwards;
+				opacity: 0;
+				transform: translateY(20px);
+			}
+
+			.glass-button:hover {
+				background: rgba(255, 255, 255, 0.3);
+				transform: translateY(-2px);
+				box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+			}
+
+			@keyframes textSlideUp {
 				to {
 					opacity: 1;
 					transform: translateY(0);
 				}
 			}
 
-			.hero-title {
-				font-size: 3rem;
-				font-weight: 700;
-				color: white;
-				text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-				letter-spacing: -0.03em;
-				margin-bottom: 1.5rem;
-			}
-
-			.hero-subtitle {
-				font-size: 1.25rem;
-				color: rgba(255, 255, 255, 0.9);
-				max-width: 600px;
-				margin: 0 auto 2rem;
-			}
-
-			.hero-cta .btn {
-				padding: 1rem 2.5rem;
-				border-radius: 2rem;
-				background: rgba(255, 255, 255, 0.15);
-				border: 2px solid rgba(255, 255, 255, 0.3);
-				backdrop-filter: blur(5px);
-				transition: all 0.3s ease;
-			}
-
-			.hero-cta .btn:hover {
-				background: rgba(255, 255, 255, 0.25);
-				transform: translateY(-2px);
-				box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-			}
-
-			@media (min-width: 768px) {
-				.hero-title {
-					font-size: 4rem;
-				}
-				.hero-subtitle {
-					font-size: 1.5rem;
-				}
-			}
-
-			/* Responsive text spacing */
-			@media (max-width: 768px) {
-				.hero-content {
+			@keyframes buttonEntrance {
+				to {
+					opacity: 1;
 					transform: translateY(0);
 				}
-				.hero-title {
-					margin-bottom: 1rem !important;
+			}
+
+			@media (max-width: 768px) {
+				.glass-card {
+					padding: 2rem;
+					margin: 1rem;
 				}
+
+				.hero-title {
+					font-size: 2.5rem;
+				}
+
 				.hero-subtitle {
-					margin-bottom: 2rem !important;
+					font-size: 1.1rem;
 				}
 			}
 
@@ -294,18 +257,14 @@
 				</div>
 			</div>
 		</nav>
+		<!-- Glassmorphism Hero Section -->
 
-		<!-- Hero Section -->
 		<section class="hero-section">
-			<div class="container h-100">
-				<div class="hero-content text-center">
-					<h1 class="hero-title mb-4 animate-title">Digital Innovation</h1>
-					<p class="hero-subtitle mb-5 animate-subtitle">
-						Next-Gen Solutions for Modern Business
-					</p>
-					<div class="hero-cta animate-cta">
-						<a href="#" class="btn btn-primary btn-lg">Explore Now</a>
-					</div>
+			<div class="container">
+				<div class="glass-card">
+					<h1 class="hero-title">Digital Innovation</h1>
+					<p class="hero-subtitle">Next-Gen Solutions for Modern Business</p>
+					<a href="#" class="glass-button">Explore Now</a>
 				</div>
 			</div>
 		</section>
