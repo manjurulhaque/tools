@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>SVG-Enhanced Glassmorphism Hero</title>
+
+		<!-- Bootstrap 5 CSS -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+
+		<style>
+			/* --- Keyframes --- */
+			@keyframes bgShift {
+				0% {
+					background-position: 0% 50%;
+				}
+				50% {
+					background-position: 100% 50%;
+				}
+				100% {
+					background-position: 0% 50%;
+				}
+			}
+			@keyframes fadeInUp {
+				from {
+					opacity: 0;
+					transform: translateY(20px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			@keyframes float {
+				0% {
+					transform: translate(0, 0) scale(1);
+				}
+				50% {
+					transform: translate(20px, -30px) scale(1.1);
+				}
+				100% {
+					transform: translate(0, 0) scale(1);
+				}
+			}
+			@keyframes bounce {
+				0%,
+				100% {
+					transform: translateY(0);
+				}
+				50% {
+					transform: translateY(10px);
+				}
+			}
+
+			/* --- Navbar Overrides --- */
+			.navbar {
+				position: absolute;
+				top: 0;
+				width: 100%;
+				background: rgba(0, 0, 0, 0.4) !important;
+				backdrop-filter: blur(10px);
+				-webkit-backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+				z-index: 1000;
+			}
+			.navbar .navbar-brand {
+				color: #fff !important;
+				font-size: 1.75rem !important; /* bigger logo text */
+				font-weight: 600;
+			}
+			.navbar .nav-link,
+			.navbar .dropdown-toggle {
+				color: #fff !important;
+				transition: color 0.3s;
+			}
+			.navbar .nav-link:hover,
+			.navbar .dropdown-item:hover {
+				color: #ddd !important;
+			}
+			.navbar-toggler {
+				border-color: rgba(255, 255, 255, 0.7);
+			}
+			.navbar-toggler-icon {
+				background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+			}
+
+			/* --- Hero Section --- */
+			.hero {
+				position: relative;
+				margin-top: 4.3rem;
+				height: 60vh;
+				background: linear-gradient(135deg, #4b6cb7, #182848);
+				background-size: 200% 200%;
+				animation: bgShift 10s ease infinite;
+				overflow: hidden;
+			}
+
+			/* --- SVG Decorations --- */
+			.decor {
+				position: absolute;
+				fill: rgba(255, 255, 255, 0.1);
+				filter: blur(8px);
+				animation: float 12s ease-in-out infinite;
+			}
+			.decor.hex {
+				width: 100px;
+				height: 100px;
+				top: 20%;
+				left: 10%;
+			}
+			.decor.circle {
+				width: 80px;
+				height: 80px;
+				bottom: 20%;
+				right: 15%;
+				animation-delay: 3s;
+			}
+
+			/* --- Glass Card --- */
+			.glass-card {
+				position: relative;
+				background: rgba(255, 255, 255, 0.15);
+				backdrop-filter: blur(10px);
+				-webkit-backdrop-filter: blur(10px);
+				border: 1px solid rgba(255, 255, 255, 0.3);
+				box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+				border-radius: 0.5rem;
+				padding: 3rem 2rem;
+				color: #fff;
+				clip-path: url(#waveClip);
+				opacity: 0;
+				animation: fadeInUp 1s ease-out forwards 0.5s;
+			}
+			.glass-card h1 {
+				overflow: hidden;
+				white-space: nowrap;
+				border-right: 2px solid #fff;
+				width: 0;
+				animation: 3s steps(30, end) 1s forwards typewriter,
+					0.75s step-end infinite 1s blink;
+			}
+			@keyframes typewriter {
+				from {
+					width: 0;
+				}
+				to {
+					width: 100%;
+				}
+			}
+			@keyframes blink {
+				0%,
+				100% {
+					border-color: transparent;
+				}
+				50% {
+					border-color: #fff;
+				}
+			}
+			.glass-card p {
+				opacity: 0;
+				animation: fadeInUp 1s ease-out forwards 2.5s;
+			}
+			.glass-card .btn {
+				opacity: 0;
+				animation: fadeInUp 1s ease-out forwards 3.5s,
+					pulse 3s ease-in-out infinite 4.5s;
+			}
+			@keyframes pulse {
+				0%,
+				100% {
+					transform: scale(1);
+				}
+				50% {
+					transform: scale(1.05);
+				}
+			}
+			.glass-card .btn:hover {
+				animation: none;
+				transform: translateY(-2px) scale(1.05);
+				background-color: rgba(255, 255, 255, 0.2) !important;
+				color: #fff !important;
+				border-color: #fff !important;
+				opacity: 1 !important;
+			}
+			.btn-outline-light:hover,
+			.btn-outline-light:focus {
+				color: #fff !important;
+				background-color: rgba(255, 255, 255, 0.2) !important;
+				border-color: #fff !important;
+				opacity: 1 !important;
+			}
+
+			/* --- Cards Section --- */
+			.cards-section {
+				padding: 4rem 0;
+			}
+			.category-title {
+				margin-bottom: 2rem;
+				color: #333;
+				text-align: center;
+			}
+			.card-link {
+				text-decoration: none !important;
+			}
+			.card-link .card {
+				transition: transform 0.3s, border-color 0.3s;
+				border: 1px solid transparent;
+			}
+			.card-link .card:hover {
+				transform: translateY(-5px);
+				border-color: #4b6cb7;
+			}
+			.card-link .card-body .card-title {
+				color: #4b6cb7;
+				transition: color 0.3s;
+			}
+			.card-link .card-body .card-title:hover {
+				color: #2a4d91;
+			}
+			.card-link .card-body .card-text {
+				color: #555;
+			}
+
+			/* --- Footer --- */
+			.footer {
+				background: rgba(0, 0, 0, 0.8);
+				color: #fff;
+				text-align: center;
+				padding: 2rem 1rem;
+			}
+			.footer a {
+				color: #4b6cb7;
+				text-decoration: none;
+				margin: 0 0.5rem;
+				transition: color 0.3s;
+			}
+			.footer a:hover {
+				color: #82aaff;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Navbar -->
+		<nav class="navbar navbar-expand-lg navbar-dark">
+			<div class="container">
+				<a class="navbar-brand" href="#">BrandName</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+					aria-controls="navbarNav"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div
+					class="collapse navbar-collapse justify-content-end"
+					id="navbarNav"
+				>
+					<ul class="navbar-nav">
+						<li class="nav-item"><a class="nav-link" href="#">Home</a></li>
+						<li class="nav-item dropdown">
+							<a
+								class="nav-link dropdown-toggle"
+								href="#"
+								id="featuresDropdown"
+								role="button"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+								>Features</a
+							>
+							<ul
+								class="dropdown-menu dropdown-menu-end"
+								aria-labelledby="featuresDropdown"
+							>
+								<li><a class="dropdown-item" href="#feature1">Feature 1</a></li>
+								<li><a class="dropdown-item" href="#feature2">Feature 2</a></li>
+								<li><a class="dropdown-item" href="#feature3">Feature 3</a></li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#pricing">Pricing</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="#contact">Contact</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Hero Section -->
+		<section class="hero d-flex align-items-center justify-content-center">
+			<!-- SVG clip-path -->
+			<svg width="0" height="0">
+				<defs>
+					<clipPath id="waveClip" clipPathUnits="objectBoundingBox">
+						<path d="M0,0 H1 V0.85 C0.75,1 0.25,0.7 0,0.85 Z" />
+					</clipPath>
+				</defs>
+			</svg>
+			<!-- Decorations -->
+			<svg class="decor hex" viewBox="0 0 100 100">
+				<polygon points="50,0 93,25 93,75 50,100 7,75 7,25" />
+			</svg>
+			<svg class="decor circle" viewBox="0 0 100 100">
+				<circle cx="50" cy="50" r="40" />
+			</svg>
+
+			<div class="container">
+				<div class="row justify-content-center">
+					<div class="col-12 col-md-10 col-lg-8">
+						<div class="glass-card text-center">
+							<h1 class="mb-4">Discover SVG Magic</h1>
+							<p class="mb-4">
+								Clip-paths transform your card into custom shapes—and SVG
+								decorations fill out the scene.
+							</p>
+							<a href="#" class="btn btn-outline-light btn-lg px-4"
+								>Explore More</a
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="scroll-down">
+				<span></span>
+				<i class="arrow"></i>
+			</div>
+		</section>
+
+		<!-- Cards Section -->
+		<section class="cards-section bg-light">
+			<div class="container">
+				<h2 class="category-title">Category One</h2>
+				<div class="row">
+					<div class="col-md-4 mb-4">
+						<a href="page1.html" class="card-link">
+							<div class="card h-100">
+								<div class="card-body">
+									<h5 class="card-title">Item One</h5>
+									<p class="card-text">Brief description of item one.</p>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<h2 class="category-title">Category Two</h2>
+				<div class="row">
+					<div class="col-md-4 mb-4">
+						<a href="page2.html" class="card-link">
+							<div class="card h-100">
+								<div class="card-body">
+									<h5 class="card-title">Item Two</h5>
+									<p class="card-text">Brief description of item two.</p>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+
+				<h2 class="category-title">Category Three</h2>
+				<div class="row">
+					<div class="col-md-4 mb-4">
+						<a href="page3.html" class="card-link">
+							<div class="card h-100">
+								<div class="card-body">
+									<h5 class="card-title">Item Three</h5>
+									<p class="card-text">Brief description of item three.</p>
+								</div>
+							</div>
+						</a>
+					</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Footer -->
+		<footer class="footer">
+			<div class="container">
+				<p>&copy; 2025 BrandName. All rights reserved.</p>
+				<p>
+					<a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> |
+					<a href="#">Contact Us</a>
+				</p>
+			</div>
+		</footer>
+
+		<!-- Bootstrap 5 JS Bundle -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	</body>
+</html>
