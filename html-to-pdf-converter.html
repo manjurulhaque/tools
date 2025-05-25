@@ -3,7 +3,64 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Advanced HTML to PDF Converter</title>
+		<title>
+			Advanced HTML to PDF Converter | Fast, Responsive & Customizable
+		</title>
+
+		<!-- Primary Meta Tags -->
+		<meta
+			name="title"
+			content="Advanced HTML to PDF Converter | Fast, Responsive & Customizable"
+		/>
+		<meta
+			name="description"
+			content="Convert your HTML content to PDF with customizable settings: page format, orientation, margins, image quality, and drag-and-drop support. Responsive and SEO-friendly."
+		/>
+		<meta
+			name="keywords"
+			content="HTML to PDF, PDF converter, html2pdf, drag and drop, bootstrap, seo, web tool"
+		/>
+
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://example.com/html-to-pdf" />
+		<meta property="og:title" content="Advanced HTML to PDF Converter" />
+		<meta
+			property="og:description"
+			content="Convert HTML to PDF with advanced settings and drag-and-drop support. Responsive and SEO-optimized tool."
+		/>
+		<meta
+			property="og:image"
+			content="https://example.com/assets/seo-preview.png"
+		/>
+
+		<!-- Twitter -->
+		<meta property="twitter:card" content="summary_large_image" />
+		<meta property="twitter:url" content="https://example.com/html-to-pdf" />
+		<meta property="twitter:title" content="Advanced HTML to PDF Converter" />
+		<meta
+			property="twitter:description"
+			content="Convert HTML to PDF with advanced settings and drag-and-drop support. Responsive and SEO-optimized tool."
+		/>
+		<meta
+			property="twitter:image"
+			content="https://example.com/assets/seo-preview.png"
+		/>
+
+		<!-- Schema.org Structured Data -->
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "Advanced HTML to PDF Converter",
+				"url": "https://example.com/html-to-pdf",
+				"description": "Convert HTML content to PDF with customizable settings: page format, orientation, margins, image quality, and drag-and-drop support.",
+				"applicationCategory": "Utilities",
+				"operatingSystem": "Web",
+				"browserRequirements": "Requires JavaScript and modern browser"
+			}
+		</script>
+
 		<!-- Bootstrap CSS -->
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
@@ -31,11 +88,19 @@
 			}
 		</style>
 	</head>
-	<body class="">
-		<div class="container bg-white p-4 rounded shadow" style="max-width: 850px">
-			<h2 class="text-center mb-4">HTML to PDF Converter</h2>
+	<body>
+		<header class="container mb-4">
+			<h1 class="text-center">HTML to PDF Converter</h1>
+		</header>
 
-			<div class="mb-3">
+		<main
+			class="container bg-white p-4 rounded shadow"
+			style="max-width: 850px"
+		>
+			<section aria-labelledby="html-content-label" class="mb-4">
+				<h2 id="html-content-label" class="visually-hidden">
+					HTML Content Input
+				</h2>
 				<label for="htmlContent" class="form-label"
 					>HTML Content (Drag & Drop Supported)</label
 				>
@@ -43,98 +108,122 @@
 					id="htmlContent"
 					class="form-control drop-zone"
 					placeholder="Enter or drop your HTML here..."
+					aria-describedby="dragDropHint"
 				></textarea>
-			</div>
+				<small id="dragDropHint" class="form-text text-muted"
+					>Drag & drop an .html file or paste HTML snippets.</small
+				>
+			</section>
 
-			<div class="row g-3 mb-3">
-				<div class="col-md-4">
-					<label for="fileName" class="form-label">File Name</label>
-					<input
-						type="text"
-						class="form-control"
-						id="fileName"
-						placeholder="e.g. MyFile"
-					/>
+			<section aria-labelledby="settings-label" class="mb-4">
+				<h2 id="settings-label" class="h5">PDF Settings</h2>
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label for="fileName" class="form-label">File Name</label>
+						<input
+							type="text"
+							class="form-control"
+							id="fileName"
+							placeholder="e.g. MyFile"
+							aria-label="PDF file name"
+						/>
+					</div>
+					<div class="col-md-4">
+						<label for="format" class="form-label">Page Format</label>
+						<select
+							class="form-select"
+							id="format"
+							aria-label="Select page format"
+						>
+							<option value="a4" selected>A4</option>
+							<option value="letter">Letter</option>
+							<option value="legal">Legal</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label for="orientation" class="form-label">Orientation</label>
+						<select
+							class="form-select"
+							id="orientation"
+							aria-label="Select page orientation"
+						>
+							<option value="portrait" selected>Portrait</option>
+							<option value="landscape">Landscape</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label for="margin" class="form-label">Margin (inches)</label>
+						<input
+							type="number"
+							class="form-control"
+							id="margin"
+							value="0.5"
+							min="0"
+							step="0.1"
+							aria-label="PDF margin size in inches"
+						/>
+					</div>
+					<div class="col-md-4">
+						<label for="scale" class="form-label">Render Scale</label>
+						<input
+							type="number"
+							class="form-control"
+							id="scale"
+							value="2"
+							min="1"
+							max="5"
+							step="0.1"
+							aria-label="HTML2Canvas render scale"
+						/>
+					</div>
+					<div class="col-md-4">
+						<label for="quality" class="form-label">Image Quality</label>
+						<input
+							type="number"
+							class="form-control"
+							id="quality"
+							value="0.98"
+							min="0.1"
+							max="1"
+							step="0.01"
+							aria-label="JPEG image quality"
+						/>
+					</div>
 				</div>
-				<div class="col-md-4">
-					<label for="format" class="form-label">Page Format</label>
-					<select class="form-select" id="format">
-						<option value="a4" selected>A4</option>
-						<option value="letter">Letter</option>
-						<option value="legal">Legal</option>
-					</select>
-				</div>
-				<div class="col-md-4">
-					<label for="orientation" class="form-label">Orientation</label>
-					<select class="form-select" id="orientation">
-						<option value="portrait" selected>Portrait</option>
-						<option value="landscape">Landscape</option>
-					</select>
-				</div>
-			</div>
+			</section>
 
-			<div class="row g-3 mb-3">
-				<div class="col-md-4">
-					<label for="margin" class="form-label">Margin (inches)</label>
-					<input
-						type="number"
-						class="form-control"
-						id="margin"
-						value="0.5"
-						min="0"
-						step="0.1"
-					/>
-				</div>
-				<div class="col-md-4">
-					<label for="scale" class="form-label">Render Scale (1-5)</label>
-					<input
-						type="number"
-						class="form-control"
-						id="scale"
-						value="2"
-						min="1"
-						max="5"
-						step="0.1"
-					/>
-				</div>
-				<div class="col-md-4">
-					<label for="quality" class="form-label">Image Quality (0-1)</label>
-					<input
-						type="number"
-						class="form-control"
-						id="quality"
-						value="0.98"
-						min="0.1"
-						max="1"
-						step="0.01"
-					/>
-				</div>
-			</div>
+			<button
+				class="btn btn-primary w-100 mb-4"
+				onclick="convertToPDF()"
+				aria-label="Download PDF"
+			>
+				Download PDF
+			</button>
 
-			<div class="d-grid mb-3">
-				<button class="btn btn-primary" onclick="convertToPDF()">
-					Download PDF
-				</button>
-			</div>
-
-			<div>
-				<label class="form-label">Live Preview</label>
+			<section aria-labelledby="preview-label">
+				<h2 id="preview-label" class="form-label">Live Preview</h2>
 				<div
 					id="preview"
 					class="p-3 border rounded bg-light"
 					style="min-height: 100px"
+					aria-live="polite"
 				>
 					Preview will appear here...
 				</div>
-			</div>
-		</div>
+			</section>
+		</main>
 
-		<!-- JavaScript -->
+		<footer class="container text-center mt-4">
+			<p class="small text-muted">
+				&copy; 2025 HTML2PDF Converter. All rights reserved.
+			</p>
+		</footer>
+
 		<script>
 			function convertToPDF() {
 				const htmlContent = document.getElementById("htmlContent").value;
 				const fileName =
-					document.getElementById("fileName").value || "document";
+					document.getElementById("fileName").value.trim() || "document";
 				const format = document.getElementById("format").value;
 				const orientation = document.getElementById("orientation").value;
 				const margin = parseFloat(document.getElementById("margin").value);
@@ -145,11 +234,11 @@
 				element.innerHTML = htmlContent;
 
 				const opt = {
-					margin: margin,
+					margin,
 					filename: `${fileName}.pdf`,
-					image: { type: "jpeg", quality: quality },
-					html2canvas: { scale: scale },
-					jsPDF: { unit: "in", format: format, orientation: orientation },
+					image: { type: "jpeg", quality },
+					html2canvas: { scale },
+					jsPDF: { unit: "in", format, orientation },
 				};
 
 				html2pdf().set(opt).from(element).save();
@@ -158,12 +247,10 @@
 			const textarea = document.getElementById("htmlContent");
 			const preview = document.getElementById("preview");
 
-			// Update preview on input
 			textarea.addEventListener("input", () => {
 				preview.innerHTML = textarea.value || "Preview will appear here...";
 			});
 
-			// Drag-and-drop listeners
 			["dragenter", "dragover"].forEach((evt) => {
 				textarea.addEventListener(evt, (e) => {
 					e.preventDefault();
