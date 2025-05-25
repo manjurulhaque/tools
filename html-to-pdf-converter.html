@@ -11,37 +11,37 @@
 		/>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 		<style>
-			.drop-zone {
+			textarea.drop-zone {
 				border: 2px dashed #ccc;
 				border-radius: 6px;
-				padding: 30px;
-				text-align: center;
-				color: #999;
-				background-color: #f9f9f9;
-				transition: background 0.2s;
+				padding: 15px;
+				min-height: 150px;
+				transition: background 0.2s, border-color 0.2s;
+				resize: vertical;
 			}
-
-			.drop-zone.dragover {
+			textarea.drop-zone.dragover {
 				background-color: #e0f7fa;
 				border-color: #00acc1;
 				color: #007c91;
 			}
+			body {
+				background-color: #f8f9fa;
+				padding-top: 2rem;
+				padding-bottom: 2rem;
+			}
 		</style>
 	</head>
-	<body class="bg-light py-5">
+	<body class="">
 		<div class="container bg-white p-4 rounded shadow" style="max-width: 850px">
 			<h2 class="text-center mb-4">HTML to PDF Converter</h2>
 
-			<div class="drop-zone mb-3" id="dropZone">
-				Drag & drop an HTML file or paste text here
-			</div>
-
 			<div class="mb-3">
-				<label for="htmlContent" class="form-label">HTML Content</label>
+				<label for="htmlContent" class="form-label"
+					>HTML Content (Drag & Drop Supported)</label
+				>
 				<textarea
-					class="form-control"
 					id="htmlContent"
-					rows="6"
+					class="form-control drop-zone"
 					placeholder="Enter or drop your HTML here..."
 				></textarea>
 			</div>
@@ -155,47 +155,48 @@
 				html2pdf().set(opt).from(element).save();
 			}
 
-			document
-				.getElementById("htmlContent")
-				.addEventListener("input", function () {
-					document.getElementById("preview").innerHTML =
-						this.value || "Preview will appear here...";
-				});
-
-			// Drag-and-drop functionality
-			const dropZone = document.getElementById("dropZone");
 			const textarea = document.getElementById("htmlContent");
+			const preview = document.getElementById("preview");
 
-			dropZone.addEventListener("dragover", (e) => {
-				e.preventDefault();
-				dropZone.classList.add("dragover");
+			// Update preview on input
+			textarea.addEventListener("input", () => {
+				preview.innerHTML = textarea.value || "Preview will appear here...";
 			});
 
-			dropZone.addEventListener("dragleave", () => {
-				dropZone.classList.remove("dragover");
+			// Drag-and-drop listeners
+			["dragenter", "dragover"].forEach((evt) => {
+				textarea.addEventListener(evt, (e) => {
+					e.preventDefault();
+					textarea.classList.add("dragover");
+				});
+			});
+			["dragleave", "drop"].forEach((evt) => {
+				textarea.addEventListener(evt, (e) => {
+					e.preventDefault();
+					textarea.classList.remove("dragover");
+				});
 			});
 
-			dropZone.addEventListener("drop", (e) => {
+			textarea.addEventListener("drop", (e) => {
 				e.preventDefault();
-				dropZone.classList.remove("dragover");
-
-				if (e.dataTransfer.files.length > 0) {
-					const file = e.dataTransfer.files[0];
+				const dt = e.dataTransfer;
+				if (dt.files.length) {
+					const file = dt.files[0];
 					if (file.type === "text/html" || file.name.endsWith(".html")) {
 						const reader = new FileReader();
-						reader.onload = function (event) {
-							textarea.value = event.target.result;
-							document.getElementById("preview").innerHTML = textarea.value;
+						reader.onload = (ev) => {
+							textarea.value = ev.target.result;
+							preview.innerHTML = textarea.value;
 						};
 						reader.readAsText(file);
 					} else {
 						alert("Please drop a valid .html file.");
 					}
 				} else {
-					const text = e.dataTransfer.getData("text");
+					const text = dt.getData("text");
 					if (text) {
 						textarea.value = text;
-						document.getElementById("preview").innerHTML = text;
+						preview.innerHTML = text;
 					}
 				}
 			});
