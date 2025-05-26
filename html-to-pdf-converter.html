@@ -1,192 +1,340 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>All-in-One Tools Suite | HTML to PDF Converter</title>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>
+			Advanced HTML to PDF Converter | Fast, Responsive & Customizable
+		</title>
 
-    <!-- Bootstrap 5 CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-    <!-- html2pdf.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+		<!-- Bootstrap CSS -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
 
-    <style>
-      /* Drop-zone styling */
-      textarea.drop-zone {
-        border: 2px dashed #ccc;
-        border-radius: 6px;
-        padding: 15px;
-        min-height: 150px;
-        transition: background 0.2s, border-color 0.2s;
-        resize: vertical;
-      }
-      textarea.drop-zone.dragover {
-        background-color: #e0f7fa;
-        border-color: #00acc1;
-        color: #007c91;
-      }
-      body {
-        background-color: #f8f9fa;
-        padding-top: 4rem;
-      }
-    </style>
-  </head>
-  <body>
-    <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
-      <div class="container">
-        <a class="navbar-brand" href="#">MANJURUL</a>
-        <button
-          class="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-          <ul class="navbar-nav">
-            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-            <li class="nav-item dropdown">
-              <a
-                class="nav-link dropdown-toggle"
-                href="#"
-                role="button"
-                data-bs-toggle="dropdown"
-                >Tools</a
-              >
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#converter">PDF Tools</a></li>
-                <li><a class="dropdown-item" href="#category1">Image Tools</a></li>
-                <li><a class="dropdown-item" href="#category3">Data & Code Tools</a></li>
-              </ul>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="faqs.html">FAQs</a></li>
-            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
-          </ul>
-        </div>
-      </div>
-    </nav>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <!-- HTML to PDF Converter Section -->
-    <section id="converter" class="container bg-white p-4 rounded shadow mt-5 mb-5" style="max-width:850px;">
-      <header class="mb-4 text-center">
-        <h1>HTML to PDF Converter</h1>
-      </header>
-      <div class="mb-4">
-        <label for="htmlContent" class="form-label">HTML Content (Drag &amp; Drop Supported)</label>
-        <textarea id="htmlContent" class="form-control drop-zone" placeholder="Enter or drop your HTML here..."></textarea>
-        <small class="form-text text-muted">Drag &amp; drop an .html file or paste snippets.</small>
-      </div>
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <label for="fileName" class="form-label">File Name</label>
-          <input type="text" id="fileName" class="form-control" placeholder="e.g. MyFile" />
-        </div>
-        <div class="col-md-4">
-          <label for="format" class="form-label">Page Format</label>
-          <select id="format" class="form-select">
-            <option value="a4" selected>A4</option>
-            <option value="letter">Letter</option>
-            <option value="legal">Legal</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label for="orientation" class="form-label">Orientation</label>
-          <select id="orientation" class="form-select">
-            <option value="portrait" selected>Portrait</option>
-            <option value="landscape">Landscape</option>
-          </select>
-        </div>
-        <div class="col-md-4">
-          <label for="margin" class="form-label">Margin (inches)</label>
-          <input type="number" id="margin" class="form-control" value="0.5" min="0" step="0.1" />
-        </div>
-        <div class="col-md-4">
-          <label for="scale" class="form-label">Render Scale</nylebel>
-          <input type="number" id="scale" class="form-control" value="2" min="1" max="5" step="0.1" />
-        </div>
-        <div class="col-md-4">
-          <label for="quality" class="form-label">Image Quality</label>
-          <input type="number" id="quality" class="form-control" value="0.98" min="0.1" max="1" step="0.01" />
-        </div>
-      </div>
-      <button class="btn btn-primary w-100 mb-4" onclick="convertToPDF()">Download PDF</button>
-      <h2 class="h5">Live Preview</h2>
-      <div id="preview" class="p-3 border rounded bg-light" style="min-height:100px;" aria-live="polite">
-        Preview will appear here...
-      </div>
-    </section>
+		<style>
+			body {
+				background-color: #f8f9fa;
+				padding-top: 5rem;
+			}
 
-   
+			/* --- Navbar Styles from index-temp-chatgpt.html --- */
+			.navbar {
+				position: absolute;
+				top: 0;
+				width: 100%;
+				background: rgba(0, 0, 0, 0.4) !important;
+				backdrop-filter: blur(10px);
+				-webkit-backdrop-filter: blur(10px);
+				border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+				z-index: 1000;
+			}
+			.navbar .navbar-brand {
+				color: #fff !important;
+				font-size: 1.75rem !important;
+				font-weight: 600;
+			}
+			.navbar .nav-link,
+			.navbar .dropdown-toggle {
+				color: #fff !important;
+				transition: color 0.3s;
+			}
+			.navbar .nav-link:hover,
+			.navbar .dropdown-item:hover {
+				color: #ddd !important;
+			}
+			.navbar-toggler {
+				border-color: rgba(255, 255, 255, 0.7);
+			}
+			.navbar-toggler-icon {
+				background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+			}
 
-    <!-- Footer -->
-    <footer class="footer bg-dark text-white text-center py-4">
-      <div class="container">
-        <p>&copy; 2025 Manjurul.com. All rights reserved.</p>
-        <p><a href="privacy-policy.html" class="text-white">Privacy Policy</a> |
-           <a href="terms-of-service.html" class="text-white">Terms of Service</a> |
-           <a href="cookie-policy.html" class="text-white">Cookie Policy</a>
-        </p>
-      </div>
-    </footer>
+			/* --- Footer Styles --- */
+			.footer {
+				background: rgba(0, 0, 0, 0.8);
+				color: #fff;
+				text-align: center;
+				padding: 2rem 1rem;
+				margin-top: 4rem;
+			}
+			.footer a {
+				color: #4b6cb7;
+				text-decoration: none;
+				margin: 0 0.5rem;
+				transition: color 0.3s;
+			}
+			.footer a:hover {
+				color: #82aaff;
+			}
 
-    <!-- Bootstrap Bundle JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      function convertToPDF() {
-        const htmlContent = document.getElementById('htmlContent').value;
-        const fileName = (document.getElementById('fileName').value.trim() || 'document') + '.pdf';
-        const format = document.getElementById('format').value;
-        const orientation = document.getElementById('orientation').value;
-        const margin = parseFloat(document.getElementById('margin').value);
-        const quality = parseFloat(document.getElementById('quality').value);
-        const scale = parseFloat(document.getElementById('scale').value);
-        const element = document.createElement('div');
-        element.innerHTML = htmlContent;
-        const opt = {
-          margin,
-          filename: fileName,
-          image: { type: 'jpeg', quality },
-          html2canvas: { scale },
-          jsPDF: { unit: 'in', format, orientation }
-        };
-        html2pdf().set(opt).from(element).save();
-      }
-      const textarea = document.getElementById('htmlContent');
-      const preview = document.getElementById('preview');
-      textarea.addEventListener('input', () => {
-        preview.innerHTML = textarea.value || 'Preview will appear here...';
-      });
-      ['dragenter','dragover'].forEach(evt => {
-        textarea.addEventListener(evt, e => { e.preventDefault(); textarea.classList.add('dragover'); });
-      });
-      ['dragleave','drop'].forEach(evt => {
-        textarea.addEventListener(evt, e => { e.preventDefault(); textarea.classList.remove('dragover'); });
-      });
-      textarea.addEventListener('drop', e => {
-        e.preventDefault();
-        const dt = e.dataTransfer;
-        if (dt.files.length) {
-          const file = dt.files[0];
-          if (file.type === 'text/html' || file.name.endsWith('.html')) {
-            const reader = new FileReader();
-            reader.onload = ev => { textarea.value = ev.target.result; preview.innerHTML = ev.target.result; };
-            reader.readAsText(file);
-          } else {
-            alert('Please drop a valid .html file.');
-          }
-        } else {
-          const text = dt.getData('text');
-          textarea.value = text; preview.innerHTML = text;
-        }
-      });
-    </script>
-  </body>
+			textarea.drop-zone {
+				border: 2px dashed #ccc;
+				border-radius: 6px;
+				padding: 15px;
+				min-height: 150px;
+				transition: background 0.2s, border-color 0.2s;
+				resize: vertical;
+			}
+			textarea.drop-zone.dragover {
+				background-color: #e0f7fa;
+				border-color: #00acc1;
+				color: #007c91;
+			}
+		</style>
+	</head>
+	<body>
+		<!-- Navbar from index-temp-chatgpt.html -->
+		<nav class="navbar navbar-expand-lg navbar-dark">
+			<div class="container">
+				<a class="navbar-brand" href="#">MANJURUL</a>
+				<button
+					class="navbar-toggler"
+					type="button"
+					data-bs-toggle="collapse"
+					data-bs-target="#navbarNav"
+					aria-controls="navbarNav"
+					aria-expanded="false"
+					aria-label="Toggle navigation"
+				>
+					<span class="navbar-toggler-icon"></span>
+				</button>
+
+				<div
+					class="collapse navbar-collapse justify-content-end"
+					id="navbarNav"
+				>
+					<ul class="navbar-nav">
+						<li class="nav-item">
+							<a class="nav-link" href="index.html">Home</a>
+						</li>
+						<li class="nav-item dropdown">
+							<a
+								class="nav-link dropdown-toggle"
+								href="#"
+								id="featuresDropdown"
+								role="button"
+								data-bs-toggle="dropdown"
+								aria-expanded="false"
+								>Tools</a
+							>
+							<ul
+								class="dropdown-menu dropdown-menu-end"
+								aria-labelledby="featuresDropdown"
+							>
+								<li>
+									<a class="dropdown-item" href="#feature1">Image Tools</a>
+								</li>
+								<li><a class="dropdown-item" href="#feature2">Pdf Tools</a></li>
+								<li>
+									<a class="dropdown-item" href="#feature3"
+										>Data & Code Tools</a
+									>
+								</li>
+							</ul>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="faqs.html">FAQs</a>
+						</li>
+						<li class="nav-item">
+							<a class="nav-link" href="contact.html">Contact</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</nav>
+
+		<!-- Main Content -->
+		<main
+			class="container bg-white p-4 rounded shadow"
+			style="max-width: 850px"
+		>
+			<header class="mb-4">
+				<h1 class="text-center">HTML to PDF Converter</h1>
+			</header>
+
+			<section class="mb-4">
+				<label for="htmlContent" class="form-label"
+					>HTML Content (Drag & Drop Supported)</label
+				>
+				<textarea
+					id="htmlContent"
+					class="form-control drop-zone"
+					placeholder="Enter or drop your HTML here..."
+					aria-describedby="dragDropHint"
+				></textarea>
+				<small id="dragDropHint" class="form-text text-muted"
+					>Drag & drop an .html file or paste HTML snippets.</small
+				>
+			</section>
+
+			<section class="mb-4">
+				<h2 class="h5">PDF Settings</h2>
+				<div class="row g-3">
+					<div class="col-md-4">
+						<label for="fileName" class="form-label">File Name</label>
+						<input
+							type="text"
+							class="form-control"
+							id="fileName"
+							placeholder="e.g. MyFile"
+						/>
+					</div>
+					<div class="col-md-4">
+						<label for="format" class="form-label">Page Format</label>
+						<select class="form-select" id="format">
+							<option value="a4" selected>A4</option>
+							<option value="letter">Letter</option>
+							<option value="legal">Legal</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label for="orientation" class="form-label">Orientation</label>
+						<select class="form-select" id="orientation">
+							<option value="portrait" selected>Portrait</option>
+							<option value="landscape">Landscape</option>
+						</select>
+					</div>
+					<div class="col-md-4">
+						<label for="margin" class="form-label">Margin (inches)</label>
+						<input
+							type="number"
+							class="form-control"
+							id="margin"
+							value="0.5"
+							min="0"
+							step="0.1"
+						/>
+					</div>
+					<div class="col-md-4">
+						<label for="scale" class="form-label">Render Scale</label>
+						<input
+							type="number"
+							class="form-control"
+							id="scale"
+							value="2"
+							min="1"
+							max="5"
+							step="0.1"
+						/>
+					</div>
+					<div class="col-md-4">
+						<label for="quality" class="form-label">Image Quality</label>
+						<input
+							type="number"
+							class="form-control"
+							id="quality"
+							value="0.98"
+							min="0.1"
+							max="1"
+							step="0.01"
+						/>
+					</div>
+				</div>
+			</section>
+
+			<button class="btn btn-primary w-100 mb-4" onclick="convertToPDF()">
+				Download PDF
+			</button>
+
+			<section>
+				<label for="preview" class="form-label">Live Preview</label>
+				<div
+					id="preview"
+					class="p-3 border rounded bg-light"
+					style="min-height: 100px"
+				>
+					Preview will appear here...
+				</div>
+			</section>
+		</main>
+
+		<!-- Footer from index-temp-chatgpt.html -->
+		<footer class="footer">
+			<div class="container">
+				<p>&copy; 2025 Manjurul.com. All rights reserved.</p>
+				<p>
+					<a href="privacy-policy.html">Privacy Policy</a> |
+					<a href="terms-of-service.html">Terms of Service</a> |
+					<a href="cookie-policy.html">Cookie Policy</a>
+				</p>
+			</div>
+		</footer>
+
+		<!-- Bootstrap JS Bundle -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+		<script>
+			function convertToPDF() {
+				const htmlContent = document.getElementById("htmlContent").value;
+				const fileName =
+					document.getElementById("fileName").value.trim() || "document";
+				const format = document.getElementById("format").value;
+				const orientation = document.getElementById("orientation").value;
+				const margin = parseFloat(document.getElementById("margin").value);
+				const quality = parseFloat(document.getElementById("quality").value);
+				const scale = parseFloat(document.getElementById("scale").value);
+
+				const element = document.createElement("div");
+				element.innerHTML = htmlContent;
+
+				const opt = {
+					margin,
+					filename: `${fileName}.pdf`,
+					image: { type: "jpeg", quality },
+					html2canvas: { scale },
+					jsPDF: { unit: "in", format, orientation },
+				};
+
+				html2pdf().set(opt).from(element).save();
+			}
+
+			const textarea = document.getElementById("htmlContent");
+			const preview = document.getElementById("preview");
+
+			textarea.addEventListener("input", () => {
+				preview.innerHTML = textarea.value || "Preview will appear here...";
+			});
+
+			["dragenter", "dragover"].forEach((evt) => {
+				textarea.addEventListener(evt, (e) => {
+					e.preventDefault();
+					textarea.classList.add("dragover");
+				});
+			});
+			["dragleave", "drop"].forEach((evt) => {
+				textarea.addEventListener(evt, (e) => {
+					e.preventDefault();
+					textarea.classList.remove("dragover");
+				});
+			});
+
+			textarea.addEventListener("drop", (e) => {
+				e.preventDefault();
+				const dt = e.dataTransfer;
+				if (dt.files.length) {
+					const file = dt.files[0];
+					if (file.type === "text/html" || file.name.endsWith(".html")) {
+						const reader = new FileReader();
+						reader.onload = (ev) => {
+							textarea.value = ev.target.result;
+							preview.innerHTML = textarea.value;
+						};
+						reader.readAsText(file);
+					} else {
+						alert("Please drop a valid .html file.");
+					}
+				} else {
+					const text = dt.getData("text");
+					if (text) {
+						textarea.value = text;
+						preview.innerHTML = text;
+					}
+				}
+			});
+		</script>
+	</body>
 </html>
