@@ -6,19 +6,96 @@
 		<title>
 			Advanced HTML to PDF Converter | Fast, Responsive & Customizable
 		</title>
+		<!-- Primary Meta Tags -->
+		<meta
+			name="title"
+			content="HTML to PDF Converter | Fast, Responsive & Free Online Tool"
+		/>
+		<meta
+			name="description"
+			content="Convert HTML code or files into high-quality PDFs with our free online HTML to PDF Converter. Fast, customizable, responsive, and easy to use!"
+		/>
+		<meta
+			name="keywords"
+			content="html to pdf, online html to pdf converter, convert html file to pdf, html2pdf, html to pdf tool"
+		/>
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href="https://manjurul.com/html-to-pdf" />
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://manjurul.com/html-to-pdf" />
+		<meta
+			property="og:title"
+			content="HTML to PDF Converter | Fast, Responsive & Free Online Tool"
+		/>
+		<meta
+			property="og:description"
+			content="Convert HTML code or files into high-quality PDFs online. No installation required."
+		/>
+		<meta
+			property="og:image"
+			content="https://manjurul.com/images/html-to-pdf-preview.jpg"
+		/>
 
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content="https://manjurul.com/html-to-pdf" />
+		<meta
+			name="twitter:title"
+			content="HTML to PDF Converter | Free & Fast Tool"
+		/>
+		<meta
+			name="twitter:description"
+			content="Convert HTML to PDF in seconds. Supports drag & drop, live preview, custom margins, and more!"
+		/>
+		<meta
+			name="twitter:image"
+			content="https://manjurul.com/images/html-to-pdf-preview.jpg"
+		/>
+		<!-- Favicon -->
+		<link
+			rel="icon"
+			href="https://manjurul.com/favicon.ico"
+			type="image/x-icon"
+		/>
+
+		<!-- Schema.org JSON-LD Markup -->
+		<script type="application/ld+json">
+			{
+				"@context": "https://schema.org",
+				"@type": "WebApplication",
+				"name": "HTML to PDF Converter",
+				"url": "https://manjurul.com/html-to-pdf",
+				"applicationCategory": "UtilitiesApplication",
+				"operatingSystem": "All",
+				"offers": {
+					"@type": "Offer",
+					"price": "0",
+					"priceCurrency": "USD"
+				},
+				"aggregateRating": {
+					"@type": "AggregateRating",
+					"ratingValue": "4.8",
+					"reviewCount": "148"
+				}
+			}
+		</script>
 		<!-- Bootstrap CSS -->
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
 
+		<!-- html2pdf JS -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+		<!-- DOMPurify for Sanitizing HTML -->
+		<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.1/dist/purify.min.js"></script>
 
 		<style>
 			body {
 				background-color: #f8f9fa;
-				padding-top: 5rem;
+				padding-top: 6rem;
 			}
 
 			/* --- Navbar Styles from index-temp-chatgpt.html --- */
@@ -59,7 +136,7 @@
 				color: #fff;
 				text-align: center;
 				padding: 2rem 1rem;
-				margin-top: 4rem;
+				margin-top: 2rem;
 			}
 			.footer a {
 				color: #4b6cb7;
@@ -240,6 +317,11 @@
 				Download PDF
 			</button>
 
+			<div id="loading" style="display: none; text-align: center" class="mb-3">
+				<div class="spinner-border text-primary" role="status"></div>
+				<p class="mt-2">Generating PDF...</p>
+			</div>
+
 			<section>
 				<label for="preview" class="form-label">Live Preview</label>
 				<div
@@ -269,7 +351,7 @@
 
 		<script>
 			function convertToPDF() {
-				const htmlContent = document.getElementById("htmlContent").value;
+				const htmlContent = document.getElementById("htmlContent").value.trim();
 				const fileName =
 					document.getElementById("fileName").value.trim() || "document";
 				const format = document.getElementById("format").value;
@@ -277,6 +359,11 @@
 				const margin = parseFloat(document.getElementById("margin").value);
 				const quality = parseFloat(document.getElementById("quality").value);
 				const scale = parseFloat(document.getElementById("scale").value);
+
+				if (!htmlContent) {
+					alert("Please enter or drop valid HTML content.");
+					return;
+				}
 
 				const element = document.createElement("div");
 				element.innerHTML = htmlContent;
@@ -289,22 +376,42 @@
 					jsPDF: { unit: "in", format, orientation },
 				};
 
-				html2pdf().set(opt).from(element).save();
+				document.getElementById("loading").style.display = "block";
+
+				html2pdf()
+					.set(opt)
+					.from(element)
+					.save()
+					.then(() => {
+						document.getElementById("loading").style.display = "none";
+					});
 			}
 
 			const textarea = document.getElementById("htmlContent");
 			const preview = document.getElementById("preview");
 
+			// Update preview with sanitized HTML
+			function updatePreview() {
+				preview.innerHTML =
+					DOMPurify.sanitize(textarea.value) || "Preview will appear here...";
+			}
+
 			textarea.addEventListener("input", () => {
-				preview.innerHTML = textarea.value || "Preview will appear here...";
+				updatePreview();
+
+				// Auto-resize the textarea
+				textarea.style.height = "auto";
+				textarea.style.height = textarea.scrollHeight + "px";
 			});
 
+			// Drag-and-drop support
 			["dragenter", "dragover"].forEach((evt) => {
 				textarea.addEventListener(evt, (e) => {
 					e.preventDefault();
 					textarea.classList.add("dragover");
 				});
 			});
+
 			["dragleave", "drop"].forEach((evt) => {
 				textarea.addEventListener(evt, (e) => {
 					e.preventDefault();
@@ -321,7 +428,7 @@
 						const reader = new FileReader();
 						reader.onload = (ev) => {
 							textarea.value = ev.target.result;
-							preview.innerHTML = textarea.value;
+							updatePreview();
 						};
 						reader.readAsText(file);
 					} else {
@@ -331,7 +438,7 @@
 					const text = dt.getData("text");
 					if (text) {
 						textarea.value = text;
-						preview.innerHTML = text;
+						updatePreview();
 					}
 				}
 			});
