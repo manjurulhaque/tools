@@ -1,353 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>
-			Advanced HTML to PDF Converter | Fast, Responsive & Customizable
-		</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All-in-One Tools Suite | HTML to PDF Converter</title>
 
-		<!-- SEO Meta Tags -->
-		<meta
-			name="description"
-			content="Convert your HTML content to PDF with customizable settings: page format, orientation, margins, image quality, and drag-and-drop support. Responsive and SEO-friendly."
-		/>
-		<meta
-			name="keywords"
-			content="HTML to PDF, PDF converter, html2pdf, drag and drop, bootstrap, web tool, SEO"
-		/>
-		<meta name="robots" content="index, follow" />
-		<link rel="canonical" href="https://example.com/html-to-pdf" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<link
-			rel="alternate"
-			hreflang="en"
-			href="https://example.com/html-to-pdf"
-		/>
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-		<!-- Open Graph / Facebook -->
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://example.com/html-to-pdf" />
-		<meta property="og:title" content="Advanced HTML to PDF Converter" />
-		<meta
-			property="og:description"
-			content="Convert HTML to PDF with advanced settings and drag-and-drop support. Responsive and SEO-optimized tool."
-		/>
-		<meta
-			property="og:image"
-			content="https://example.com/assets/seo-preview.png"
-		/>
+    <style>
+      /* Drop-zone styling */
+      textarea.drop-zone {
+        border: 2px dashed #ccc;
+        border-radius: 6px;
+        padding: 15px;
+        min-height: 150px;
+        transition: background 0.2s, border-color 0.2s;
+        resize: vertical;
+      }
+      textarea.drop-zone.dragover {
+        background-color: #e0f7fa;
+        border-color: #00acc1;
+        color: #007c91;
+      }
+      body {
+        background-color: #f8f9fa;
+        padding-top: 4rem;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">MANJURUL</a>
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarNav"
+          aria-controls="navbarNav"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+            <li class="nav-item dropdown">
+              <a
+                class="nav-link dropdown-toggle"
+                href="#"
+                role="button"
+                data-bs-toggle="dropdown"
+                >Tools</a
+              >
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="#converter">PDF Tools</a></li>
+                <li><a class="dropdown-item" href="#category1">Image Tools</a></li>
+                <li><a class="dropdown-item" href="#category3">Data & Code Tools</a></li>
+              </ul>
+            </li>
+            <li class="nav-item"><a class="nav-link" href="faqs.html">FAQs</a></li>
+            <li class="nav-item"><a class="nav-link" href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
 
-		<!-- Twitter -->
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:url" content="https://example.com/html-to-pdf" />
-		<meta name="twitter:title" content="Advanced HTML to PDF Converter" />
-		<meta
-			name="twitter:description"
-			content="Convert HTML to PDF with advanced settings and drag-and-drop support. Responsive and SEO-optimized tool."
-		/>
-		<meta
-			name="twitter:image"
-			content="https://example.com/assets/seo-preview.png"
-		/>
+    <!-- HTML to PDF Converter Section -->
+    <section id="converter" class="container bg-white p-4 rounded shadow mt-5 mb-5" style="max-width:850px;">
+      <header class="mb-4 text-center">
+        <h1>HTML to PDF Converter</h1>
+      </header>
+      <div class="mb-4">
+        <label for="htmlContent" class="form-label">HTML Content (Drag &amp; Drop Supported)</label>
+        <textarea id="htmlContent" class="form-control drop-zone" placeholder="Enter or drop your HTML here..."></textarea>
+        <small class="form-text text-muted">Drag &amp; drop an .html file or paste snippets.</small>
+      </div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4">
+          <label for="fileName" class="form-label">File Name</label>
+          <input type="text" id="fileName" class="form-control" placeholder="e.g. MyFile" />
+        </div>
+        <div class="col-md-4">
+          <label for="format" class="form-label">Page Format</label>
+          <select id="format" class="form-select">
+            <option value="a4" selected>A4</option>
+            <option value="letter">Letter</option>
+            <option value="legal">Legal</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="orientation" class="form-label">Orientation</label>
+          <select id="orientation" class="form-select">
+            <option value="portrait" selected>Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
+        </div>
+        <div class="col-md-4">
+          <label for="margin" class="form-label">Margin (inches)</label>
+          <input type="number" id="margin" class="form-control" value="0.5" min="0" step="0.1" />
+        </div>
+        <div class="col-md-4">
+          <label for="scale" class="form-label">Render Scale</nylebel>
+          <input type="number" id="scale" class="form-control" value="2" min="1" max="5" step="0.1" />
+        </div>
+        <div class="col-md-4">
+          <label for="quality" class="form-label">Image Quality</label>
+          <input type="number" id="quality" class="form-control" value="0.98" min="0.1" max="1" step="0.01" />
+        </div>
+      </div>
+      <button class="btn btn-primary w-100 mb-4" onclick="convertToPDF()">Download PDF</button>
+      <h2 class="h5">Live Preview</h2>
+      <div id="preview" class="p-3 border rounded bg-light" style="min-height:100px;" aria-live="polite">
+        Preview will appear here...
+      </div>
+    </section>
 
-		<!-- Preconnect & Preload -->
-		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
-		<link
-			rel="preload"
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-			as="style"
-		/>
-		<link
-			rel="stylesheet"
-			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-			integrity="sha384-..."
-			crossorigin="anonymous"
-		/>
+   
 
-		<!-- Structured Data (JSON-LD) -->
-		<script type="application/ld+json">
-			{
-				"@context": "https://schema.org",
-				"@type": "WebApplication",
-				"name": "Advanced HTML to PDF Converter",
-				"url": "https://example.com/html-to-pdf",
-				"description": "Convert HTML content to PDF with customizable settings: page format, orientation, margins, image quality, and drag-and-drop support.",
-				"applicationCategory": "Utilities",
-				"operatingSystem": "Web",
-				"browserRequirements": "JavaScript enabled, modern browser"
-			}
-		</script>
+    <!-- Footer -->
+    <footer class="footer bg-dark text-white text-center py-4">
+      <div class="container">
+        <p>&copy; 2025 Manjurul.com. All rights reserved.</p>
+        <p><a href="privacy-policy.html" class="text-white">Privacy Policy</a> |
+           <a href="terms-of-service.html" class="text-white">Terms of Service</a> |
+           <a href="cookie-policy.html" class="text-white">Cookie Policy</a>
+        </p>
+      </div>
+    </footer>
 
-		<!-- Manifest for PWA -->
-		<link rel="manifest" href="/manifest.json" />
-
-		<!-- Bootstrap JS & html2pdf -->
-		<script
-			src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"
-			defer
-		></script>
-		<script
-			src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-			defer
-			integrity="sha384-..."
-			crossorigin="anonymous"
-		></script>
-
-		<style>
-			textarea.drop-zone {
-				border: 2px dashed #ccc;
-				border-radius: 6px;
-				padding: 15px;
-				min-height: 150px;
-				transition: background 0.2s, border-color 0.2s;
-				resize: vertical;
-			}
-			textarea.drop-zone.dragover {
-				background-color: #e0f7fa;
-				border-color: #00acc1;
-				color: #007c91;
-			}
-			body {
-				background-color: #f8f9fa;
-				padding-top: 2rem;
-				padding-bottom: 2rem;
-			}
-		</style>
-	</head>
-	<body>
-		<!-- Navigation -->
-		<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-			<div class="container">
-				<a class="navbar-brand" href="/">HTML2PDF</a>
-				<button
-					class="navbar-toggler"
-					type="button"
-					data-bs-toggle="collapse"
-					data-bs-target="#navMenu"
-				>
-					<span class="navbar-toggler-icon"></span>
-				</button>
-				<div class="collapse navbar-collapse" id="navMenu">
-					<ul class="navbar-nav ms-auto">
-						<li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-						<li class="nav-item">
-							<a class="nav-link" href="/features">Features</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/pricing">Pricing</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link" href="/contact">Contact</a>
-						</li>
-					</ul>
-				</div>
-			</div>
-		</nav>
-
-		<!-- Header -->
-		<header class="container mb-4">
-			<h1 class="text-center">HTML to PDF Converter</h1>
-		</header>
-
-		<!-- Main Content -->
-		<main
-			class="container bg-white p-4 rounded shadow"
-			style="max-width: 850px"
-		>
-			<h2 class="visually-hidden">Advanced HTML to PDF Converter</h2>
-
-			<section aria-labelledby="html-content-label" class="mb-4">
-				<h2 id="html-content-label" class="h5">HTML Content Input</h2>
-				<label for="htmlContent" class="form-label"
-					>HTML Content (Drag &amp; Drop Supported)</label
-				>
-				<textarea
-					id="htmlContent"
-					class="form-control drop-zone"
-					placeholder="Enter or drop your HTML here..."
-					aria-describedby="dragDropHint"
-				></textarea>
-				<small id="dragDropHint" class="form-text text-muted"
-					>Drag &amp; drop an .html file or paste HTML snippets.</small
-				>
-			</section>
-
-			<section aria-labelledby="settings-label" class="mb-4">
-				<h2 id="settings-label" class="h5">PDF Settings</h2>
-				<div class="row g-3">
-					<div class="col-md-4">
-						<label for="fileName" class="form-label">File Name</label>
-						<input
-							type="text"
-							class="form-control"
-							id="fileName"
-							placeholder="e.g. MyFile"
-							aria-label="PDF file name"
-						/>
-					</div>
-					<div class="col-md-4">
-						<label for="format" class="form-label">Page Format</label>
-						<select
-							class="form-select"
-							id="format"
-							aria-label="Select page format"
-						>
-							<option value="a4" selected>A4</option>
-							<option value="letter">Letter</option>
-							<option value="legal">Legal</option>
-						</select>
-					</div>
-					<div class="col-md-4">
-						<label for="orientation" class="form-label">Orientation</label>
-						<select
-							class="form-select"
-							id="orientation"
-							aria-label="Select page orientation"
-						>
-							<option value="portrait" selected>Portrait</option>
-							<option value="landscape">Landscape</option>
-						</select>
-					</div>
-					<div class="col-md-4">
-						<label for="margin" class="form-label">Margin (inches)</label>
-						<input
-							type="number"
-							class="form-control"
-							id="margin"
-							value="0.5"
-							min="0"
-							step="0.1"
-							aria-label="PDF margin size in inches"
-						/>
-					</div>
-					<div class="col-md-4">
-						<label for="scale" class="form-label">Render Scale</label>
-						<input
-							type="number"
-							class="form-control"
-							id="scale"
-							value="2"
-							min="1"
-							max="5"
-							step="0.1"
-							aria-label="HTML2Canvas render scale"
-						/>
-					</div>
-					<div class="col-md-4">
-						<label for="quality" class="form-label">Image Quality</label>
-						<input
-							type="number"
-							class="form-control"
-							id="quality"
-							value="0.98"
-							min="0.1"
-							max="1"
-							step="0.01"
-							aria-label="JPEG image quality"
-						/>
-					</div>
-				</div>
-			</section>
-
-			<button
-				class="btn btn-primary w-100 mb-4"
-				onclick="convertToPDF()"
-				aria-label="Download PDF"
-			>
-				Download PDF
-			</button>
-
-			<section aria-labelledby="preview-label">
-				<h2 id="preview-label" class="h5">Live Preview</h2>
-				<div
-					id="preview"
-					class="p-3 border rounded bg-light"
-					style="min-height: 100px"
-					aria-live="polite"
-				>
-					Preview will appear here...
-				</div>
-			</section>
-		</main>
-
-		<!-- Footer -->
-		<footer class="container text-center mt-4">
-			<ul class="list-inline mb-2">
-				<li class="list-inline-item"><a href="/sitemap.xml">Sitemap</a></li>
-				<li class="list-inline-item">
-					<a href="/privacy-policy">Privacy Policy</a>
-				</li>
-				<li class="list-inline-item"><a href="/terms">Terms of Service</a></li>
-			</ul>
-			<p class="small text-muted">
-				&copy; 2025 HTML2PDF Converter. All rights reserved.
-			</p>
-		</footer>
-
-		<script>
-			function convertToPDF() {
-				const htmlContent = document.getElementById("htmlContent").value;
-				const fileName =
-					document.getElementById("fileName").value.trim() || "document";
-				const format = document.getElementById("format").value;
-				const orientation = document.getElementById("orientation").value;
-				const margin = parseFloat(document.getElementById("margin").value);
-				const quality = parseFloat(document.getElementById("quality").value);
-				const scale = parseFloat(document.getElementById("scale").value);
-
-				const element = document.createElement("div");
-				element.innerHTML = htmlContent;
-
-				const opt = {
-					margin,
-					filename: `${fileName}.pdf`,
-					image: { type: "jpeg", quality },
-					html2canvas: { scale },
-					jsPDF: { unit: "in", format, orientation },
-				};
-				html2pdf().set(opt).from(element).save();
-			}
-
-			const textarea = document.getElementById("htmlContent");
-			const preview = document.getElementById("preview");
-
-			textarea.addEventListener("input", () => {
-				preview.innerHTML = textarea.value || "Preview will appear here...";
-			});
-			["dragenter", "dragover"].forEach((evt) =>
-				textarea.addEventListener(evt, (e) => {
-					e.preventDefault();
-					textarea.classList.add("dragover");
-				})
-			);
-			["dragleave", "drop"].forEach((evt) =>
-				textarea.addEventListener(evt, (e) => {
-					e.preventDefault();
-					textarea.classList.remove("dragover");
-				})
-			);
-			textarea.addEventListener("drop", (e) => {
-				e.preventDefault();
-				const dt = e.dataTransfer;
-				if (dt.files.length) {
-					const file = dt.files[0];
-					if (/\.html?$/.test(file.name)) {
-						const reader = new FileReader();
-						reader.onload = (ev) => {
-							textarea.value = ev.target.result;
-							preview.innerHTML = textarea.value;
-						};
-						reader.readAsText(file);
-					} else alert("Please drop a valid .html file.");
-				} else {
-					const text = dt.getData("text");
-					if (text) {
-						textarea.value = text;
-						preview.innerHTML = text;
-					}
-				}
-			});
-		</script>
-	</body>
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function convertToPDF() {
+        const htmlContent = document.getElementById('htmlContent').value;
+        const fileName = (document.getElementById('fileName').value.trim() || 'document') + '.pdf';
+        const format = document.getElementById('format').value;
+        const orientation = document.getElementById('orientation').value;
+        const margin = parseFloat(document.getElementById('margin').value);
+        const quality = parseFloat(document.getElementById('quality').value);
+        const scale = parseFloat(document.getElementById('scale').value);
+        const element = document.createElement('div');
+        element.innerHTML = htmlContent;
+        const opt = {
+          margin,
+          filename: fileName,
+          image: { type: 'jpeg', quality },
+          html2canvas: { scale },
+          jsPDF: { unit: 'in', format, orientation }
+        };
+        html2pdf().set(opt).from(element).save();
+      }
+      const textarea = document.getElementById('htmlContent');
+      const preview = document.getElementById('preview');
+      textarea.addEventListener('input', () => {
+        preview.innerHTML = textarea.value || 'Preview will appear here...';
+      });
+      ['dragenter','dragover'].forEach(evt => {
+        textarea.addEventListener(evt, e => { e.preventDefault(); textarea.classList.add('dragover'); });
+      });
+      ['dragleave','drop'].forEach(evt => {
+        textarea.addEventListener(evt, e => { e.preventDefault(); textarea.classList.remove('dragover'); });
+      });
+      textarea.addEventListener('drop', e => {
+        e.preventDefault();
+        const dt = e.dataTransfer;
+        if (dt.files.length) {
+          const file = dt.files[0];
+          if (file.type === 'text/html' || file.name.endsWith('.html')) {
+            const reader = new FileReader();
+            reader.onload = ev => { textarea.value = ev.target.result; preview.innerHTML = ev.target.result; };
+            reader.readAsText(file);
+          } else {
+            alert('Please drop a valid .html file.');
+          }
+        } else {
+          const text = dt.getData('text');
+          textarea.value = text; preview.innerHTML = text;
+        }
+      });
+    </script>
+  </body>
 </html>
