@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multi-format Document Converter</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2rem; }
+    textarea { width: 100%; height: 150px; margin-bottom: 1rem; }
+    select, button { font-size: 1rem; padding: 0.5rem; margin-right: 1rem; }
+    #output { border: 1px solid #ccc; padding: 1rem; margin-top: 1rem; white-space: pre-wrap; background: #f9f9f9; }
+  </style>
+</head>
+<body>
+
+  <h1>Multi-format Document Converter</h1>
+
+  <label for="input-format">From:</label>
+  <select id="input-format">
+    <option value="markdown">Markdown</option>
+    <option value="html">HTML</option>
+    <option value="text">Plain Text</option>
+    <option value="json">JSON</option>
+  </select>
+
+  <label for="output-format">To:</label>
+  <select id="output-format">
+    <option value="html">HTML</option>
+    <option value="markdown">Markdown</option>
+    <option value="text">Plain Text (Uppercase)</option>
+    <option value="json">Pretty JSON</option>
+  </select>
+
+  <textarea id="input-text" placeholder="Enter your document here..."></textarea>
+  <button id="convert-btn">Convert</button>
+
+  <h2>Output:</h2>
+  <pre id="output"></pre>
+
+  <!-- Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/turndown/dist/turndown.min.js"></script>
+
+  <script>
+    const inputFormat = document.getElementById('input-format');
+    const outputFormat = document.getElementById('output-format');
+    const inputText = document.getElementById('input-text');
+    const output = document.getElementById('output');
+    const btn = document.getElementById('convert-btn');
+
+    const turndownService = new TurndownService();
+
+    btn.addEventListener('click', () => {
+      const from = inputFormat.value;
+      const to = outputFormat.value;
+      const text = inputText.value;
+
+      let result = '';
+
+      try {
+        if (from === 'markdown' && to === 'html') {
+          // Markdown to HTML
+          result = marked.parse(text);
+        } else if (from === 'html' && to === 'markdown') {
+          // HTML to Markdown
+          result = turndownService.turndown(text);
+        } else if (from === 'text' && to === 'text') {
+          // Plain Text to Uppercase Text
+          result = text.toUpperCase();
+        } else if (from === 'json' && to === 'json') {
+          // Pretty-print JSON
+          const obj = JSON.parse(text);
+          result = JSON.stringify(obj, null, 2);
+        } else if (from === 'markdown' && to === 'markdown') {
+          result = text; // no conversion
+        } else if (from === 'html' && to === 'html') {
+          result = text; // no conversion
+        } else if (from === 'text' && to === 'html') {
+          // Plain Text to HTML (simple escape + paragraphs)
+          result = text.split('\n').map(line => `<p>${escapeHtml(line)}</p>`).join('\n');
+        } else if (from === 'text' && to === 'markdown') {
+          // Plain Text to Markdown (just raw text)
+          result = text;
+        } else if (from === 'markdown' && to === 'text') {
+          // Markdown to Plain Text (remove markdown)
+          const html = marked.parse(text);
+          result = htmlToPlainText(html);
+        } else if (from === 'html' && to === 'text') {
+          // HTML to Plain Text
+          result = htmlToPlainText(text);
+        } else {
+          result = 'Conversion not supported for the selected formats.';
+        }
+      } catch (e) {
+        result = 'Error: ' + e.message;
+      }
+
+      output.textContent = result;
+    });
+
+    // Utility: Escape HTML for safety
+    function escapeHtml(text) {
+      return text.replace(/[&<>"']/g, function(m) {
+        return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[m];
+      });
+    }
+
+    // Utility: convert HTML string to plain text by stripping tags
+    function htmlToPlainText(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    }
+  </script>
+</body>
+</html>
