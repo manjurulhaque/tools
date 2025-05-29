@@ -1,147 +1,703 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Live JSON Converter & Highlighter</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Prism CSS -->
-  <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
-  <style>
-    pre code {
-      display: block;
-      padding: 1em;
-      background: #f5f2f0;
-      border-radius: 0.3em;
-      max-height: 400px;
-      overflow: auto;
-    }
-    #copyBtn {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-    }
-    .position-relative pre {
-      margin-bottom: 0;
-    }
-  </style>
-</head>
-<body class="bg-light">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Advanced JSON Converter</title>
+		<style>
+			:root {
+				--primary: #3366ff;
+				--bg: #f4f6f8;
+				--light: #ffffff;
+				--dark: #2e2e2e;
+				--danger: #ff4d4f;
+			}
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+				background: var(--bg);
+				color: #333;
+				min-height: 100vh;
+				display: flex;
+				flex-direction: column;
+			}
+			header {
+				background: var(--primary);
+				color: var(--light);
+				padding: 1rem;
+				text-align: center;
+				box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			}
+			main {
+				flex: 1;
+				padding: 1rem;
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 1rem;
+			}
+			.panel {
+				background: var(--light);
+				padding: 1rem;
+				border-radius: 8px;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+				display: flex;
+				flex-direction: column;
+			}
+			textarea {
+				flex: 1;
+				width: 100%;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+				padding: 0.5rem;
+				font-family: monospace;
+				resize: vertical;
+			}
+			.controls {
+				margin: 0.5rem 0;
+				display: flex;
+				gap: 0.5rem;
+				flex-wrap: wrap;
+			}
+			button,
+			.toggle {
+				background: var(--primary);
+				color: var(--light);
+				border: none;
+				padding: 0.5rem 1rem;
+				border-radius: 4px;
+				cursor: pointer;
+				font-size: 0.9rem;
+				transition: background 0.2s;
+			}
+			button:hover,
+			.toggle:hover {
+				background: #274bdb;
+			}
+			.danger {
+				background: var(--danger);
+			}
+			.tree {
+				flex: 1;
+				overflow: auto;
+				font-family: monospace;
+				padding: 0.5rem;
+				border: 1px solid #ccc;
+				border-radius: 4px;
+			}
+			.node {
+				position: relative;
+				padding-left: 1rem;
+			}
+			.node::before {
+				content: "";
+				position: absolute;
+				top: 0.6rem;
+				left: 0;
+				width: 0.7rem;
+				height: 0.1rem;
+				background: #888;
+			}
+			.collapse {
+				cursor: pointer;
+				user-select: none;
+				margin-right: 0.3rem;
+			}
+			.dark-mode {
+				background: var(--dark);
+				color: #ddd;
+			}
+			.dark-mode textarea,
+			.dark-mode .tree {
+				background: #3a3a3a;
+				color: #ddd;
+				border-color: #555;
+			}
+		</style>
+		<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.2.5/umd/toml.min.js"></script>
+	</head>
+	<body>
+		<header>
+			<h1>Advanced JSON Converter</h1>
+		</header>
+		<main>
+			<section class="panel" id="inputPanel">
+				<h2>Input JSON</h2>
+				<textarea
+					id="jsonInput"
+					placeholder="Paste or drop a JSON file here..."
+				></textarea>
+				<div class="controls">
+					<input type="file" id="fileInput" accept=".json" />
+					<button id="validateBtn">Validate</button>
+					<button id="prettyPrintBtn">Pretty Print</button>
+					<button id="minifyBtn">Minify</button>
+					<button id="toCsvBtn">To CSV</button>
+					<button id="toXmlBtn">To XML</button>
+					<button id="toYamlBtn">To YAML</button>
+					<button id="toTomlBtn">To TOML</button>
+					<button id="toSqlBtn">To SQL</button>
+					<button id="toMarkdownBtn">To Markdown</button>
+					<button id="toIniBtn">To INI</button>
+				</div>
+			</section>
+			<section class="panel" id="outputPanel">
+				<h2>Output & Tree View</h2>
+				<div class="controls">
+					<button id="copyBtn">Copy</button>
+					<button id="downloadBtn">Download</button>
+					<button class="toggle" id="themeToggle">Toggle Dark Mode</button>
+				</div>
+				<textarea
+					id="jsonOutput"
+					readonly
+					placeholder="Result will appear here..."
+				></textarea>
+				<div class="tree" id="treeView"></div>
+			</section>
+		</main>
+		<script>
+			const input = document.getElementById("jsonInput");
+			const output = document.getElementById("jsonOutput");
+			const setOutput = (txt) => {
+				output.value = txt;
+				renderTree(txt);
+			};
 
-<div class="container py-5">
-  <h1 class="mb-4">🧰 Live JSON Highlighter</h1>
+			function renderTree(jsonText) {
+				const container = document.getElementById("treeView");
+				container.innerHTML = "";
+				let data;
+				try {
+					data = JSON.parse(jsonText);
+				} catch {
+					container.textContent = "Invalid JSON";
+					return;
+				}
+				function createNode(key, val) {
+					const el = document.createElement("div");
+					el.className = "node";
+					if (val && typeof val === "object") {
+						const details = document.createElement("div");
+						const collapse = document.createElement("span");
+						collapse.textContent = "▾";
+						collapse.className = "collapse";
+						collapse.onclick = () => {
+							const visible = childContainer.style.display !== "none";
+							childContainer.style.display = visible ? "none" : "";
+							collapse.textContent = visible ? "▸" : "▾";
+						};
+						details.append(
+							collapse,
+							document.createTextNode(
+								key + " (" + (Array.isArray(val) ? "Array" : "Object") + ")"
+							)
+						);
+						const childContainer = document.createElement("div");
+						childContainer.style.paddingLeft = "1rem";
+						for (let k in val)
+							childContainer.appendChild(createNode(k, val[k]));
+						el.append(details, childContainer);
+					} else {
+						el.textContent = key + ": " + JSON.stringify(val);
+					}
+					return el;
+				}
+				if (typeof data === "object") {
+					for (let k in data) container.appendChild(createNode(k, data[k]));
+				} else {
+					container.textContent = JSON.stringify(data);
+				}
+			}
 
-  <!-- JSON Input -->
-  <div class="mb-3">
-    <label for="jsonInput" class="form-label">JSON Input</label>
-    <textarea class="form-control" id="jsonInput" rows="6" placeholder='{"name": "Alice", "age": 25}'></textarea>
-  </div>
+			document.getElementById("validateBtn").onclick = () => {
+				try {
+					JSON.parse(input.value);
+					alert("Valid JSON!");
+				} catch (e) {
+					alert("Invalid JSON: " + e.message);
+				}
+			};
+			document.getElementById("prettyPrintBtn").onclick = () => {
+				try {
+					setOutput(JSON.stringify(JSON.parse(input.value), null, 2));
+				} catch (e) {
+					alert("Error: " + e.message);
+				}
+			};
+			document.getElementById("minifyBtn").onclick = () => {
+				try {
+					setOutput(JSON.stringify(JSON.parse(input.value)));
+				} catch (e) {
+					alert("Error: " + e.message);
+				}
+			};
+			document.getElementById("toCsvBtn").onclick = () => {
+				const data = JSON.parse(input.value);
+				if (!Array.isArray(data))
+					return alert("JSON root must be an array to convert to CSV");
+				const cols = [...new Set(data.flatMap((obj) => Object.keys(obj)))];
+				const csv = [cols.join(",")]
+					.concat(
+						data.map((row) =>
+							cols.map((k) => JSON.stringify(row[k] || "")).join(",")
+						)
+					)
+					.join("\n");
+				setOutput(csv);
+			};
+			document.getElementById("toXmlBtn").onclick = () => {
+				const obj = JSON.parse(input.value);
+				const toXml = (o, tag = "root") =>
+					Array.isArray(o)
+						? o.map((v) => toXml(v, tag)).join("")
+						: typeof o === "object"
+						? `<${tag}>${Object.entries(o)
+								.map(([k, v]) => toXml(v, k))
+								.join("")}</${tag}>`
+						: `<${tag}>${String(o)}</${tag}>`;
+				setOutput(toXml(obj));
+			};
+			document.getElementById("toYamlBtn").onclick = () => {
+				try {
+					setOutput(jsyaml.dump(JSON.parse(input.value), { indent: 2 }));
+				} catch (e) {
+					alert("YAML Error: " + e.message);
+				}
+			};
+			document.getElementById("toTomlBtn").onclick = () => {
+				try {
+					setOutput(TOML.stringify(JSON.parse(input.value)));
+				} catch (e) {
+					alert("TOML Error: " + e.message);
+				}
+			};
+			document.getElementById("toSqlBtn").onclick = () => {
+				try {
+					const data = JSON.parse(input.value);
+					if (!Array.isArray(data))
+						return alert("JSON root must be an array for SQL conversion");
+					const keys = Object.keys(data[0]);
+					const rows = data.map(
+						(obj) =>
+							"(" +
+							keys
+								.map((k) => `'${(obj[k] + "").replace(/'/g, "''")}'`)
+								.join(", ") +
+							")"
+					);
+					const sql =
+						`INSERT INTO tablename (${keys.join(", ")}) VALUES\n` +
+						rows.join(",\n") +
+						";";
+					setOutput(sql);
+				} catch (e) {
+					alert("SQL Error: " + e.message);
+				}
+			};
+			document.getElementById("toMarkdownBtn").onclick = () => {
+				try {
+					const data = JSON.parse(input.value);
+					if (!Array.isArray(data))
+						return alert("JSON root must be an array for Markdown conversion");
+					const keys = Object.keys(data[0]);
+					const md =
+						"|" +
+						keys.join("|") +
+						"|\n|" +
+						keys.map(() => "-").join("|") +
+						"|\n" +
+						data
+							.map((row) => "|" + keys.map((k) => row[k]).join("|") + "|")
+							.join("\n");
+					setOutput(md);
+				} catch (e) {
+					alert("Markdown Error: " + e.message);
+				}
+			};
+			document.getElementById("toIniBtn").onclick = () => {
+				try {
+					const data = JSON.parse(input.value);
+					let ini = "";
+					for (let section in data) {
+						ini += `[${section}]\n`;
+						for (let key in data[section]) {
+							ini += `${key}=${data[section][key]}\n`;
+						}
+					}
+					setOutput(ini);
+				} catch (e) {
+					alert("INI Error: " + e.message);
+				}
+			};
+			document.getElementById("copyBtn").onclick = () => {
+				navigator.clipboard
+					.writeText(output.value)
+					.then(() => alert("Copied!"));
+			};
+			document.getElementById("downloadBtn").onclick = () => {
+				const blob = new Blob([output.value], { type: "text/plain" });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = "output.txt";
+				a.click();
+				URL.revokeObjectURL(url);
+			};
+			document.getElementById("fileInput").onchange = (e) => {
+				const file = e.target.files[0];
+				if (!file) return;
+				const reader = new FileReader();
+				reader.onload = () => (input.value = reader.result);
+				reader.readAsText(file);
+			};
+			input.addEventListener("dragover", (e) => {
+				e.preventDefault();
+			});
+			input.addEventListener("drop", (e) => {
+				e.preventDefault();
+				const file = e.dataTransfer.files[0];
+				if (file && file.type === "application/json") {
+					const reader = new FileReader();
+					reader.onload = () => (input.value = reader.result);
+					reader.readAsText(file);
+				}
+			});
+			document.getElementById("themeToggle").onclick = () => {
+				document.body.classList.toggle("dark-mode");
+			};
+			renderTree("{}");
 
-  <!-- Language Selector -->
-  <div class="row mb-3">
-    <div class="col-md-6">
-      <label for="languageSelect" class="form-label">Output Language</label>
-      <select class="form-select" id="languageSelect">
-        <option value="json">JSON</option>
-        <option value="javascript">JavaScript</option>
-        <option value="python">Python</option>
-        <option value="yaml">YAML</option>
-        <option value="sql">SQL</option>
-      </select>
-    </div>
-  </div>
+			// New: To HTML Table
+			document.getElementById("toHtmlTableBtn")?.remove();
+			const htmlTableBtn = document.createElement("button");
+			htmlTableBtn.textContent = "To HTML Table";
+			htmlTableBtn.id = "toHtmlTableBtn";
+			htmlTableBtn.onclick = () => {
+				try {
+					const data = JSON.parse(input.value);
+					if (!Array.isArray(data))
+						return alert(
+							"JSON root must be an array for HTML Table conversion"
+						);
+					const keys = Object.keys(data[0]);
+					const rows = data
+						.map(
+							(row) =>
+								`<tr>${keys.map((k) => `<td>${row[k]}</td>`).join("")}</tr>`
+						)
+						.join("");
+					const html = `<table border='1'><thead><tr>${keys
+						.map((k) => `<th>${k}</th>`)
+						.join("")}</tr></thead><tbody>${rows}</tbody></table>`;
+					setOutput(html);
+				} catch (e) {
+					alert("HTML Table Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(htmlTableBtn);
 
-  <!-- Highlighted Output -->
-  <div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <span>🎨 Highlighted Output</span>
-      <button id="copyBtn" class="btn btn-outline-secondary btn-sm" onclick="copyOutput()">📋 Copy</button>
-    </div>
-    <div class="card-body position-relative">
-      <pre><code id="highlightOutput" class="language-json">// Highlighted output will appear here...</code></pre>
-    </div>
-  </div>
-</div>
+			// New: To Python Object
+			const pythonBtn = document.createElement("button");
+			pythonBtn.textContent = "To Python Object";
+			pythonBtn.onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					const pythonStr = JSON.stringify(obj, null, 2)
+						.replace(/"([^\"]+)":/g, "$1:")
+						.replace(/"/g, "'");
+					setOutput(pythonStr);
+				} catch (e) {
+					alert("Python Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(pythonBtn);
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+			// New: To C# Object
+			const csharpBtn = document.createElement("button");
+			csharpBtn.textContent = "To C# Object";
+			csharpBtn.onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					const keys = Object.keys(obj);
+					const lines = keys.map((k) => `public string ${k} { get; set; }`);
+					setOutput(`class MyClass {\n  ${lines.join("\n  ")}\n}`);
+				} catch (e) {
+					alert("C# Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(csharpBtn);
 
-<script>
-const inputEl = document.getElementById("jsonInput");
-const langSelect = document.getElementById("languageSelect");
-const outputEl = document.getElementById("highlightOutput");
+			// New: To Java Object
+			const javaBtn = document.createElement("button");
+			javaBtn.textContent = "To Java Object";
+			javaBtn.onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					const keys = Object.keys(obj);
+					const lines = keys.map((k) => `private String ${k};`);
+					setOutput(`public class MyClass {\n  ${lines.join("\n  ")}\n}`);
+				} catch (e) {
+					alert("Java Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(javaBtn);
 
-function renderFormattedCode() {
-  const rawInput = inputEl.value.trim();
-  const lang = langSelect.value;
+			// New: To YAML
+			const yamlBtn = document.createElement("button");
+			yamlBtn.textContent = "To YAML";
+			yamlBtn.onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					const yaml = jsonToYaml(obj);
+					setOutput(yaml);
+				} catch (e) {
+					alert("YAML Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(yamlBtn);
 
-  let obj;
-  try {
-    obj = JSON.parse(rawInput);
-  } catch (e) {
-    outputEl.textContent = "// Invalid JSON: " + e.message;
-    outputEl.className = "language-js";
-    Prism.highlightElement(outputEl);
-    return;
-  }
+			function jsonToYaml(obj, indent = "") {
+				if (Array.isArray(obj)) {
+					return obj
+						.map(
+							(item) =>
+								`${indent}- ${
+									typeof item === "object"
+										? "\n" + jsonToYaml(item, indent + "  ")
+										: item
+								}`
+						)
+						.join("\n");
+				} else if (typeof obj === "object") {
+					return Object.entries(obj)
+						.map(([key, value]) => {
+							if (typeof value === "object") {
+								return `${indent}${key}:\n${jsonToYaml(value, indent + "  ")}`;
+							} else {
+								return `${indent}${key}: ${value}`;
+							}
+						})
+						.join("\n");
+				}
+				return String(obj);
+			}
 
-  let formatted = "";
-  switch (lang) {
-    case "json":
-      formatted = JSON.stringify(obj, null, 4);
-      break;
-    case "javascript":
-      formatted = `const data = ${JSON.stringify(obj, null, 4)};`;
-      break;
-    case "python":
-      formatted = "data = {\n" +
-        Object.entries(obj).map(([k, v]) => {
-          let val = typeof v === "string"
-            ? `'${v}'`
-            : Array.isArray(v)
-              ? `[${v.map(i => `'${i}'`).join(", ")}]`
-              : v;
-          return `    '${k}': ${val}`;
-        }).join(",\n") + "\n}";
-      break;
-    case "yaml":
-      formatted = Object.entries(obj).map(([k, v]) => {
-        if (Array.isArray(v)) {
-          return `${k}:\n  - ${v.join("\n  - ")}`;
-        } else {
-          return `${k}: ${v}`;
-        }
-      }).join("\n");
-      break;
-    case "sql":
-      formatted = `INSERT INTO table_name (${Object.keys(obj).join(", ")})\nVALUES (${Object.values(obj).map(v => typeof v === "string" ? `'${v}'` : v).join(", ")});`;
-      break;
-    default:
-      formatted = "// Unsupported format";
-  }
+			// New: To TSV
+			const tsvBtn = document.createElement("button");
+			tsvBtn.textContent = "To TSV";
+			tsvBtn.onclick = () => {
+				try {
+					const data = JSON.parse(input.value);
+					if (!Array.isArray(data))
+						return alert("TSV conversion requires an array of objects.");
+					const keys = Object.keys(data[0]);
+					const lines = data.map((row) => keys.map((k) => row[k]).join("\t"));
+					lines.unshift(keys.join("\t"));
+					setOutput(lines.join("\n"));
+				} catch (e) {
+					alert("TSV Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(tsvBtn);
 
-  outputEl.textContent = formatted;
-  outputEl.className = `language-${lang}`;
-  Prism.highlightElement(outputEl);
-}
+			// New: Download as Excel
+			const excelBtn = document.createElement("button");
+			excelBtn.textContent = "Download Excel";
+			excelBtn.onclick = () => {
+				try {
+					const data = JSON.parse(input.value);
+					const csvContent = JSONToCSV(data);
+					const blob = new Blob([csvContent], {
+						type: "text/csv;charset=utf-8;",
+					});
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement("a");
+					a.href = url;
+					a.download = "data.xlsx";
+					a.click();
+				} catch (e) {
+					alert("Excel Download Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(excelBtn);
 
-// Live preview
-inputEl.addEventListener("input", renderFormattedCode);
-langSelect.addEventListener("change", renderFormattedCode);
+			function JSONToCSV(data) {
+				if (!Array.isArray(data))
+					throw new Error("CSV export needs array of objects");
+				const keys = Object.keys(data[0]);
+				const rows = data.map((row) =>
+					keys.map((k) => JSON.stringify(row[k] || "")).join(",")
+				);
+				rows.unshift(keys.join(","));
+				return rows.join("\n");
+			}
 
-// Copy to clipboard
-function copyOutput() {
-  const text = outputEl.textContent;
-  navigator.clipboard.writeText(text).then(() => {
-    const btn = document.getElementById("copyBtn");
-    btn.innerText = "✅ Copied!";
-    setTimeout(() => btn.innerText = "📋 Copy", 1500);
-  });
-}
-</script>
+			// Future: Custom Template - placeholder for implementation
+			const customBtn = document.createElement("button");
+			customBtn.textContent = "To Custom Template";
+			customBtn.onclick = () => {
+				const template = prompt("Enter template with {{key}} placeholders:");
+				try {
+					const data = JSON.parse(input.value);
+					if (!Array.isArray(data))
+						return alert("Custom template requires array of objects");
+					const output = data
+						.map((item) => {
+							return template.replace(
+								/{{(\w+)}}/g,
+								(_, key) => item[key] ?? ""
+							);
+						})
+						.join("\n");
+					setOutput(output);
+				} catch (e) {
+					alert("Custom Template Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(customBtn);
 
-</body>
+			// New: Upload JSON File
+			const uploadInput = document.createElement("input");
+			uploadInput.type = "file";
+			uploadInput.accept = ".json";
+			uploadInput.style.display = "none";
+			uploadInput.onchange = async (e) => {
+				const file = e.target.files[0];
+				if (!file) return;
+				const text = await file.text();
+				input.value = text;
+			};
+
+			const uploadBtn = document.createElement("button");
+			uploadBtn.textContent = "Upload JSON File";
+			uploadBtn.onclick = () => uploadInput.click();
+			document.querySelector(".controls").appendChild(uploadInput);
+			document.querySelector(".controls").appendChild(uploadBtn);
+
+			// New: Download Output as File
+			const downloadBtn = document.createElement("button");
+			downloadBtn.textContent = "Download Output";
+			downloadBtn.onclick = () => {
+				const blob = new Blob([output.value], {
+					type: "text/plain;charset=utf-8;",
+				});
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = "converted_output.txt";
+				a.click();
+			};
+			document.querySelector(".controls").appendChild(downloadBtn);
+
+			// New: To XML
+			const xmlBtn = document.createElement("button");
+			xmlBtn.textContent = "To XML";
+			xmlBtn.onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					const xml = jsonToXml(obj);
+					setOutput(xml);
+				} catch (e) {
+					alert("XML Error: " + e.message);
+				}
+			};
+			document.querySelector(".controls").appendChild(xmlBtn);
+
+			function jsonToXml(obj, indent = "") {
+				let xml = "";
+				if (Array.isArray(obj)) {
+					for (const item of obj) {
+						xml += `${indent}<item>\n${jsonToXml(
+							item,
+							indent + "  "
+						)}${indent}</item>\n`;
+					}
+				} else if (typeof obj === "object") {
+					for (const key in obj) {
+						const value = obj[key];
+						if (typeof value === "object") {
+							xml += `${indent}<${key}>\n${jsonToXml(
+								value,
+								indent + "  "
+							)}${indent}</${key}>\n`;
+						} else {
+							xml += `${indent}<${key}>${value}</${key}>\n`;
+						}
+					}
+				} else {
+					xml += `${indent}${obj}\n`;
+				}
+				return xml;
+			}
+
+			// Real-time preview setup
+			let currentFormat = "json"; // Default
+
+			const formatSelectors = document.createElement("select");
+			formatSelectors.innerHTML = `
+    <option value="json">JSON</option>
+    <option value="yaml">YAML</option>
+    <option value="xml">XML</option>
+    <option value="html">HTML Table</option>
+    <option value="tsv">TSV</option>
+  `;
+			formatSelectors.onchange = () => {
+				currentFormat = formatSelectors.value;
+				runPreview();
+			};
+			document.querySelector(".controls").appendChild(formatSelectors);
+
+			input.addEventListener("input", runPreview);
+
+			function runPreview() {
+				try {
+					const obj = JSON.parse(input.value);
+					let preview = "";
+					switch (currentFormat) {
+						case "json":
+							preview = JSON.stringify(obj, null, 2);
+							break;
+						case "yaml":
+							preview = jsonToYaml(obj);
+							break;
+						case "xml":
+							preview = jsonToXml(obj);
+							break;
+						case "html":
+							if (!Array.isArray(obj))
+								throw new Error("HTML preview requires an array of objects");
+							const keys = Object.keys(obj[0]);
+							const rows = obj
+								.map(
+									(row) =>
+										`<tr>${keys.map((k) => `<td>${row[k]}</td>`).join("")}</tr>`
+								)
+								.join("");
+							preview = `<table border='1'><thead><tr>${keys
+								.map((k) => `<th>${k}</th>`)
+								.join("")}</tr></thead><tbody>${rows}</tbody></table>`;
+							break;
+						case "tsv":
+							if (!Array.isArray(obj))
+								throw new Error("TSV preview requires an array of objects");
+							const keys2 = Object.keys(obj[0]);
+							const lines = obj.map((row) =>
+								keys2.map((k) => row[k]).join("\t")
+							);
+							lines.unshift(keys2.join("\t"));
+							preview = lines.join("\n");
+							break;
+					}
+					output.value = preview;
+				} catch (e) {
+					output.value = `Error: ${e.message}`;
+				}
+			}
+		</script>
+	</body>
 </html>
