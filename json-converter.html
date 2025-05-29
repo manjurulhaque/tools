@@ -4,379 +4,1010 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Advanced JSON Converter</title>
-		<!-- Bootstrap CSS -->
+		<!-- Bootstrap 5 CSS -->
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 			rel="stylesheet"
 		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css"
+		/>
 		<style>
 			body {
-				padding-top: 1rem;
-				background: #f4f6f8;
+				background-color: #f8f9fa;
+				font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+			}
+			.header {
+				background: linear-gradient(135deg, #4e73df, #224abe);
+				color: white;
+				padding: 1.5rem 0;
+				box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+				margin-bottom: 2rem;
+			}
+			.card {
+				border-radius: 10px;
+				box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+				border: none;
+				margin-bottom: 1.5rem;
+				height: 100%;
+			}
+			.card-header {
+				background: linear-gradient(to right, #6c757d, #5a6268);
+				color: white;
+				font-weight: 600;
+				border-radius: 10px 10px 0 0 !important;
+				padding: 1rem 1.25rem;
+			}
+			.tree {
+				font-family: monospace;
+				padding: 0.75rem;
+				border: 1px solid #dee2e6;
+				border-radius: 5px;
+				background-color: #f8f9fa;
+				max-height: 300px;
+				overflow-y: auto;
+			}
+			.node {
+				position: relative;
+				padding-left: 1.2rem;
+				margin-bottom: 0.25rem;
+			}
+			.node::before {
+				content: "";
+				position: absolute;
+				top: 0.6rem;
+				left: 0;
+				width: 0.7rem;
+				height: 0.1rem;
+				background: #6c757d;
+			}
+			.collapse-icon {
+				cursor: pointer;
+				user-select: none;
+				margin-right: 0.5rem;
+				display: inline-block;
+				width: 1.2rem;
+				text-align: center;
 			}
 			textarea {
 				font-family: monospace;
+				min-height: 200px;
 				resize: vertical;
-				height: 200px;
 			}
-			#errorMsg {
-				display: none;
+			.btn-group-custom .btn {
+				margin-right: 0.5rem;
+				margin-bottom: 0.5rem;
+			}
+			.converter-icon {
+				margin-right: 8px;
+			}
+			.preview-selector {
+				background-color: #e9ecef;
+				border-radius: 5px;
+				padding: 0.5rem;
+				margin-top: 1rem;
+			}
+			.output-container {
+				position: relative;
+			}
+			.copy-btn {
+				position: absolute;
+				top: 10px;
+				right: 10px;
+				z-index: 10;
+			}
+			.file-drop-area {
+				border: 2px dashed #dee2e6;
+				border-radius: 5px;
+				padding: 1.5rem;
+				text-align: center;
+				background-color: #f8f9fa;
+				margin-bottom: 1rem;
+				cursor: pointer;
+				transition: all 0.3s;
+			}
+			.file-drop-area:hover {
+				border-color: #4e73df;
+				background-color: #e9ecef;
+			}
+			.file-drop-area i {
+				font-size: 2.5rem;
+				color: #6c757d;
+				margin-bottom: 0.5rem;
+			}
+			.feature-badge {
+				position: absolute;
+				top: -10px;
+				right: -10px;
+				z-index: 10;
+			}
+			.tree-container {
+				max-height: 300px;
+				overflow-y: auto;
+				border: 1px solid #dee2e6;
+				border-radius: 5px;
+				padding: 15px;
+				background-color: #f8f9fa;
+			}
+			.stats-card {
+				background: linear-gradient(to right, #36b9cc, #2c9faf);
+				color: white;
+			}
+			.stats-number {
+				font-size: 1.8rem;
+				font-weight: bold;
 			}
 		</style>
 	</head>
-	<body class="container-fluid">
-		<h1 class="text-center mb-4">Advanced JSON Converter</h1>
+	<body>
+		<!-- Header -->
+		<header class="header text-center">
+			<div class="container">
+				<h1 class="display-4 fw-bold">
+					<i class="bi bi-code-slash me-3"></i>Advanced JSON Converter
+				</h1>
+				<p class="lead">
+					Convert, validate, and visualize JSON data in multiple formats
+				</p>
+			</div>
+		</header>
 
-		<div class="row gx-3">
-			<!-- Input Panel -->
-			<div class="col-lg-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header bg-primary text-white">Input JSON</div>
-					<div class="card-body d-flex flex-column">
-						<textarea
-							id="jsonInput"
-							class="form-control mb-2"
-							placeholder="Paste or drop JSON here…"
-						></textarea>
-						<div id="errorMsg" class="alert alert-danger py-1 mb-2"></div>
-						<div class="d-flex flex-wrap gap-2">
-							<input
-								type="file"
-								id="fileInput"
-								class="form-control form-control-sm w-auto"
-								accept=".json"
-							/>
-							<button
-								class="btn btn-sm btn-outline-secondary"
-								data-action="validate"
+		<div class="container mb-5">
+			<div class="row">
+				<!-- Input Section -->
+				<div class="col-lg-6">
+					<div class="card">
+						<div
+							class="card-header d-flex justify-content-between align-items-center"
+						>
+							<span
+								><i class="bi bi-input-cursor-text me-2"></i>Input JSON</span
 							>
-								Validate
-							</button>
-							<button
-								class="btn btn-sm btn-outline-secondary"
-								data-action="pretty"
-							>
-								Pretty Print
-							</button>
-							<button
-								class="btn btn-sm btn-outline-secondary"
-								data-action="minify"
-							>
-								Minify
-							</button>
-							<!-- Conversion buttons -->
-							<div class="dropdown">
-								<button
-									class="btn btn-sm btn-outline-secondary dropdown-toggle"
-									data-bs-toggle="dropdown"
-								>
-									Convert…
+							<div class="badge bg-warning">Interactive</div>
+						</div>
+						<div class="card-body">
+							<div class="file-drop-area mb-3" id="dropArea">
+								<i class="bi bi-cloud-arrow-up"></i>
+								<h5>Drag & Drop JSON File</h5>
+								<p class="text-muted">or click to browse</p>
+								<input
+									type="file"
+									id="fileInput"
+									class="d-none"
+									accept=".json"
+								/>
+							</div>
+
+							<textarea
+								class="form-control mb-3"
+								id="jsonInput"
+								placeholder='Paste your JSON here... Example: { "name": "John", "age": 30, "city": "New York" }'
+							></textarea>
+
+							<div class="d-flex flex-wrap btn-group-custom">
+								<button class="btn btn-primary" id="validateBtn">
+									<i class="bi bi-check-circle-fill"></i> Validate
 								</button>
-								<ul class="dropdown-menu">
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="csv"
-											>To CSV</a
+								<button class="btn btn-success" id="prettyPrintBtn">
+									<i class="bi bi-card-text"></i> Pretty Print
+								</button>
+								<button class="btn btn-info" id="minifyBtn">
+									<i class="bi bi-arrows-collapse"></i> Minify
+								</button>
+
+								<div class="dropdown">
+									<button
+										class="btn btn-secondary dropdown-toggle"
+										type="button"
+										id="convertDropdown"
+										data-bs-toggle="dropdown"
+									>
+										<i class="bi bi-arrow-repeat"></i> Convert To
+									</button>
+									<ul class="dropdown-menu">
+										<li>
+											<a class="dropdown-item" href="#" id="toCsvBtn"
+												><i class="bi bi-filetype-csv"></i> CSV</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toXmlBtn"
+												><i class="bi bi-filetype-xml"></i> XML</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toYamlBtn"
+												><i class="bi bi-filetype-yml"></i> YAML</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toTomlBtn"
+												><i class="bi bi-file-earmark-text"></i> TOML</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toSqlBtn"
+												><i class="bi bi-database"></i> SQL</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toMarkdownBtn"
+												><i class="bi bi-markdown"></i> Markdown</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toIniBtn"
+												><i class="bi bi-file-earmark"></i> INI</a
+											>
+										</li>
+										<li>
+											<a class="dropdown-item" href="#" id="toHtmlTableBtn"
+												><i class="bi bi-table"></i> HTML Table</a
+											>
+										</li>
+									</ul>
+								</div>
+							</div>
+
+							<div class="mt-3">
+								<h5><i class="bi bi-lightning-charge"></i> Quick Actions</h5>
+								<div class="d-flex flex-wrap">
+									<button class="btn btn-outline-primary btn-sm me-2 mb-2">
+										<i class="bi bi-clipboard"></i> Copy
+									</button>
+									<button class="btn btn-outline-success btn-sm me-2 mb-2">
+										<i class="bi bi-download"></i> Download
+									</button>
+									<button class="btn btn-outline-info btn-sm me-2 mb-2">
+										<i class="bi bi-cloud-arrow-up"></i> Upload
+									</button>
+									<button class="btn btn-outline-warning btn-sm me-2 mb-2">
+										<i class="bi bi-eraser"></i> Clear
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="col-md-6 mb-3">
+							<div class="card stats-card h-100">
+								<div class="card-body text-center">
+									<h5><i class="bi bi-file-earmark-text"></i> File Size</h5>
+									<div class="stats-number" id="fileSize">0 KB</div>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<div class="card bg-success text-white h-100">
+								<div class="card-body text-center">
+									<h5><i class="bi bi-check-circle"></i> Validation</h5>
+									<div class="stats-number" id="validationStatus">Unknown</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Output Section -->
+				<div class="col-lg-6">
+					<div class="card">
+						<div
+							class="card-header d-flex justify-content-between align-items-center"
+						>
+							<span
+								><i class="bi bi-output me-2"></i>Output & Visualization</span
+							>
+							<div class="badge bg-info">Real-time</div>
+						</div>
+						<div class="card-body">
+							<ul class="nav nav-tabs mb-3" id="outputTabs" role="tablist">
+								<li class="nav-item" role="presentation">
+									<button
+										class="nav-link active"
+										id="output-tab"
+										data-bs-toggle="tab"
+										data-bs-target="#output"
+										type="button"
+										role="tab"
+									>
+										<i class="bi bi-code me-1"></i> Output
+									</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button
+										class="nav-link"
+										id="tree-tab"
+										data-bs-toggle="tab"
+										data-bs-target="#tree"
+										type="button"
+										role="tab"
+									>
+										<i class="bi bi-diagram-3 me-1"></i> Tree View
+									</button>
+								</li>
+								<li class="nav-item" role="presentation">
+									<button
+										class="nav-link"
+										id="stats-tab"
+										data-bs-toggle="tab"
+										data-bs-target="#stats"
+										type="button"
+										role="tab"
+									>
+										<i class="bi bi-bar-chart me-1"></i> Statistics
+									</button>
+								</li>
+							</ul>
+
+							<div class="tab-content" id="outputTabsContent">
+								<div
+									class="tab-pane fade show active"
+									id="output"
+									role="tabpanel"
+								>
+									<div class="output-container">
+										<textarea
+											class="form-control"
+											id="jsonOutput"
+											readonly
+											placeholder="Converted output will appear here..."
+										></textarea>
+										<button
+											class="btn btn-sm btn-outline-primary copy-btn"
+											id="copyBtn"
 										>
-									</li>
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="xml"
-											>To XML</a
+											<i class="bi bi-clipboard"></i>
+										</button>
+									</div>
+
+									<div class="preview-selector mt-3">
+										<div
+											class="d-flex justify-content-between align-items-center"
 										>
-									</li>
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="yaml"
-											>To YAML</a
-										>
-									</li>
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="toml"
-											>To TOML</a
-										>
-									</li>
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="sql"
-											>To SQL</a
-										>
-									</li>
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="markdown"
-											>To Markdown</a
-										>
-									</li>
-									<li>
-										<a
-											class="dropdown-item convert-item"
-											href="#"
-											data-format="ini"
-											>To INI</a
-										>
-									</li>
-								</ul>
+											<span
+												><i class="bi bi-eye me-1"></i> Preview Format:</span
+											>
+											<select
+												class="form-select form-select-sm w-auto"
+												id="previewFormat"
+											>
+												<option value="json">JSON</option>
+												<option value="yaml">YAML</option>
+												<option value="xml">XML</option>
+												<option value="html">HTML</option>
+												<option value="csv">CSV</option>
+											</select>
+										</div>
+									</div>
+								</div>
+
+								<div class="tab-pane fade" id="tree" role="tabpanel">
+									<div class="tree-container" id="treeView"></div>
+								</div>
+
+								<div class="tab-pane fade" id="stats" role="tabpanel">
+									<div class="row">
+										<div class="col-md-6 mb-3">
+											<div class="card h-100">
+												<div class="card-body">
+													<h5><i class="bi bi-list-check"></i> Structure</h5>
+													<ul class="list-group list-group-flush">
+														<li
+															class="list-group-item d-flex justify-content-between"
+														>
+															<span>Object Keys:</span>
+															<span class="badge bg-primary" id="keyCount"
+																>0</span
+															>
+														</li>
+														<li
+															class="list-group-item d-flex justify-content-between"
+														>
+															<span>Array Items:</span>
+															<span class="badge bg-success" id="arrayCount"
+																>0</span
+															>
+														</li>
+														<li
+															class="list-group-item d-flex justify-content-between"
+														>
+															<span>Nested Levels:</span>
+															<span class="badge bg-info" id="depthCount"
+																>0</span
+															>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+										<div class="col-md-6">
+											<div class="card h-100">
+												<div class="card-body">
+													<h5><i class="bi bi-pie-chart"></i> Data Types</h5>
+													<ul class="list-group list-group-flush">
+														<li
+															class="list-group-item d-flex justify-content-between"
+														>
+															<span>Strings:</span>
+															<span class="badge bg-warning" id="stringCount"
+																>0</span
+															>
+														</li>
+														<li
+															class="list-group-item d-flex justify-content-between"
+														>
+															<span>Numbers:</span>
+															<span class="badge bg-danger" id="numberCount"
+																>0</span
+															>
+														</li>
+														<li
+															class="list-group-item d-flex justify-content-between"
+														>
+															<span>Booleans:</span>
+															<span class="badge bg-secondary" id="booleanCount"
+																>0</span
+															>
+														</li>
+													</ul>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<div class="mt-3 d-flex justify-content-between">
+								<button class="btn btn-success" id="downloadBtn">
+									<i class="bi bi-download me-1"></i> Download Output
+								</button>
+								<div class="btn-group">
+									<button class="btn btn-outline-secondary">
+										<i class="bi bi-share"></i> Share
+									</button>
+									<button class="btn btn-outline-secondary">
+										<i class="bi bi-save"></i> Save
+									</button>
+									<button class="btn btn-outline-secondary">
+										<i class="bi bi-printer"></i> Print
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="card mt-4">
+						<div class="card-header">
+							<i class="bi bi-info-circle me-2"></i>JSON Converter Features
+						</div>
+						<div class="card-body">
+							<div class="row">
+								<div class="col-md-6 mb-3">
+									<div class="d-flex">
+										<div class="flex-shrink-0 me-3">
+											<i class="bi bi-check-circle-fill text-success"></i>
+										</div>
+										<div>
+											<h6>Multiple Formats</h6>
+											<p class="small mb-0">
+												Convert to CSV, XML, YAML, TOML, SQL and more
+											</p>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6 mb-3">
+									<div class="d-flex">
+										<div class="flex-shrink-0 me-3">
+											<i class="bi bi-check-circle-fill text-success"></i>
+										</div>
+										<div>
+											<h6>Visual Tree View</h6>
+											<p class="small mb-0">
+												Explore your JSON structure interactively
+											</p>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6 mb-3">
+									<div class="d-flex">
+										<div class="flex-shrink-0 me-3">
+											<i class="bi bi-check-circle-fill text-success"></i>
+										</div>
+										<div>
+											<h6>Drag & Drop</h6>
+											<p class="small mb-0">
+												Easily upload JSON files by dragging
+											</p>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="d-flex">
+										<div class="flex-shrink-0 me-3">
+											<i class="bi bi-check-circle-fill text-success"></i>
+										</div>
+										<div>
+											<h6>Detailed Statistics</h6>
+											<p class="small mb-0">
+												Get insights about your JSON data
+											</p>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<!-- Output Panel -->
-			<div class="col-lg-6 mb-4">
-				<div class="card h-100">
-					<div class="card-header bg-secondary text-white">
-						Output & Tree View
-					</div>
-					<div class="card-body d-flex flex-column">
-						<textarea
-							id="jsonOutput"
-							class="form-control mb-2"
-							readonly
-							placeholder="Result will appear here…"
-						></textarea>
-						<div class="d-flex gap-2 mb-2">
-							<button class="btn btn-sm btn-outline-primary" id="copyBtn">
-								Copy
-							</button>
-							<button class="btn btn-sm btn-outline-primary" id="downloadBtn">
-								Download
-							</button>
-							<button class="btn btn-sm btn-outline-secondary" id="themeToggle">
-								Dark Mode
-							</button>
-						</div>
-						<div
-							class="accordion flex-grow-1 overflow-auto"
-							id="treeAccordion"
-						></div>
-					</div>
-				</div>
-			</div>
 		</div>
 
-		<!-- External libs -->
+		<!-- Bootstrap JS Bundle with Popper -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+		<!-- External Libraries -->
 		<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.2.5/umd/toml.min.js"></script>
 
 		<script>
-			(() => {
-				const input = document.getElementById("jsonInput");
-				const output = document.getElementById("jsonOutput");
-				const errorMsg = document.getElementById("errorMsg");
-				const treeAcc = document.getElementById("treeAccordion");
+			// DOM Elements
+			const input = document.getElementById("jsonInput");
+			const output = document.getElementById("jsonOutput");
+			const treeView = document.getElementById("treeView");
+			const dropArea = document.getElementById("dropArea");
+			const fileInput = document.getElementById("fileInput");
+			const previewFormat = document.getElementById("previewFormat");
 
-				// Utility: show inline error
-				function showError(msg) {
-					errorMsg.textContent = msg;
-					errorMsg.style.display = "block";
-				}
-				function clearError() {
-					errorMsg.style.display = "none";
+			// Stats elements
+			const fileSizeEl = document.getElementById("fileSize");
+			const validationStatus = document.getElementById("validationStatus");
+			const keyCount = document.getElementById("keyCount");
+			const arrayCount = document.getElementById("arrayCount");
+			const depthCount = document.getElementById("depthCount");
+			const stringCount = document.getElementById("stringCount");
+			const numberCount = document.getElementById("numberCount");
+			const booleanCount = document.getElementById("booleanCount");
+
+			// Set initial JSON example
+			input.value = JSON.stringify(
+				{
+					name: "John Doe",
+					age: 35,
+					isEmployed: true,
+					address: {
+						street: "123 Main St",
+						city: "New York",
+						zip: "10001",
+					},
+					phoneNumbers: [
+						{ type: "home", number: "212-555-1234" },
+						{ type: "mobile", number: "646-555-5678" },
+					],
+					children: [],
+					spouse: null,
+				},
+				null,
+				2
+			);
+
+			// Set output to match input
+			output.value = input.value;
+
+			// Render initial tree
+			renderTree(input.value);
+
+			// Function to update output and tree
+			function setOutput(txt) {
+				output.value = txt;
+				renderTree(txt);
+				updateStats();
+			}
+
+			// Tree rendering function
+			function renderTree(jsonText) {
+				treeView.innerHTML = "";
+				let data;
+				try {
+					data = JSON.parse(jsonText);
+				} catch {
+					treeView.innerHTML =
+						"<div class='alert alert-danger'>Invalid JSON</div>";
+					return;
 				}
 
-				// Generic convert function
-				const converters = {
-					pretty: (txt) => JSON.stringify(JSON.parse(txt), null, 2),
-					minify: (txt) => JSON.stringify(JSON.parse(txt)),
-					csv: (txt) => {
-						const arr = JSON.parse(txt);
-						if (!Array.isArray(arr)) throw new Error("Root must be an array");
-						const cols = [...new Set(arr.flatMap((o) => Object.keys(o)))];
-						return [
-							cols.join(","),
-							...arr.map((r) =>
-								cols.map((k) => JSON.stringify(r[k] || "")).join(",")
-							),
-						].join("\n");
-					},
-					xml: (txt) => {
-						const toXml = (o, tag = "root") =>
-							Array.isArray(o)
-								? o.map((v) => toXml(v, tag)).join("")
-								: typeof o === "object"
-								? `<${tag}>${Object.entries(o)
-										.map(([k, v]) => toXml(v, k))
-										.join("")}</${tag}>`
-								: `<${tag}>${String(o)}</${tag}>`;
-						return toXml(JSON.parse(txt));
-					},
-					yaml: (txt) => jsyaml.dump(JSON.parse(txt), { indent: 2 }),
-					toml: (txt) => TOML.stringify(JSON.parse(txt)),
-					sql: (txt) => {
-						const arr = JSON.parse(txt);
-						if (!Array.isArray(arr)) throw new Error("Root must be an array");
-						const keys = Object.keys(arr[0]);
-						const rows = arr.map(
-							(o) =>
-								"(" +
-								keys
-									.map((k) => `'${String(o[k] || "").replace(/'/g, "''")}'`)
-									.join(",") +
-								")"
+				function createNode(key, val, depth = 0) {
+					const el = document.createElement("div");
+					el.className = "node";
+					el.style.marginLeft = depth * 15 + "px";
+
+					if (val && typeof val === "object") {
+						const details = document.createElement("div");
+						const collapse = document.createElement("span");
+						collapse.textContent = "▾";
+						collapse.className = "collapse-icon";
+
+						const type = Array.isArray(val)
+							? `Array (${val.length} items)`
+							: `Object (${Object.keys(val).length} keys)`;
+
+						details.append(
+							collapse,
+							document.createTextNode(key ? `${key}: ${type}` : type)
 						);
-						return `INSERT INTO table (${keys.join(",")}) VALUES\n${rows.join(
-							",\n"
-						)};`;
-					},
-					markdown: (txt) => {
-						const arr = JSON.parse(txt);
-						if (!Array.isArray(arr)) throw new Error("Root must be an array");
-						const keys = Object.keys(arr[0]);
-						const header = `|${keys.join("|")}|`;
-						const sep = `|${keys.map(() => "-").join("|")}|`;
-						const rows = arr.map((r) => `|${keys.map((k) => r[k]).join("|")}|`);
-						return [header, sep, ...rows].join("\n");
-					},
-					ini: (txt) => {
-						const obj = JSON.parse(txt);
-						return Object.entries(obj)
-							.map(([sec, val]) => {
-								const body = Object.entries(val)
-									.map(([k, v]) => `${k}=${v}`)
-									.join("\n");
-								return `[${sec}]\n${body}`;
-							})
-							.join("\n\n");
-					},
-				};
 
-				// Render tree into Bootstrap accordion
-				function renderTree(txt) {
-					let data;
+						const childContainer = document.createElement("div");
+						childContainer.style.display = "block";
+
+						for (let k in val) {
+							childContainer.appendChild(createNode(k, val[k], depth + 1));
+						}
+
+						collapse.onclick = () => {
+							const visible = childContainer.style.display !== "none";
+							childContainer.style.display = visible ? "none" : "block";
+							collapse.textContent = visible ? "▸" : "▾";
+						};
+
+						el.append(details, childContainer);
+					} else {
+						let valueDisplay = val;
+						if (val === null) valueDisplay = "null";
+						if (typeof val === "string") valueDisplay = `"${val}"`;
+
+						let typeClass = "";
+						if (typeof val === "string") typeClass = "text-success";
+						if (typeof val === "number") typeClass = "text-primary";
+						if (typeof val === "boolean") typeClass = "text-warning";
+
+						el.innerHTML = key
+							? `<span>${key}:</span> <span class="${typeClass}">${valueDisplay}</span>`
+							: `<span class="${typeClass}">${valueDisplay}</span>`;
+					}
+					return el;
+				}
+
+				if (typeof data === "object") {
+					treeView.appendChild(createNode("", data, 0));
+				} else {
+					treeView.textContent = JSON.stringify(data);
+				}
+			}
+
+			// Update statistics
+			function updateStats() {
+				try {
+					const jsonData = JSON.parse(input.value);
+					const jsonString = JSON.stringify(jsonData);
+
+					// File size
+					const sizeKB = new TextEncoder().encode(jsonString).length / 1024;
+					fileSizeEl.textContent = sizeKB.toFixed(2) + " KB";
+
+					// Validation status
+					validationStatus.textContent = "Valid";
+					validationStatus.parentElement.parentElement.className =
+						"card bg-success text-white h-100";
+
+					// Initialize counters
+					let keys = 0;
+					let arrays = 0;
+					let maxDepth = 0;
+					let strings = 0;
+					let numbers = 0;
+					let booleans = 0;
+
+					// Recursive function to traverse JSON
+					function traverse(obj, depth = 0) {
+						maxDepth = Math.max(maxDepth, depth);
+
+						if (Array.isArray(obj)) {
+							arrays++;
+							obj.forEach((item) => {
+								if (typeof item === "object" && item !== null) {
+									traverse(item, depth + 1);
+								}
+							});
+						} else if (typeof obj === "object" && obj !== null) {
+							keys += Object.keys(obj).length;
+							for (let key in obj) {
+								const value = obj[key];
+								if (typeof value === "string") strings++;
+								if (typeof value === "number") numbers++;
+								if (typeof value === "boolean") booleans++;
+
+								if (typeof value === "object" && value !== null) {
+									traverse(value, depth + 1);
+								}
+							}
+						}
+					}
+
+					traverse(jsonData);
+
+					// Update DOM
+					keyCount.textContent = keys;
+					arrayCount.textContent = arrays;
+					depthCount.textContent = maxDepth;
+					stringCount.textContent = strings;
+					numberCount.textContent = numbers;
+					booleanCount.textContent = booleans;
+				} catch (e) {
+					validationStatus.textContent = "Invalid";
+					validationStatus.parentElement.parentElement.className =
+						"card bg-danger text-white h-100";
+				}
+			}
+
+			// Initial stats update
+			updateStats();
+
+			// Event Listeners
+			document.getElementById("validateBtn").addEventListener("click", () => {
+				try {
+					JSON.parse(input.value);
+					alert("Valid JSON!");
+				} catch (e) {
+					alert("Invalid JSON: " + e.message);
+				}
+			});
+
+			document
+				.getElementById("prettyPrintBtn")
+				.addEventListener("click", () => {
 					try {
-						data = JSON.parse(txt);
-					} catch {
-						treeAcc.innerHTML = '<div class="text-danger">Invalid JSON</div>';
+						setOutput(JSON.stringify(JSON.parse(input.value), null, 2));
+					} catch (e) {
+						alert("Error: " + e.message);
+					}
+				});
+
+			document.getElementById("minifyBtn").addEventListener("click", () => {
+				try {
+					setOutput(JSON.stringify(JSON.parse(input.value)));
+				} catch (e) {
+					alert("Error: " + e.message);
+				}
+			});
+
+			document.getElementById("toCsvBtn").addEventListener("click", () => {
+				try {
+					const data = JSON.parse(input.value);
+					if (!Array.isArray(data)) {
+						alert("JSON root must be an array to convert to CSV");
 						return;
 					}
 
-					treeAcc.innerHTML = "";
-					let idCounter = 0;
-					function recurse(obj, parentId) {
-						const card = document.createElement("div");
-						card.className = "accordion-item";
-						const headingId = `heading${++idCounter}`;
-						const collapseId = `collapse${idCounter}`;
+					const cols = [...new Set(data.flatMap((obj) => Object.keys(obj)))];
+					const csv = [
+						cols.join(","),
+						...data.map((row) =>
+							cols.map((k) => JSON.stringify(row[k] || "")).join(",")
+						),
+					].join("\n");
 
-						// Header
-						const header = document.createElement("h2");
-						header.className = "accordion-header";
-						header.id = headingId;
-						header.innerHTML = `
-          <button class="accordion-button ${
-						parentId ? "collapsed" : ""
-					}" type="button" data-bs-toggle="collapse" data-bs-target="#${collapseId}">
-            ${parentId || "root"} (${Array.isArray(obj) ? "Array" : "Object"})
-          </button>`;
-						card.append(header);
-
-						// Body
-						const bodyWrapper = document.createElement("div");
-						bodyWrapper.id = collapseId;
-						bodyWrapper.className = `accordion-collapse collapse ${
-							parentId ? "" : "show"
-						}`;
-						bodyWrapper.setAttribute("data-bs-parent", "#treeAccordion");
-						const body = document.createElement("div");
-						body.className = "accordion-body ps-4";
-						for (let k in obj) {
-							const val = obj[k];
-							if (val && typeof val === "object") {
-								recurse(val, k);
-							} else {
-								const p = document.createElement("p");
-								p.textContent = `${k}: ${JSON.stringify(val)}`;
-								body.append(p);
-							}
-						}
-						bodyWrapper.append(body);
-						card.append(bodyWrapper);
-						treeAcc.append(card);
-					}
-					recurse(data, null);
+					setOutput(csv);
+				} catch (e) {
+					alert("CSV Error: " + e.message);
 				}
+			});
 
-				// Bind static buttons
-				document.querySelectorAll("[data-action]").forEach((btn) => {
-					btn.addEventListener("click", () => {
-						clearError();
-						try {
-							const fmt = btn.dataset.action;
-							const res = converters[fmt](input.value);
-							output.value = res;
-							renderTree(res);
-						} catch (e) {
-							showError(e.message);
+			document.getElementById("toXmlBtn").addEventListener("click", () => {
+				try {
+					const obj = JSON.parse(input.value);
+					const toXml = (o, tag = "root") => {
+						if (Array.isArray(o)) {
+							return o.map((v) => toXml(v, "item")).join("");
+						} else if (typeof o === "object") {
+							return `<${tag}>${Object.entries(o)
+								.map(([k, v]) => toXml(v, k))
+								.join("")}</${tag}>`;
 						}
-					});
+						return `<${tag}>${String(o)}</${tag}>`;
+					};
+					setOutput(toXml(obj));
+				} catch (e) {
+					alert("XML Error: " + e.message);
+				}
+			});
+
+			document.getElementById("toYamlBtn").addEventListener("click", () => {
+				try {
+					setOutput(jsyaml.dump(JSON.parse(input.value), { indent: 2 }));
+				} catch (e) {
+					alert("YAML Error: " + e.message);
+				}
+			});
+
+			document.getElementById("toTomlBtn").addEventListener("click", () => {
+				try {
+					setOutput(TOML.stringify(JSON.parse(input.value)));
+				} catch (e) {
+					alert("TOML Error: " + e.message);
+				}
+			});
+
+			document
+				.getElementById("toHtmlTableBtn")
+				.addEventListener("click", () => {
+					try {
+						const data = JSON.parse(input.value);
+						if (!Array.isArray(data)) {
+							alert("JSON root must be an array for HTML Table conversion");
+							return;
+						}
+
+						const keys = Object.keys(data[0]);
+						const rows = data
+							.map(
+								(row) =>
+									`<tr>${keys.map((k) => `<td>${row[k]}</td>`).join("")}</tr>`
+							)
+							.join("");
+
+						const html = `
+			            <table class="table table-bordered table-striped">
+			                <thead class="table-dark">
+			                    <tr>${keys.map((k) => `<th>${k}</th>`).join("")}</tr>
+			                </thead>
+			                <tbody>${rows}</tbody>
+			            </table>
+			        `;
+
+						setOutput(html);
+					} catch (e) {
+						alert("HTML Table Error: " + e.message);
+					}
 				});
 
-				// Bind conversion menu
-				document.querySelectorAll(".convert-item").forEach((link) => {
-					link.addEventListener("click", (e) => {
-						e.preventDefault();
-						clearError();
-						try {
-							const fmt = link.dataset.format;
-							const res = converters[fmt](input.value);
-							output.value = res;
-							renderTree(res);
-						} catch (e) {
-							showError(e.message);
-						}
-					});
+			document.getElementById("copyBtn").addEventListener("click", () => {
+				navigator.clipboard.writeText(output.value).then(() => {
+					const copyBtn = document.getElementById("copyBtn");
+					copyBtn.innerHTML = '<i class="bi bi-check"></i>';
+					copyBtn.classList.add("btn-success");
+					setTimeout(() => {
+						copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>';
+						copyBtn.classList.remove("btn-success");
+					}, 2000);
 				});
+			});
 
-				// File input
-				document.getElementById("fileInput").addEventListener("change", (e) => {
-					const file = e.target.files[0];
-					if (!file) return;
+			document.getElementById("downloadBtn").addEventListener("click", () => {
+				const blob = new Blob([output.value], { type: "text/plain" });
+				const url = URL.createObjectURL(blob);
+				const a = document.createElement("a");
+				a.href = url;
+				a.download = "json_converter_output.txt";
+				a.click();
+				URL.revokeObjectURL(url);
+			});
+
+			// File input handling
+			dropArea.addEventListener("click", () => {
+				fileInput.click();
+			});
+
+			fileInput.addEventListener("change", (e) => {
+				const file = e.target.files[0];
+				if (!file) return;
+
+				const reader = new FileReader();
+				reader.onload = () => {
+					input.value = reader.result;
+					setOutput(reader.result);
+				};
+				reader.readAsText(file);
+			});
+
+			dropArea.addEventListener("dragover", (e) => {
+				e.preventDefault();
+				dropArea.style.borderColor = "#4e73df";
+				dropArea.style.backgroundColor = "#e2e6ea";
+			});
+
+			dropArea.addEventListener("dragleave", () => {
+				dropArea.style.borderColor = "#dee2e6";
+				dropArea.style.backgroundColor = "#f8f9fa";
+			});
+
+			dropArea.addEventListener("drop", (e) => {
+				e.preventDefault();
+				dropArea.style.borderColor = "#dee2e6";
+				dropArea.style.backgroundColor = "#f8f9fa";
+
+				const file = e.dataTransfer.files[0];
+				if (file && file.type === "application/json") {
 					const reader = new FileReader();
 					reader.onload = () => {
 						input.value = reader.result;
-						clearError();
-						renderTree(reader.result);
+						setOutput(reader.result);
 					};
 					reader.readAsText(file);
-				});
+				}
+			});
 
-				// Copy & download
-				document.getElementById("copyBtn").onclick = () =>
-					navigator.clipboard.writeText(output.value);
-				document.getElementById("downloadBtn").onclick = () => {
-					const blob = new Blob([output.value], { type: "text/plain" });
-					const url = URL.createObjectURL(blob);
-					const a = document.createElement("a");
-					a.href = url;
-					a.download = "output.txt";
-					a.click();
-					URL.revokeObjectURL(url);
-				};
+			// Input change listener for real-time preview
+			input.addEventListener("input", () => {
+				try {
+					const obj = JSON.parse(input.value);
+					output.value = JSON.stringify(obj, null, 2);
+					renderTree(input.value);
+					updateStats();
+				} catch {
+					output.value = "Invalid JSON";
+					treeView.innerHTML =
+						"<div class='alert alert-danger'>Invalid JSON</div>";
+				}
+			});
 
-				// Dark mode toggle
-				document.getElementById("themeToggle").onclick = () =>
-					document.body.classList.toggle("bg-dark") ||
-					document.body.classList.toggle("text-light");
+			// Preview format selector
+			previewFormat.addEventListener("change", () => {
+				try {
+					const obj = JSON.parse(input.value);
+					let preview = "";
 
-				// Initial render
-				renderTree("{}");
-			})();
+					switch (previewFormat.value) {
+						case "json":
+							preview = JSON.stringify(obj, null, 2);
+							break;
+						case "yaml":
+							preview = jsyaml.dump(obj, { indent: 2 });
+							break;
+						case "xml":
+							const toXml = (o, tag = "root") => {
+								if (Array.isArray(o)) {
+									return o.map((v) => toXml(v, "item")).join("");
+								} else if (typeof o === "object") {
+									return `<${tag}>${Object.entries(o)
+										.map(([k, v]) => toXml(v, k))
+										.join("")}</${tag}>`;
+								}
+								return `<${tag}>${String(o)}</${tag}>`;
+							};
+							preview = toXml(obj);
+							break;
+						case "html":
+							if (Array.isArray(obj)) {
+								const keys = Object.keys(obj[0]);
+								const rows = obj
+									.map(
+										(row) =>
+											`<tr>${keys
+												.map((k) => `<td>${row[k]}</td>`)
+												.join("")}</tr>`
+									)
+									.join("");
+								preview = `
+			                        <table class="table table-bordered">
+			                            <thead><tr>${keys
+																		.map((k) => `<th>${k}</th>`)
+																		.join("")}</tr></thead>
+			                            <tbody>${rows}</tbody>
+			                        </table>
+			                    `;
+							} else {
+								preview = "HTML preview requires an array of objects";
+							}
+							break;
+						case "csv":
+							if (Array.isArray(obj)) {
+								const keys = Object.keys(obj[0]);
+								preview = [
+									keys.join(","),
+									...obj.map((row) =>
+										keys.map((k) => JSON.stringify(row[k] || "")).join(",")
+									),
+								].join("\n");
+							} else {
+								preview = "CSV preview requires an array of objects";
+							}
+							break;
+					}
+
+					output.value = preview;
+				} catch (e) {
+					output.value = `Preview error: ${e.message}`;
+				}
+			});
 		</script>
 	</body>
 </html>
