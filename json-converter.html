@@ -116,6 +116,56 @@
 				color: #ddd;
 				border-color: #555;
 			}
+			.dropdown {
+				position: relative;
+				display: inline-block;
+			}
+			.dropdown-content {
+				display: none;
+				position: absolute;
+				background-color: var(--light);
+				min-width: 160px;
+				box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+				z-index: 1;
+				border-radius: 4px;
+				overflow: hidden;
+			}
+			.dropdown-content button {
+				width: 100%;
+				text-align: left;
+				border-radius: 0;
+				border-bottom: 1px solid #eee;
+			}
+			.dropdown-content button:last-child {
+				border-bottom: none;
+			}
+			.dropdown:hover .dropdown-content {
+				display: block;
+			}
+			#jsonOutput {
+				height: 200px;
+				margin-bottom: 1rem;
+			}
+			#treeView {
+				height: 200px;
+			}
+			.tab-controls {
+				display: flex;
+				margin-bottom: 0.5rem;
+				border-bottom: 1px solid #ccc;
+			}
+			.tab-btn {
+				padding: 0.5rem;
+				background: none;
+				border: none;
+				color: var(--primary);
+				cursor: pointer;
+				border-bottom: 2px solid transparent;
+			}
+			.tab-btn.active {
+				border-bottom: 2px solid var(--primary);
+				font-weight: bold;
+			}
 		</style>
 		<script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
 		<script src="https://cdn.jsdelivr.net/npm/@iarna/toml@2.2.5/umd/toml.min.js"></script>
@@ -136,13 +186,28 @@
 					<button id="validateBtn">Validate</button>
 					<button id="prettyPrintBtn">Pretty Print</button>
 					<button id="minifyBtn">Minify</button>
-					<button id="toCsvBtn">To CSV</button>
-					<button id="toXmlBtn">To XML</button>
-					<button id="toYamlBtn">To YAML</button>
-					<button id="toTomlBtn">To TOML</button>
-					<button id="toSqlBtn">To SQL</button>
-					<button id="toMarkdownBtn">To Markdown</button>
-					<button id="toIniBtn">To INI</button>
+					<div class="dropdown">
+						<button>Convert To</button>
+						<div class="dropdown-content">
+							<button id="toCsvBtn">CSV</button>
+							<button id="toXmlBtn">XML</button>
+							<button id="toYamlBtn">YAML</button>
+							<button id="toTomlBtn">TOML</button>
+							<button id="toSqlBtn">SQL</button>
+							<button id="toMarkdownBtn">Markdown</button>
+							<button id="toIniBtn">INI</button>
+							<button id="toHtmlTableBtn">HTML Table</button>
+							<button id="toPythonBtn">Python Object</button>
+							<button id="toCSharpBtn">C# Object</button>
+							<button id="toJavaBtn">Java Object</button>
+							<button id="toTypeScriptBtn">TypeScript</button>
+							<button id="toGraphQLBtn">GraphQL</button>
+							<button id="toPHPBtn">PHP</button>
+							<button id="toSwiftBtn">Swift</button>
+							<button id="toKotlinBtn">Kotlin</button>
+						</div>
+					</div>
+					<button class="toggle" id="themeToggle">Toggle Dark Mode</button>
 				</div>
 			</section>
 			<section class="panel" id="outputPanel">
@@ -150,7 +215,10 @@
 				<div class="controls">
 					<button id="copyBtn">Copy</button>
 					<button id="downloadBtn">Download</button>
-					<button class="toggle" id="themeToggle">Toggle Dark Mode</button>
+					<div class="tab-controls">
+						<button class="tab-btn active" data-tab="output">Output</button>
+						<button class="tab-btn" data-tab="tree">Tree View</button>
+					</div>
 				</div>
 				<textarea
 					id="jsonOutput"
@@ -163,6 +231,31 @@
 		<script>
 			const input = document.getElementById("jsonInput");
 			const output = document.getElementById("jsonOutput");
+			const treeView = document.getElementById("treeView");
+			const tabBtns = document.querySelectorAll(".tab-btn");
+			const outputTab = document.querySelector('[data-tab="output"]');
+			const treeTab = document.querySelector('[data-tab="tree"]');
+
+			// Initialize tab state
+			treeView.style.display = "none";
+			output.style.display = "block";
+
+			// Tab switching
+			tabBtns.forEach((btn) => {
+				btn.addEventListener("click", () => {
+					tabBtns.forEach((b) => b.classList.remove("active"));
+					btn.classList.add("active");
+
+					if (btn.dataset.tab === "output") {
+						treeView.style.display = "none";
+						output.style.display = "block";
+					} else {
+						output.style.display = "none";
+						treeView.style.display = "block";
+					}
+				});
+			});
+
 			const setOutput = (txt) => {
 				output.value = txt;
 				renderTree(txt);
@@ -372,12 +465,8 @@
 			};
 			renderTree("{}");
 
-			// New: To HTML Table
-			document.getElementById("toHtmlTableBtn")?.remove();
-			const htmlTableBtn = document.createElement("button");
-			htmlTableBtn.textContent = "To HTML Table";
-			htmlTableBtn.id = "toHtmlTableBtn";
-			htmlTableBtn.onclick = () => {
+			// New conversion functions
+			document.getElementById("toHtmlTableBtn").onclick = () => {
 				try {
 					const data = JSON.parse(input.value);
 					if (!Array.isArray(data))
@@ -399,12 +488,8 @@
 					alert("HTML Table Error: " + e.message);
 				}
 			};
-			document.querySelector(".controls").appendChild(htmlTableBtn);
 
-			// New: To Python Object
-			const pythonBtn = document.createElement("button");
-			pythonBtn.textContent = "To Python Object";
-			pythonBtn.onclick = () => {
+			document.getElementById("toPythonBtn").onclick = () => {
 				try {
 					const obj = JSON.parse(input.value);
 					const pythonStr = JSON.stringify(obj, null, 2)
@@ -415,12 +500,8 @@
 					alert("Python Error: " + e.message);
 				}
 			};
-			document.querySelector(".controls").appendChild(pythonBtn);
 
-			// New: To C# Object
-			const csharpBtn = document.createElement("button");
-			csharpBtn.textContent = "To C# Object";
-			csharpBtn.onclick = () => {
+			document.getElementById("toCSharpBtn").onclick = () => {
 				try {
 					const obj = JSON.parse(input.value);
 					const keys = Object.keys(obj);
@@ -430,12 +511,8 @@
 					alert("C# Error: " + e.message);
 				}
 			};
-			document.querySelector(".controls").appendChild(csharpBtn);
 
-			// New: To Java Object
-			const javaBtn = document.createElement("button");
-			javaBtn.textContent = "To Java Object";
-			javaBtn.onclick = () => {
+			document.getElementById("toJavaBtn").onclick = () => {
 				try {
 					const obj = JSON.parse(input.value);
 					const keys = Object.keys(obj);
@@ -445,212 +522,182 @@
 					alert("Java Error: " + e.message);
 				}
 			};
-			document.querySelector(".controls").appendChild(javaBtn);
 
-			// New: To YAML
-			const yamlBtn = document.createElement("button");
-			yamlBtn.textContent = "To YAML";
-			yamlBtn.onclick = () => {
+			document.getElementById("toTypeScriptBtn").onclick = () => {
 				try {
 					const obj = JSON.parse(input.value);
-					const yaml = jsonToYaml(obj);
-					setOutput(yaml);
-				} catch (e) {
-					alert("YAML Error: " + e.message);
-				}
-			};
-			document.querySelector(".controls").appendChild(yamlBtn);
+					let tsInterface = "interface MyInterface {\n";
 
-			function jsonToYaml(obj, indent = "") {
-				if (Array.isArray(obj)) {
-					return obj
-						.map(
-							(item) =>
-								`${indent}- ${
-									typeof item === "object"
-										? "\n" + jsonToYaml(item, indent + "  ")
-										: item
-								}`
-						)
-						.join("\n");
-				} else if (typeof obj === "object") {
-					return Object.entries(obj)
-						.map(([key, value]) => {
-							if (typeof value === "object") {
-								return `${indent}${key}:\n${jsonToYaml(value, indent + "  ")}`;
-							} else {
-								return `${indent}${key}: ${value}`;
-							}
-						})
-						.join("\n");
-				}
-				return String(obj);
-			}
-
-			// New: To TSV
-			const tsvBtn = document.createElement("button");
-			tsvBtn.textContent = "To TSV";
-			tsvBtn.onclick = () => {
-				try {
-					const data = JSON.parse(input.value);
-					if (!Array.isArray(data))
-						return alert("TSV conversion requires an array of objects.");
-					const keys = Object.keys(data[0]);
-					const lines = data.map((row) => keys.map((k) => row[k]).join("\t"));
-					lines.unshift(keys.join("\t"));
-					setOutput(lines.join("\n"));
-				} catch (e) {
-					alert("TSV Error: " + e.message);
-				}
-			};
-			document.querySelector(".controls").appendChild(tsvBtn);
-
-			// New: Download as Excel
-			const excelBtn = document.createElement("button");
-			excelBtn.textContent = "Download Excel";
-			excelBtn.onclick = () => {
-				try {
-					const data = JSON.parse(input.value);
-					const csvContent = JSONToCSV(data);
-					const blob = new Blob([csvContent], {
-						type: "text/csv;charset=utf-8;",
-					});
-					const url = URL.createObjectURL(blob);
-					const a = document.createElement("a");
-					a.href = url;
-					a.download = "data.xlsx";
-					a.click();
-				} catch (e) {
-					alert("Excel Download Error: " + e.message);
-				}
-			};
-			document.querySelector(".controls").appendChild(excelBtn);
-
-			function JSONToCSV(data) {
-				if (!Array.isArray(data))
-					throw new Error("CSV export needs array of objects");
-				const keys = Object.keys(data[0]);
-				const rows = data.map((row) =>
-					keys.map((k) => JSON.stringify(row[k] || "")).join(",")
-				);
-				rows.unshift(keys.join(","));
-				return rows.join("\n");
-			}
-
-			// Future: Custom Template - placeholder for implementation
-			const customBtn = document.createElement("button");
-			customBtn.textContent = "To Custom Template";
-			customBtn.onclick = () => {
-				const template = prompt("Enter template with {{key}} placeholders:");
-				try {
-					const data = JSON.parse(input.value);
-					if (!Array.isArray(data))
-						return alert("Custom template requires array of objects");
-					const output = data
-						.map((item) => {
-							return template.replace(
-								/{{(\w+)}}/g,
-								(_, key) => item[key] ?? ""
-							);
-						})
-						.join("\n");
-					setOutput(output);
-				} catch (e) {
-					alert("Custom Template Error: " + e.message);
-				}
-			};
-			document.querySelector(".controls").appendChild(customBtn);
-
-			// New: Upload JSON File
-			const uploadInput = document.createElement("input");
-			uploadInput.type = "file";
-			uploadInput.accept = ".json";
-			uploadInput.style.display = "none";
-			uploadInput.onchange = async (e) => {
-				const file = e.target.files[0];
-				if (!file) return;
-				const text = await file.text();
-				input.value = text;
-			};
-
-			const uploadBtn = document.createElement("button");
-			uploadBtn.textContent = "Upload JSON File";
-			uploadBtn.onclick = () => uploadInput.click();
-			document.querySelector(".controls").appendChild(uploadInput);
-			document.querySelector(".controls").appendChild(uploadBtn);
-
-			// New: Download Output as File
-			const downloadBtn = document.createElement("button");
-			downloadBtn.textContent = "Download Output";
-			downloadBtn.onclick = () => {
-				const blob = new Blob([output.value], {
-					type: "text/plain;charset=utf-8;",
-				});
-				const url = URL.createObjectURL(blob);
-				const a = document.createElement("a");
-				a.href = url;
-				a.download = "converted_output.txt";
-				a.click();
-			};
-			document.querySelector(".controls").appendChild(downloadBtn);
-
-			// New: To XML
-			const xmlBtn = document.createElement("button");
-			xmlBtn.textContent = "To XML";
-			xmlBtn.onclick = () => {
-				try {
-					const obj = JSON.parse(input.value);
-					const xml = jsonToXml(obj);
-					setOutput(xml);
-				} catch (e) {
-					alert("XML Error: " + e.message);
-				}
-			};
-			document.querySelector(".controls").appendChild(xmlBtn);
-
-			function jsonToXml(obj, indent = "") {
-				let xml = "";
-				if (Array.isArray(obj)) {
-					for (const item of obj) {
-						xml += `${indent}<item>\n${jsonToXml(
-							item,
-							indent + "  "
-						)}${indent}</item>\n`;
-					}
-				} else if (typeof obj === "object") {
 					for (const key in obj) {
-						const value = obj[key];
-						if (typeof value === "object") {
-							xml += `${indent}<${key}>\n${jsonToXml(
-								value,
-								indent + "  "
-							)}${indent}</${key}>\n`;
-						} else {
-							xml += `${indent}<${key}>${value}</${key}>\n`;
+						let type = typeof obj[key];
+						if (type === "object") {
+							if (Array.isArray(obj[key])) {
+								type = "any[]";
+							} else {
+								type = "object";
+							}
 						}
+						tsInterface += `  ${key}: ${type};\n`;
 					}
-				} else {
-					xml += `${indent}${obj}\n`;
+
+					tsInterface += "}";
+					setOutput(tsInterface);
+				} catch (e) {
+					alert("TypeScript Error: " + e.message);
 				}
-				return xml;
-			}
+			};
+
+			document.getElementById("toGraphQLBtn").onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					let gqlType = "type MyType {\n";
+
+					for (const key in obj) {
+						let type = "String";
+						const value = obj[key];
+
+						if (typeof value === "number") {
+							type = "Float";
+						} else if (typeof value === "boolean") {
+							type = "Boolean";
+						} else if (Array.isArray(value)) {
+							type = "[String]";
+						}
+
+						gqlType += `  ${key}: ${type}\n`;
+					}
+
+					gqlType += "}";
+					setOutput(gqlType);
+				} catch (e) {
+					alert("GraphQL Error: " + e.message);
+				}
+			};
+
+			document.getElementById("toPHPBtn").onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					let php = "<?php\n\n$data = ";
+
+					const convertValue = (val) => {
+						if (typeof val === "string") return `'${val.replace(/'/g, "\\'")}'`;
+						if (typeof val === "number") return val;
+						if (typeof val === "boolean") return val ? "true" : "false";
+						if (val === null) return "null";
+						if (Array.isArray(val)) {
+							return "[" + val.map(convertValue).join(", ") + "]";
+						}
+						if (typeof val === "object") {
+							return (
+								"[" +
+								Object.entries(val)
+									.map(([k, v]) => `'${k}' => ${convertValue(v)}`)
+									.join(", ") +
+								"]"
+							);
+						}
+						return "null";
+					};
+
+					php += convertValue(obj) + ";\n\n?>";
+					setOutput(php);
+				} catch (e) {
+					alert("PHP Error: " + e.message);
+				}
+			};
+
+			document.getElementById("toSwiftBtn").onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					let swift = "struct MyStruct: Codable {\n";
+
+					for (const key in obj) {
+						let type = "String";
+						const value = obj[key];
+
+						if (typeof value === "number") {
+							type = "Double";
+						} else if (typeof value === "boolean") {
+							type = "Bool";
+						} else if (Array.isArray(value)) {
+							type = "[String]";
+						} else if (typeof value === "object") {
+							type = "Any";
+						}
+
+						swift += `    let ${key}: ${type}\n`;
+					}
+
+					swift += "}";
+					setOutput(swift);
+				} catch (e) {
+					alert("Swift Error: " + e.message);
+				}
+			};
+
+			document.getElementById("toKotlinBtn").onclick = () => {
+				try {
+					const obj = JSON.parse(input.value);
+					let kotlin = "data class MyData(\n";
+					const props = [];
+
+					for (const key in obj) {
+						let type = "String";
+						const value = obj[key];
+
+						if (typeof value === "number") {
+							type = "Double";
+						} else if (typeof value === "boolean") {
+							type = "Boolean";
+						} else if (Array.isArray(value)) {
+							type = "List<String>";
+						} else if (typeof value === "object") {
+							type = "Any";
+						}
+
+						props.push(`    val ${key}: ${type}`);
+					}
+
+					kotlin += props.join(",\n") + "\n)";
+					setOutput(kotlin);
+				} catch (e) {
+					alert("Kotlin Error: " + e.message);
+				}
+			};
 
 			// Real-time preview setup
 			let currentFormat = "json"; // Default
 
-			const formatSelectors = document.createElement("select");
-			formatSelectors.innerHTML = `
-    <option value="json">JSON</option>
-    <option value="yaml">YAML</option>
-    <option value="xml">XML</option>
-    <option value="html">HTML Table</option>
-    <option value="tsv">TSV</option>
-  `;
-			formatSelectors.onchange = () => {
-				currentFormat = formatSelectors.value;
+			// Format selector for preview
+			const formatSelector = document.createElement("select");
+			formatSelector.innerHTML = `
+				<option value="json">JSON</option>
+				<option value="yaml">YAML</option>
+				<option value="xml">XML</option>
+				<option value="html">HTML Table</option>
+				<option value="tsv">TSV</option>
+			`;
+			formatSelector.style.marginLeft = "auto";
+			formatSelector.onchange = () => {
+				currentFormat = formatSelector.value;
 				runPreview();
 			};
-			document.querySelector(".controls").appendChild(formatSelectors);
+
+			// Add format selector to controls
+			const previewLabel = document.createElement("span");
+			previewLabel.textContent = "Preview:";
+			previewLabel.style.marginRight = "0.5rem";
+
+			const previewContainer = document.createElement("div");
+			previewContainer.style.display = "flex";
+			previewContainer.style.alignItems = "center";
+			previewContainer.style.marginLeft = "auto";
+			previewContainer.appendChild(previewLabel);
+			previewContainer.appendChild(formatSelector);
+
+			document
+				.querySelector("#outputPanel .controls")
+				.prepend(previewContainer);
 
 			input.addEventListener("input", runPreview);
 
@@ -663,10 +710,18 @@
 							preview = JSON.stringify(obj, null, 2);
 							break;
 						case "yaml":
-							preview = jsonToYaml(obj);
+							preview = jsyaml.dump(obj, { indent: 2 });
 							break;
 						case "xml":
-							preview = jsonToXml(obj);
+							const toXml = (o, tag = "root") =>
+								Array.isArray(o)
+									? o.map((v) => toXml(v, tag)).join("")
+									: typeof o === "object"
+									? `<${tag}>${Object.entries(o)
+											.map(([k, v]) => toXml(v, k))
+											.join("")}</${tag}>`
+									: `<${tag}>${String(o)}</${tag}>`;
+							preview = toXml(obj);
 							break;
 						case "html":
 							if (!Array.isArray(obj))
