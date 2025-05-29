@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>JSON Converter with Input & Highlighting</title>
+  <title>Live JSON Converter & Highlighter</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Prism CSS -->
   <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
   <style>
     pre code {
@@ -15,52 +17,66 @@
       max-height: 400px;
       overflow: auto;
     }
+    #copyBtn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+    .position-relative pre {
+      margin-bottom: 0;
+    }
   </style>
 </head>
 <body class="bg-light">
 
 <div class="container py-5">
-  <h1 class="mb-4">🔧 JSON Input & Code Highlighter</h1>
+  <h1 class="mb-4">🧰 Live JSON Highlighter</h1>
 
+  <!-- JSON Input -->
   <div class="mb-3">
-    <label for="jsonInput" class="form-label">Enter or Paste JSON</label>
+    <label for="jsonInput" class="form-label">JSON Input</label>
     <textarea class="form-control" id="jsonInput" rows="6" placeholder='{"name": "Alice", "age": 25}'></textarea>
   </div>
 
+  <!-- Language Selector -->
   <div class="row mb-3">
     <div class="col-md-6">
-      <label for="languageSelect" class="form-label">Choose Output Language</label>
+      <label for="languageSelect" class="form-label">Output Language</label>
       <select class="form-select" id="languageSelect">
-        <option value="json" selected>JSON</option>
+        <option value="json">JSON</option>
         <option value="javascript">JavaScript</option>
         <option value="python">Python</option>
         <option value="yaml">YAML</option>
         <option value="sql">SQL</option>
       </select>
     </div>
-    <div class="col-md-6 d-flex align-items-end">
-      <button class="btn btn-primary w-100" onclick="renderFormattedCode()">Render Highlighted Code</button>
-    </div>
   </div>
 
+  <!-- Highlighted Output -->
   <div class="card">
-    <div class="card-header">🧾 Highlighted Output</div>
-    <div class="card-body">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <span>🎨 Highlighted Output</span>
+      <button id="copyBtn" class="btn btn-outline-secondary btn-sm" onclick="copyOutput()">📋 Copy</button>
+    </div>
+    <div class="card-body position-relative">
       <pre><code id="highlightOutput" class="language-json">// Highlighted output will appear here...</code></pre>
     </div>
   </div>
 </div>
 
-<!-- Prism + Bootstrap -->
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
 <script>
+const inputEl = document.getElementById("jsonInput");
+const langSelect = document.getElementById("languageSelect");
+const outputEl = document.getElementById("highlightOutput");
+
 function renderFormattedCode() {
-  const rawInput = document.getElementById("jsonInput").value.trim();
-  const lang = document.getElementById("languageSelect").value;
-  const outputEl = document.getElementById("highlightOutput");
+  const rawInput = inputEl.value.trim();
+  const lang = langSelect.value;
 
   let obj;
   try {
@@ -89,8 +105,7 @@ function renderFormattedCode() {
               ? `[${v.map(i => `'${i}'`).join(", ")}]`
               : v;
           return `    '${k}': ${val}`;
-        }).join(",\n") +
-        "\n}";
+        }).join(",\n") + "\n}";
       break;
     case "yaml":
       formatted = Object.entries(obj).map(([k, v]) => {
@@ -111,6 +126,20 @@ function renderFormattedCode() {
   outputEl.textContent = formatted;
   outputEl.className = `language-${lang}`;
   Prism.highlightElement(outputEl);
+}
+
+// Live preview
+inputEl.addEventListener("input", renderFormattedCode);
+langSelect.addEventListener("change", renderFormattedCode);
+
+// Copy to clipboard
+function copyOutput() {
+  const text = outputEl.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.getElementById("copyBtn");
+    btn.innerText = "✅ Copied!";
+    setTimeout(() => btn.innerText = "📋 Copy", 1500);
+  });
 }
 </script>
 
