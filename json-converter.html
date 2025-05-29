@@ -2,14 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>JSON Converter with Syntax Highlighting</title>
+    <title>JSON Converter with Multi-Language Highlighting</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- Bootstrap 5 CSS -->
+    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Prism.js CSS (for syntax highlighting) -->
+    <!-- Prism.js CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet" />
     <style>
-        pre code { 
+        pre code {
             display: block;
             padding: 1em;
             background: #f5f2f0;
@@ -22,107 +22,92 @@
 <body class="bg-light">
 
 <div class="container py-5">
-    <h1 class="mb-4">🧰 JSON Converter</h1>
+    <h1 class="mb-4">🧰 JSON Converter with Language Switching</h1>
 
-    <!-- Convert Object to JSON -->
-    <div class="card mb-4">
-        <div class="card-header">Convert JavaScript Object to JSON</div>
-        <div class="card-body">
-            <button class="btn btn-primary mb-2" onclick="convertObjectToJSON()">Convert Sample Object</button>
-            <pre><code id="jsonOutput" class="language-json">// JSON will appear here...</code></pre>
-        </div>
+    <div class="mb-3">
+        <label for="languageSelect" class="form-label">Choose Output Language:</label>
+        <select class="form-select w-auto" id="languageSelect" onchange="updateHighlightedCode()">
+            <option value="json">JSON</option>
+            <option value="javascript">JavaScript</option>
+            <option value="python">Python</option>
+            <option value="yaml">YAML</option>
+            <option value="sql">SQL</option>
+        </select>
     </div>
 
-    <!-- Parse JSON to Object -->
     <div class="card mb-4">
-        <div class="card-header">Convert JSON String to JavaScript Object</div>
+        <div class="card-header">Sample Object Highlighted</div>
         <div class="card-body">
-            <textarea class="form-control mb-2" id="jsonInput" rows="6" placeholder="Paste JSON here..."></textarea>
-            <button class="btn btn-success" onclick="convertJSONToObject()">Parse JSON</button>
-            <pre><code id="objectOutput" class="language-json">// Parsed object will appear here...</code></pre>
-        </div>
-    </div>
-
-    <!-- File Upload -->
-    <div class="card mb-4">
-        <div class="card-header">Upload JSON File</div>
-        <div class="card-body">
-            <input class="form-control" type="file" accept=".json" onchange="handleFileUpload(event)" />
-            <pre><code id="fileContent" class="language-json">// File content will appear here...</code></pre>
-        </div>
-    </div>
-
-    <!-- Download JSON -->
-    <div class="card mb-4">
-        <div class="card-header">Download Sample JSON</div>
-        <div class="card-body">
-            <button class="btn btn-warning" onclick="downloadJSON()">Download</button>
+            <button class="btn btn-primary mb-3" onclick="renderSample()">Render Sample</button>
+            <pre><code id="highlightOutput" class="language-json">// Output will appear here...</code></pre>
         </div>
     </div>
 </div>
 
-<!-- Bootstrap JS (optional) -->
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<!-- Prism.js (core + JSON language) -->
+<!-- Prism Core -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+<!-- Prism Autoloader Plugin -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
 
 <script>
     const sampleObject = {
         name: "Manjurul Haque",
         age: 30,
-        languages: ["JavaScript", "Python"],
+        skills: ["JavaScript", "Python"],
         isDeveloper: true
     };
 
-    function convertObjectToJSON() {
-        const jsonString = JSON.stringify(sampleObject, null, 4);
-        const el = document.getElementById("jsonOutput");
-        el.textContent = jsonString;
+    function renderSample() {
+        const selectedLang = document.getElementById('languageSelect').value;
+        const el = document.getElementById('highlightOutput');
+
+        let formatted = '';
+        switch (selectedLang) {
+            case 'json':
+                formatted = JSON.stringify(sampleObject, null, 4);
+                break;
+            case 'javascript':
+                formatted = `const data = ${JSON.stringify(sampleObject, null, 4)};`;
+                break;
+            case 'python':
+                formatted = `data = {\n` +
+                    Object.entries(sampleObject).map(([key, value]) => {
+                        const pyValue = typeof value === 'string'
+                            ? `'${value}'`
+                            : Array.isArray(value)
+                                ? `[${value.map(v => `'${v}'`).join(', ')}]`
+                                : value;
+                        return `    '${key}': ${pyValue}`;
+                    }).join(',\n') + `\n}`;
+                break;
+            case 'yaml':
+                formatted =
+                    `name: ${sampleObject.name}\n` +
+                    `age: ${sampleObject.age}\n` +
+                    `skills:\n  - ${sampleObject.skills.join('\n  - ')}\n` +
+                    `isDeveloper: ${sampleObject.isDeveloper}`;
+                break;
+            case 'sql':
+                formatted = `INSERT INTO users (name, age, skills, isDeveloper)\nVALUES (\n` +
+                    `  '${sampleObject.name}',\n` +
+                    `  ${sampleObject.age},\n` +
+                    `  '${sampleObject.skills.join(', ')}',\n` +
+                    `  ${sampleObject.isDeveloper ? 1 : 0}\n);`;
+                break;
+            default:
+                formatted = "// Unsupported format";
+        }
+
+        // Update output element
+        el.textContent = formatted;
+        el.className = `language-${selectedLang}`;
         Prism.highlightElement(el);
     }
 
-    function convertJSONToObject() {
-        const jsonInput = document.getElementById("jsonInput").value;
-        const el = document.getElementById("objectOutput");
-        try {
-            const obj = JSON.parse(jsonInput);
-            el.textContent = JSON.stringify(obj, null, 4);
-        } catch (e) {
-            el.textContent = "Invalid JSON: " + e.message;
-        }
-        Prism.highlightElement(el);
-    }
-
-    function handleFileUpload(event) {
-        const file = event.target.files[0];
-        const el = document.getElementById("fileContent");
-        if (!file) {
-            el.textContent = "";
-            Prism.highlightElement(el);
-            return;
-        }
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const jsonData = JSON.parse(e.target.result);
-                el.textContent = JSON.stringify(jsonData, null, 4);
-            } catch (error) {
-                el.textContent = "Error parsing JSON: " + error.message;
-            }
-            Prism.highlightElement(el);
-        };
-        reader.readAsText(file);
-    }
-
-    function downloadJSON() {
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sampleObject, null, 4));
-        const downloadAnchorNode = document.createElement('a');
-        downloadAnchorNode.setAttribute("href", dataStr);
-        downloadAnchorNode.setAttribute("download", "sample_data.json");
-        document.body.appendChild(downloadAnchorNode);
-        downloadAnchorNode.click();
-        downloadAnchorNode.remove();
+    function updateHighlightedCode() {
+        renderSample(); // Re-render when language changes
     }
 </script>
 
