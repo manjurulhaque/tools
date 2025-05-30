@@ -3,77 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <title>Body Weight Calculator</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 40px auto;
-      padding: 20px;
-      border: 1px solid #ccc;
-      border-radius: 10px;
-    }
-    label, select, input {
-      display: block;
-      margin-bottom: 10px;
-    }
-    button {
-      padding: 8px 12px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 10px;
-      background: #f4f4f4;
-      border-left: 4px solid #007BFF;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap 5 CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
+<body class="bg-light">
 
-  <h2>Body Weight Calculator</h2>
+<div class="container mt-5">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="card-title text-center mb-4">Body Weight Calculator</h2>
 
-  <label for="height">Height (cm):</label>
-  <input type="number" id="height" required>
+      <div class="mb-3">
+        <label for="height" class="form-label">Height (cm):</label>
+        <input type="number" class="form-control" id="height" placeholder="Enter your height in cm">
+      </div>
 
-  <label for="gender">Gender:</label>
-  <select id="gender">
-    <option value="male">Male</option>
-    <option value="female">Female</option>
-  </select>
+      <div class="mb-3">
+        <label for="gender" class="form-label">Gender:</label>
+        <select class="form-select" id="gender">
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+        </select>
+      </div>
 
-  <button onclick="calculateWeight()">Calculate</button>
+      <div class="d-grid">
+        <button class="btn btn-primary" onclick="calculateWeight()">Calculate</button>
+      </div>
 
-  <div class="result" id="result"></div>
+      <div class="mt-4 alert alert-info d-none" id="result"></div>
+    </div>
+  </div>
+</div>
 
-  <script>
-    function calculateWeight() {
-      const heightCm = parseFloat(document.getElementById("height").value);
-      const gender = document.getElementById("gender").value;
-      const heightIn = heightCm / 2.54;
-      const heightM = heightCm / 100;
+<!-- JavaScript -->
+<script>
+  function calculateWeight() {
+    const heightCm = parseFloat(document.getElementById("height").value);
+    const gender = document.getElementById("gender").value;
+    const resultDiv = document.getElementById("result");
 
-      // Robinson Formula
-      const robinson = gender === "male"
-        ? 52 + 1.9 * (heightIn - 60)
-        : 49 + 1.7 * (heightIn - 60);
-
-      // Miller Formula
-      const miller = gender === "male"
-        ? 56.2 + 1.41 * (heightIn - 60)
-        : 53.1 + 1.36 * (heightIn - 60);
-
-      // BMI Method (default 22)
-      const bmiBased = 22 * (heightM * heightM);
-
-      document.getElementById("result").innerHTML = `
-        <strong>Results:</strong><br>
-        Robinson Formula: ${robinson.toFixed(2)} kg<br>
-        Miller Formula: ${miller.toFixed(2)} kg<br>
-        BMI Method (BMI = 22): ${bmiBased.toFixed(2)} kg
-      `;
+    if (!heightCm || heightCm <= 0) {
+      resultDiv.classList.remove("d-none");
+      resultDiv.classList.replace("alert-info", "alert-danger");
+      resultDiv.innerHTML = "Please enter a valid height.";
+      return;
     }
-  </script>
+
+    const heightIn = heightCm / 2.54;
+    const heightM = heightCm / 100;
+
+    const robinson = gender === "male"
+      ? 52 + 1.9 * (heightIn - 60)
+      : 49 + 1.7 * (heightIn - 60);
+
+    const miller = gender === "male"
+      ? 56.2 + 1.41 * (heightIn - 60)
+      : 53.1 + 1.36 * (heightIn - 60);
+
+    const bmiBased = 22 * (heightM * heightM);  // BMI = 22
+
+    resultDiv.classList.remove("d-none", "alert-danger");
+    resultDiv.classList.add("alert-info");
+    resultDiv.innerHTML = `
+      <strong>Results:</strong><br>
+      Robinson Formula: ${robinson.toFixed(2)} kg<br>
+      Miller Formula: ${miller.toFixed(2)} kg<br>
+      BMI Method (BMI = 22): ${bmiBased.toFixed(2)} kg
+    `;
+  }
+</script>
 
 </body>
 </html>
