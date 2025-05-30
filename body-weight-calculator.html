@@ -2,7 +2,7 @@
 <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
-		<title>Interactive BMI Chart</title>
+		<title>BMI Weight Calculator</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<!-- Bootstrap -->
 		<link
@@ -24,9 +24,10 @@
 						<label for="height" class="form-label">Height (cm):</label>
 						<input
 							type="number"
+							min="50"
 							class="form-control"
 							id="height"
-							placeholder="Enter your height in cm"
+							placeholder="Minimum 50 cm"
 						/>
 					</div>
 
@@ -38,18 +39,76 @@
 						</select>
 					</div>
 
+					<!-- BMI Checkboxes -->
 					<div class="mb-3">
-						<label for="bmi-values" class="form-label"
-							>Select BMI Values:</label
-						>
-						<select multiple class="form-select" id="bmi-values">
-							<option value="16.5">16.5 (Severely Underweight)</option>
-							<option value="18.5" selected>18.5 (Underweight)</option>
-							<option value="22">22 (Healthy average)</option>
-							<option value="25">25 (Overweight)</option>
-							<option value="30">30 (Obese)</option>
-							<option value="35">35 (Morbid Obese)</option>
-						</select>
+						<label class="form-label">Select BMI Values:</label>
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="16.5"
+								id="bmi165"
+							/>
+							<label class="form-check-label" for="bmi165"
+								>16.5 (Severely Underweight)</label
+							>
+						</div>
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="18.5"
+								id="bmi185"
+								checked
+							/>
+							<label class="form-check-label" for="bmi185"
+								>18.5 (Underweight)</label
+							>
+						</div>
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="22"
+								id="bmi22"
+								checked
+							/>
+							<label class="form-check-label" for="bmi22"
+								>22 (Healthy average)</label
+							>
+						</div>
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="25"
+								id="bmi25"
+								checked
+							/>
+							<label class="form-check-label" for="bmi25"
+								>25 (Overweight)</label
+							>
+						</div>
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="30"
+								id="bmi30"
+							/>
+							<label class="form-check-label" for="bmi30">30 (Obese)</label>
+						</div>
+						<div class="form-check">
+							<input
+								class="form-check-input"
+								type="checkbox"
+								value="35"
+								id="bmi35"
+							/>
+							<label class="form-check-label" for="bmi35"
+								>35 (Morbid Obese)</label
+							>
+						</div>
 					</div>
 
 					<div class="d-grid">
@@ -134,13 +193,12 @@
 			function calculateWeight() {
 				const heightCm = parseFloat(document.getElementById("height").value);
 				const gender = document.getElementById("gender").value;
-				const bmiSelect = document.getElementById("bmi-values");
 				const resultDiv = document.getElementById("result");
 
-				if (!heightCm || heightCm <= 0) {
+				if (!heightCm || heightCm < 50) {
 					resultDiv.classList.remove("d-none");
 					resultDiv.classList.replace("alert-info", "alert-danger");
-					resultDiv.innerHTML = "Please enter a valid height.";
+					resultDiv.innerHTML = "Please enter a valid height (minimum 50 cm).";
 					return;
 				}
 
@@ -157,9 +215,9 @@
 						? 56.2 + 1.41 * (heightIn - 60)
 						: 53.1 + 1.36 * (heightIn - 60);
 
-				const selectedBMIs = Array.from(bmiSelect.selectedOptions).map((opt) =>
-					parseFloat(opt.value)
-				);
+				const selectedBMIs = Array.from(
+					document.querySelectorAll('input[type="checkbox"][id^="bmi"]:checked')
+				).map((cb) => parseFloat(cb.value));
 
 				let bmiResults = "";
 				const chartLabels = [];
@@ -284,7 +342,6 @@
 					options: {
 						responsive: true,
 						plugins: {
-							legend: { display: true },
 							tooltip: {
 								callbacks: {
 									label: function (context) {
@@ -293,8 +350,9 @@
 										if (match) {
 											const bmi = parseFloat(match[1]);
 											const description = getBMIDescription(bmi);
-											const weight = context.raw.toFixed(2);
-											return `Weight: ${weight} kg (${description})`;
+											return `Weight: ${context.raw.toFixed(
+												2
+											)} kg (${description})`;
 										}
 										return `Weight: ${context.raw.toFixed(2)} kg`;
 									},
