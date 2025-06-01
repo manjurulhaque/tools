@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Word & Character Counter</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<style>
+			body {
+				background-color: #f8f9fa;
+			}
+			.stat-box {
+				border-radius: 10px;
+				padding: 20px;
+				background-color: #e9ecef;
+				text-align: center;
+				margin-bottom: 15px;
+			}
+			.stat-box h6 {
+				font-size: 14px;
+				color: #6c757d;
+			}
+			.stat-box p {
+				font-size: 20px;
+				font-weight: bold;
+				margin: 0;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container py-5">
+			<h2 class="text-center mb-4">Advanced Word & Character Counter</h2>
+
+			<div class="mb-3">
+				<textarea
+					class="form-control"
+					id="textInput"
+					rows="8"
+					placeholder="Start typing or paste your text..."
+				></textarea>
+			</div>
+
+			<div class="row" id="statsRow">
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Words</h6>
+					<p id="wordCount">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Characters (with spaces)</h6>
+					<p id="charWithSpaces">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Characters (no spaces)</h6>
+					<p id="charWithoutSpaces">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Sentences</h6>
+					<p id="sentenceCount">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Paragraphs</h6>
+					<p id="paragraphCount">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Avg. Word Length</h6>
+					<p id="avgWordLength">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Avg. Sentence Length</h6>
+					<p id="avgSentenceLength">0</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Reading Time</h6>
+					<p id="readingTime">0 min</p>
+				</div>
+				<div class="col-md-4 col-sm-6 stat-box">
+					<h6>Longest Word</h6>
+					<p id="longestWord">-</p>
+				</div>
+				<div class="col-md-6 offset-md-3 col-sm-12 stat-box">
+					<h6>Most Frequent Word</h6>
+					<p id="mostFrequentWord">-</p>
+				</div>
+			</div>
+
+			<div class="text-center mt-4">
+				<button class="btn btn-danger me-2" id="clearBtn">Clear</button>
+				<button class="btn btn-primary" id="copyBtn">Copy</button>
+			</div>
+		</div>
+
+		<script>
+			const textInput = document.getElementById("textInput");
+			const wordCount = document.getElementById("wordCount");
+			const charWithSpaces = document.getElementById("charWithSpaces");
+			const charWithoutSpaces = document.getElementById("charWithoutSpaces");
+			const sentenceCount = document.getElementById("sentenceCount");
+			const paragraphCount = document.getElementById("paragraphCount");
+			const avgWordLength = document.getElementById("avgWordLength");
+			const avgSentenceLength = document.getElementById("avgSentenceLength");
+			const readingTime = document.getElementById("readingTime");
+			const longestWord = document.getElementById("longestWord");
+			const mostFrequentWord = document.getElementById("mostFrequentWord");
+
+			const clearBtn = document.getElementById("clearBtn");
+			const copyBtn = document.getElementById("copyBtn");
+
+			function updateStats() {
+				const text = textInput.value.trim();
+
+				const wordsArray = text.match(/\b[\w']+\b/g) || [];
+				const sentencesArray = text
+					.split(/[.!?]+/)
+					.filter((s) => s.trim().length > 0);
+				const paragraphsArray = text
+					.split(/\n\s*\n/)
+					.filter((p) => p.trim().length > 0);
+
+				const wordLen = wordsArray.length;
+				const charLenWithSpaces = text.length;
+				const charLenWithoutSpaces = text.replace(/\s/g, "").length;
+
+				wordCount.textContent = wordLen;
+				charWithSpaces.textContent = charLenWithSpaces;
+				charWithoutSpaces.textContent = charLenWithoutSpaces;
+				sentenceCount.textContent = sentencesArray.length;
+				paragraphCount.textContent = paragraphsArray.length;
+
+				// Average word length
+				const avgWord =
+					wordLen > 0
+						? (
+								wordsArray.reduce((sum, word) => sum + word.length, 0) / wordLen
+						  ).toFixed(2)
+						: 0;
+				avgWordLength.textContent = avgWord;
+
+				// Average sentence length
+				const avgSentence =
+					sentencesArray.length > 0
+						? (wordLen / sentencesArray.length).toFixed(2)
+						: 0;
+				avgSentenceLength.textContent = avgSentence;
+
+				// Reading time
+				const minutes = Math.floor(wordLen / 200);
+				const seconds = Math.floor((wordLen % 200) / (200 / 60));
+				readingTime.textContent = `${minutes} min ${seconds} sec`;
+
+				// Longest word
+				const longest = wordsArray.reduce(
+					(longest, current) =>
+						current.length > longest.length ? current : longest,
+					""
+				);
+				longestWord.textContent = longest || "-";
+
+				// Most frequent word
+				const freqMap = {};
+				wordsArray.forEach((word) => {
+					const lower = word.toLowerCase();
+					freqMap[lower] = (freqMap[lower] || 0) + 1;
+				});
+
+				let maxFreq = 0;
+				let mostFreq = "-";
+				for (let word in freqMap) {
+					if (freqMap[word] > maxFreq) {
+						maxFreq = freqMap[word];
+						mostFreq = word;
+					}
+				}
+				mostFrequentWord.textContent = wordLen ? mostFreq : "-";
+			}
+
+			textInput.addEventListener("input", updateStats);
+
+			clearBtn.addEventListener("click", () => {
+				textInput.value = "";
+				updateStats();
+			});
+
+			copyBtn.addEventListener("click", async () => {
+				try {
+					await navigator.clipboard.writeText(textInput.value);
+					alert("Text copied to clipboard!");
+				} catch (err) {
+					alert("Failed to copy: " + err);
+				}
+			});
+
+			updateStats();
+		</script>
+	</body>
+</html>
