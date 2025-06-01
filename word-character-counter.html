@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Word & Character Counter</title>
+		<title>Word & Character Counter with Markdown Preview</title>
 		<link
 			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
 			rel="stylesheet"
@@ -28,22 +28,42 @@
 				font-weight: bold;
 				margin: 0;
 			}
+			#preview {
+				white-space: pre-wrap;
+				background-color: #fff;
+				padding: 15px;
+				border-radius: 10px;
+				border: 1px solid #dee2e6;
+				min-height: 300px;
+			}
+			#textInput {
+				min-height: 300px;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="container py-5">
-			<h2 class="text-center mb-4">Advanced Word & Character Counter</h2>
+			<h2 class="text-center mb-4">
+				Advanced Word & Character Counter + Markdown Preview
+			</h2>
 
-			<div class="mb-3">
-				<textarea
-					class="form-control"
-					id="textInput"
-					rows="8"
-					placeholder="Start typing or paste your text..."
-				></textarea>
+			<div class="row g-4">
+				<div class="col-md-6">
+					<label for="textInput" class="form-label fw-bold">Editor</label>
+					<textarea
+						class="form-control"
+						id="textInput"
+						placeholder="Type or paste Markdown text..."
+						rows="10"
+					></textarea>
+				</div>
+				<div class="col-md-6">
+					<label class="form-label fw-bold">Live Markdown Preview</label>
+					<div id="preview"></div>
+				</div>
 			</div>
 
-			<div class="row row-cols-1 row-cols-md-2 g-3" id="statsRow">
+			<div class="row row-cols-1 row-cols-md-2 g-3 mt-4" id="statsRow">
 				<div class="col stat-box">
 					<h6>Words</h6>
 					<p id="wordCount">0</p>
@@ -94,6 +114,8 @@
 
 		<script>
 			const textInput = document.getElementById("textInput");
+			const preview = document.getElementById("preview");
+
 			const wordCount = document.getElementById("wordCount");
 			const charWithSpaces = document.getElementById("charWithSpaces");
 			const charWithoutSpaces = document.getElementById("charWithoutSpaces");
@@ -108,9 +130,24 @@
 			const clearBtn = document.getElementById("clearBtn");
 			const copyBtn = document.getElementById("copyBtn");
 
-			function updateStats() {
+			function simpleMarkdownParser(md) {
+				return md
+					.replace(/^### (.*$)/gim, "<h5>$1</h5>")
+					.replace(/^## (.*$)/gim, "<h4>$1</h4>")
+					.replace(/^# (.*$)/gim, "<h3>$1</h3>")
+					.replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>")
+					.replace(/\*(.*?)\*/gim, "<em>$1</em>")
+					.replace(/`([^`]+)`/gim, "<code>$1</code>")
+					.replace(/\n$/gim, "<br />");
+			}
+
+			function updateStatsAndPreview() {
 				const text = textInput.value.trim();
 
+				// Markdown Preview
+				preview.innerHTML = simpleMarkdownParser(text);
+
+				// Text stats
 				const wordsArray = text.match(/\b[\w']+\b/g) || [];
 				const sentencesArray = text
 					.split(/[.!?]+/)
@@ -129,28 +166,22 @@
 				sentenceCount.textContent = sentencesArray.length;
 				paragraphCount.textContent = paragraphsArray.length;
 
-				// Average word length
-				const avgWord =
+				avgWordLength.textContent =
 					wordLen > 0
 						? (
 								wordsArray.reduce((sum, word) => sum + word.length, 0) / wordLen
 						  ).toFixed(2)
 						: 0;
-				avgWordLength.textContent = avgWord;
 
-				// Average sentence length
-				const avgSentence =
+				avgSentenceLength.textContent =
 					sentencesArray.length > 0
 						? (wordLen / sentencesArray.length).toFixed(2)
 						: 0;
-				avgSentenceLength.textContent = avgSentence;
 
-				// Reading time
 				const minutes = Math.floor(wordLen / 200);
 				const seconds = Math.floor((wordLen % 200) / (200 / 60));
 				readingTime.textContent = `${minutes} min ${seconds} sec`;
 
-				// Longest word
 				const longest = wordsArray.reduce(
 					(longest, current) =>
 						current.length > longest.length ? current : longest,
@@ -158,7 +189,6 @@
 				);
 				longestWord.textContent = longest || "-";
 
-				// Most frequent word
 				const freqMap = {};
 				wordsArray.forEach((word) => {
 					const lower = word.toLowerCase();
@@ -176,11 +206,11 @@
 				mostFrequentWord.textContent = wordLen ? mostFreq : "-";
 			}
 
-			textInput.addEventListener("input", updateStats);
+			textInput.addEventListener("input", updateStatsAndPreview);
 
 			clearBtn.addEventListener("click", () => {
 				textInput.value = "";
-				updateStats();
+				updateStatsAndPreview();
 			});
 
 			copyBtn.addEventListener("click", async () => {
@@ -192,7 +222,7 @@
 				}
 			});
 
-			updateStats();
+			updateStatsAndPreview();
 		</script>
 	</body>
 </html>
