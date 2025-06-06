@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Advanced Time Zone Converter | Modern & SEO Optimized</title>
+  <meta name="description" content="Convert times between any time zones with our advanced, modern time zone converter. Enjoy features like auto-detection of your local zone, swap functionality, and more." />
+  <meta name="keywords" content="Time Zone Converter, Advanced Time Zone Conversion, Moment.js, SEO Optimized, Time Zone Calculator, JavaScript Time Zone Converter" />
+  <meta name="robots" content="index, follow" />
+  <!-- Structured Data: JSON-LD for a Web Application -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Advanced Time Zone Converter",
+    "url": "https://yourdomain.com/timezone-converter",
+    "description": "A modern, advanced time zone converter featuring auto-detection of local time zone, swap functionality, and easy-to-use interface.",
+    "applicationCategory": "Utility"
+  }
+  </script>
+  <style>
+    /* Reset some defaults */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    }
+
+    header, main, footer {
+      margin-bottom: 20px;
+    }
+
+    h1, h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .converter {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .converter label {
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .converter input,
+    .converter select,
+    .converter button {
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+
+    .converter button {
+      cursor: pointer;
+      background: #007BFF;
+      color: #fff;
+      border: none;
+      transition: background 0.3s ease;
+    }
+
+    .converter button:hover {
+      background: #0056b3;
+    }
+
+    .result {
+      margin-top: 20px;
+      text-align: center;
+      background: #e9ecef;
+      padding: 15px;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Advanced Time Zone Converter</h1>
+    </header>
+    <main>
+      <section class="converter" aria-label="Time Zone Converter">
+        <label for="datetime">Select Date and Time:</label>
+        <input type="datetime-local" id="datetime" />
+
+        <label for="fromZone">From Time Zone:</label>
+        <select id="fromZone"></select>
+
+        <button id="swap" title="Swap Time Zones">Swap</button>
+
+        <label for="toZone">To Time Zone:</label>
+        <select id="toZone"></select>
+
+        <button id="convert">Convert</button>
+      </section>
+      <section class="result" aria-live="polite">
+        <h2>Converted Time</h2>
+        <p id="convertedTime">--</p>
+      </section>
+    </main>
+    <footer>
+      <p>&copy; 2025 Your Company Name. All rights reserved.</p>
+    </footer>
+  </div>
+
+  <!-- Include Moment.js and Moment Timezone from CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.43/moment-timezone-with-data-10-year-range.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      const fromZoneSelect = document.getElementById('fromZone');
+      const toZoneSelect = document.getElementById('toZone');
+      const convertBtn = document.getElementById('convert');
+      const swapBtn = document.getElementById('swap');
+      const datetimeInput = document.getElementById('datetime');
+      const convertedTimeP = document.getElementById('convertedTime');
+
+      // Get full list of time zones from Moment Timezone
+      const timezones = moment.tz.names();
+
+      // Populate both timezone dropdowns
+      timezones.forEach(zone => {
+        const optionFrom = document.createElement('option');
+        optionFrom.value = zone;
+        optionFrom.textContent = zone;
+        fromZoneSelect.appendChild(optionFrom);
+
+        const optionTo = document.createElement('option');
+        optionTo.value = zone;
+        optionTo.textContent = zone;
+        toZoneSelect.appendChild(optionTo);
+      });
+
+      // Set default values:
+      // - Use the user's local time zone for the "from" select.
+      // - Default "to" select to UTC.
+      const localTimezone = moment.tz.guess();
+      fromZoneSelect.value = localTimezone;
+      toZoneSelect.value = 'UTC';
+
+      // Set default datetime input to current local time (rounded to minutes)
+      datetimeInput.value = moment().format('YYYY-MM-DDTHH:mm');
+
+      // Swap the selected time zones when clicking the swap button
+      swapBtn.addEventListener('click', function () {
+        const temp = fromZoneSelect.value;
+        fromZoneSelect.value = toZoneSelect.value;
+        toZoneSelect.value = temp;
+      });
+
+      // Convert the time based on the selected time zones and datetime input
+      convertBtn.addEventListener('click', function () {
+        const inputDateTime = datetimeInput.value;
+        if (!inputDateTime) {
+          convertedTimeP.textContent = "Please enter a valid date and time.";
+          return;
+        }
+
+        const fromZone = fromZoneSelect.value;
+        const toZone = toZoneSelect.value;
+
+        // Create a Moment object using the input time and treat it as in the "from" time zone
+        const momentObj = moment.tz(inputDateTime, fromZone);
+
+        // Convert to the target time zone
+        const converted = momentObj.clone().tz(toZone);
+
+        // Display the result in a clear format (e.g., 2025-03-22 14:30 EDT)
+        convertedTimeP.textContent = converted.format('YYYY-MM-DD HH:mm z');
+      });
+    });
+  </script>
+</body>
+</html>
