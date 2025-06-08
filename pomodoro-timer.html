@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Pomodoro Timer</title>
+  <style>
+    /* Base Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f4f4f4;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+    }
+    .dark-mode {
+      background: #121212;
+      color: #eee;
+    }
+    #app {
+      max-width: 500px;
+      margin: 0 auto;
+      text-align: center;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: background 0.3s;
+    }
+    .dark-mode #app {
+      background: #1e1e1e;
+    }
+    h1 {
+      margin-bottom: 20px;
+    }
+    /* Timer Display */
+    #timer-display {
+      font-size: 4em;
+      margin: 20px 0;
+      font-weight: bold;
+    }
+    /* Buttons */
+    button {
+      cursor: pointer;
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      transition: background 0.2s;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    #controls button {
+      background: #3498db;
+      color: #fff;
+    }
+    #modes button {
+      background: #e67e22;
+      color: #fff;
+    }
+    #modes button.active {
+      background: #27ae60;
+    }
+    #settings input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      margin: 0 5px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+    }
+    /* Progress Bar */
+    #progress-bar {
+      width: 100%;
+      height: 20px;
+      background: #ddd;
+      border-radius: 10px;
+      margin: 20px 0;
+      overflow: hidden;
+    }
+    #progress {
+      height: 100%;
+      width: 0%;
+      background: #27ae60;
+      transition: width 1s linear;
+    }
+    /* Dark Mode Toggle */
+    #dark-mode button {
+      background: #34495e;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <h1>Pomodoro Timer</h1>
+    <!-- Timer Display -->
+    <div id="timer-display">25:00</div>
+    <!-- Controls -->
+    <div id="controls">
+      <button id="start-btn">Start</button>
+      <button id="pause-btn" disabled>Pause</button>
+      <button id="reset-btn" disabled>Reset</button>
+    </div>
+    <!-- Modes -->
+    <div id="modes">
+      <button class="mode-btn active" data-time="25">Pomodoro</button>
+      <button class="mode-btn" data-time="5">Short Break</button>
+      <button class="mode-btn" data-time="15">Long Break</button>
+    </div>
+    <!-- Custom Time Setting -->
+    <div id="settings">
+      <label for="customTime">Custom Minutes:</label>
+      <input type="number" id="customTime" value="25" min="1" />
+      <button id="set-custom">Set Custom</button>
+    </div>
+    <!-- Progress Bar -->
+    <div id="progress-bar">
+      <div id="progress"></div>
+    </div>
+    <!-- Dark Mode Toggle -->
+    <div id="dark-mode">
+      <button id="toggle-dark">Toggle Dark Mode</button>
+    </div>
+  </div>
+  
+  <audio id="alert-sound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
+  
+  <script>
+    // Timer Variables
+    let timerDuration = 25 * 60; // in seconds
+    let remainingTime = timerDuration;
+    let timerInterval = null;
+    let isRunning = false;
+    let modeDuration = timerDuration;
+    
+    // DOM Elements
+    const timerDisplay = document.getElementById('timer-display');
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const modeBtns = document.querySelectorAll('.mode-btn');
+    const customInput = document.getElementById('customTime');
+    const setCustomBtn = document.getElementById('set-custom');
+    const progressBar = document.getElementById('progress');
+    const darkToggle = document.getElementById('toggle-dark');
+    const alertSound = document.getElementById('alert-sound');
+    
+    // Initialize display
+    updateDisplay(remainingTime);
+    
+    // Request Notification permission if available
+    if ('Notification' in window && Notification.permission !== "granted") {
+      Notification.requestPermission();
+    }
+    
+    // Format seconds into mm:ss
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    }
+    
+    // Update timer display and progress bar
+    function updateDisplay(time) {
+      timerDisplay.textContent = formatTime(time);
+      const progressPercent = ((modeDuration - time) / modeDuration) * 100;
+      progressBar.style.width = progressPercent + '%';
+    }
+    
+    // Start Timer
+    function startTimer() {
+      if (isRunning) return;
+      isRunning = true;
+      startBtn.disabled = true;
+      pauseBtn.disabled = false;
+      resetBtn.disabled = false;
+      
+      timerInterval = setInterval(() => {
+        if (remainingTime > 0) {
+          remainingTime--;
+          updateDisplay(remainingTime);
+        } else {
+          // Timer complete actions
+          clearInterval(timerInterval);
+          isRunning = false;
+          startBtn.disabled = false;
+          pauseBtn.disabled = true;
+          // Play sound alert
+          alertSound.play();
+          // Show notification if permitted
+          if (Notification.permission === "granted") {
+            new Notification("Time's up!", {
+              body: "Your timer has finished.",
+              icon: "https://via.placeholder.com/50"
+            });
+          }
+        }
+      }, 1000);
+    }
+    
+    // Pause Timer
+    function pauseTimer() {
+      if (!isRunning) return;
+      clearInterval(timerInterval);
+      isRunning = false;
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+    }
+    
+    // Reset Timer
+    function resetTimer() {
+      clearInterval(timerInterval);
+      isRunning = false;
+      remainingTime = modeDuration;
+      updateDisplay(remainingTime);
+      startBtn.disabled = false;
+      pauseBtn.disabled = true;
+      resetBtn.disabled = true;
+    }
+    
+    // Mode Selection
+    modeBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        modeBtns.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const minutes = parseInt(btn.getAttribute('data-time'));
+        modeDuration = minutes * 60;
+        remainingTime = modeDuration;
+        updateDisplay(remainingTime);
+        // Reset timer state if running
+        clearInterval(timerInterval);
+        isRunning = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        resetBtn.disabled = true;
+      });
+    });
+    
+    // Set Custom Time
+    setCustomBtn.addEventListener('click', () => {
+      const customMinutes = parseInt(customInput.value);
+      if (customMinutes > 0) {
+        modeDuration = customMinutes * 60;
+        remainingTime = modeDuration;
+        updateDisplay(remainingTime);
+        // Remove active class from preset mode buttons
+        modeBtns.forEach(b => b.classList.remove('active'));
+        clearInterval(timerInterval);
+        isRunning = false;
+        startBtn.disabled = false;
+        pauseBtn.disabled = true;
+        resetBtn.disabled = true;
+      }
+    });
+    
+    // Dark Mode Toggle
+    darkToggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      // Save user preference
+      localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+    });
+    
+    // Check stored dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+    
+    // Button Event Listeners
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+    
+    // Optional: Allow keyboard shortcuts (Space to start/pause, R to reset)
+    document.addEventListener('keydown', (e) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        isRunning ? pauseTimer() : startTimer();
+      } else if (e.code === 'KeyR') {
+        resetTimer();
+      }
+    });
+  </script>
+</body>
+</html>
