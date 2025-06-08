@@ -4,107 +4,36 @@
   <meta charset="UTF-8">
   <title>Advanced Barcode Generator</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      background: #f0f2f5;
-      color: #333;
+      background: #f8f9fa;
     }
-
-    header {
-      background: #007bff;
-      color: white;
-      text-align: center;
-      padding: 1rem;
-    }
-
-    .container {
-      max-width: 700px;
-      margin: 2rem auto;
-      background: white;
-      padding: 2rem;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.05);
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    label {
-      font-weight: 600;
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 0.6rem;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-
-    input[type="color"] {
-      padding: 0.3rem;
-      height: 40px;
-    }
-
-    .inline {
-      display: flex;
-      gap: 1rem;
-      align-items: center;
-    }
-
-    button {
-      background: #28a745;
-      color: white;
-      padding: 0.7rem 1.5rem;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-
-    button:hover {
-      background: #218838;
-    }
-
     canvas {
-      display: block;
-      margin: 2rem auto;
-      border: 1px dashed #aaa;
-      background: white;
-    }
-
-    .note {
-      font-size: 0.9rem;
-      color: #666;
-    }
-
-    .form-columns {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 1rem;
+      border: 1px dashed #6c757d;
+      background: #ffffff;
+      max-width: 100%;
+      height: auto;
     }
   </style>
 </head>
 <body>
 
-<header>
-  <h1>Advanced Barcode Generator</h1>
-</header>
-
-<div class="container">
-  <div class="form-group">
-    <label for="barcodeText">Text/Number</label>
-    <input type="text" id="barcodeText" value="123456789012">
+<div class="container py-4">
+  <div class="text-center mb-4">
+    <h1 class="text-primary">Advanced Barcode Generator</h1>
+    <p class="text-muted">Supports multiple formats and customizable styles</p>
   </div>
 
-  <div class="form-columns">
-    <div class="form-group">
-      <label for="barcodeType">Barcode Type</label>
-      <select id="barcodeType">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label for="barcodeText" class="form-label">Text / Number</label>
+      <input type="text" id="barcodeText" class="form-control" value="123456789012">
+    </div>
+    <div class="col-md-6">
+      <label for="barcodeType" class="form-label">Barcode Type</label>
+      <select id="barcodeType" class="form-select">
         <option value="CODE128">CODE128</option>
         <option value="CODE39">CODE39</option>
         <option value="EAN13">EAN13</option>
@@ -117,59 +46,60 @@
       </select>
     </div>
 
-    <div class="form-group">
-      <label for="barcodeWidth">Width (bar)</label>
-      <input type="number" id="barcodeWidth" value="2" min="1" max="10">
+    <div class="col-md-4">
+      <label for="barcodeWidth" class="form-label">Width (bar)</label>
+      <input type="number" id="barcodeWidth" class="form-control" value="2" min="1" max="10">
+    </div>
+    <div class="col-md-4">
+      <label for="barcodeHeight" class="form-label">Height (px)</label>
+      <input type="number" id="barcodeHeight" class="form-control" value="100" min="50" max="300">
+    </div>
+    <div class="col-md-4">
+      <label for="fontSize" class="form-label">Font Size</label>
+      <input type="number" id="fontSize" class="form-control" value="16" min="8" max="30">
     </div>
 
-    <div class="form-group">
-      <label for="barcodeHeight">Height (px)</label>
-      <input type="number" id="barcodeHeight" value="100" min="50" max="300">
+    <div class="col-md-4">
+      <label for="lineColor" class="form-label">Line Color</label>
+      <input type="color" id="lineColor" class="form-control form-control-color" value="#000000">
+    </div>
+    <div class="col-md-4">
+      <label for="bgColor" class="form-label">Background Color</label>
+      <input type="color" id="bgColor" class="form-control form-control-color" value="#ffffff">
+    </div>
+    <div class="col-md-4">
+      <label for="textColor" class="form-label">Text Color</label>
+      <input type="color" id="textColor" class="form-control form-control-color" value="#000000">
     </div>
 
-    <div class="form-group">
-      <label for="fontSize">Font Size</label>
-      <input type="number" id="fontSize" value="16" min="8" max="30">
+    <div class="col-md-4">
+      <label for="margin" class="form-label">Margin</label>
+      <input type="number" id="margin" class="form-control" value="10" min="0" max="50">
+    </div>
+    <div class="col-md-4 d-flex align-items-end">
+      <div class="form-check">
+        <input type="checkbox" id="showText" class="form-check-input" checked>
+        <label for="showText" class="form-check-label">Show Barcode Text</label>
+      </div>
+    </div>
+    <div class="col-md-4 d-flex align-items-end justify-content-end">
+      <button id="generateBtn" class="btn btn-success w-100">Generate Barcode</button>
     </div>
   </div>
 
-  <div class="form-columns">
-    <div class="form-group">
-      <label for="lineColor">Line Color</label>
-      <input type="color" id="lineColor" value="#000000">
+  <div class="text-center my-4">
+    <canvas id="barcodeCanvas" width="500" height="150"></canvas>
+    <div class="mt-2">
+      <button id="downloadBtn" class="btn btn-primary">Download PNG</button>
     </div>
-
-    <div class="form-group">
-      <label for="bgColor">Background Color</label>
-      <input type="color" id="bgColor" value="#ffffff">
-    </div>
-
-    <div class="form-group">
-      <label for="textColor">Text Color</label>
-      <input type="color" id="textColor" value="#000000">
-    </div>
-
-    <div class="form-group">
-      <label for="margin">Margin</label>
-      <input type="number" id="margin" value="10" min="0" max="50">
-    </div>
+    <p class="text-muted mt-2">Tip: EAN13 requires 12 digits, UPC requires 11 digits.</p>
   </div>
-
-  <div class="form-group inline">
-    <input type="checkbox" id="showText" checked>
-    <label for="showText">Show Barcode Text</label>
-  </div>
-
-  <button id="generateBtn">Generate Barcode</button>
-  <canvas id="barcodeCanvas" width="500" height="150"></canvas>
-  <button id="downloadBtn">Download as PNG</button>
-
-  <p class="note">Tip: EAN13 requires exactly 12 digits, UPC requires 11 digits, CODE128 works with text.</p>
 </div>
 
+<!-- JsBarcode Library -->
 <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 <script>
-  const barcodeCanvas = document.getElementById("barcodeCanvas");
+  const canvas = document.getElementById("barcodeCanvas");
 
   function generateBarcode() {
     const text = document.getElementById("barcodeText").value.trim();
@@ -184,7 +114,7 @@
     const displayValue = document.getElementById("showText").checked;
 
     try {
-      JsBarcode(barcodeCanvas, text, {
+      JsBarcode(canvas, text, {
         format: format,
         lineColor: lineColor,
         background: background,
@@ -200,17 +130,16 @@
         text: displayValue ? text : "",
         textColor: textColor
       });
-    } catch (err) {
-      alert("Error: " + err.message);
+    } catch (e) {
+      alert("Error: " + e.message);
     }
   }
 
   document.getElementById("generateBtn").addEventListener("click", generateBarcode);
-
   document.getElementById("downloadBtn").addEventListener("click", () => {
     const link = document.createElement("a");
     link.download = "barcode.png";
-    link.href = barcodeCanvas.toDataURL("image/png");
+    link.href = canvas.toDataURL("image/png");
     link.click();
   });
 
