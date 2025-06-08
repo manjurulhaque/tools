@@ -3,7 +3,45 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Advanced Pomodoro Timer</title>
+
+  <!-- Title & Meta Description -->
+  <title>Advanced Pomodoro Timer - Boost Productivity with Time Management</title>
+  <meta name="description" content="Use this advanced Pomodoro Timer with customizable time settings, break modes, sound alerts, and dark mode to improve your focus and productivity." />
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://yourdomain.com/" />
+
+  <!-- Open Graph Meta Tags -->
+  <meta property="og:title" content="Advanced Pomodoro Timer" />
+  <meta property="og:description" content="Customizable Pomodoro timer to help manage time and productivity. Includes dark mode, alerts, and progress tracking." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yourdomain.com/" />
+  <meta property="og:image" content="https://yourdomain.com/preview.png" />
+
+  <!-- Twitter Meta Tags -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Advanced Pomodoro Timer" />
+  <meta name="twitter:description" content="Powerful Pomodoro timer app with modern features like notifications, sound alerts, and customizable sessions." />
+  <meta name="twitter:image" content="https://yourdomain.com/preview.png" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+
+  <!-- Schema Markup (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "Advanced Pomodoro Timer",
+    "url": "https://yourdomain.com/",
+    "applicationCategory": "ProductivityApplication",
+    "operatingSystem": "All",
+    "description": "An advanced Pomodoro Timer for managing tasks and boosting productivity with dark mode, sound alerts, and notifications.",
+    "browserRequirements": "Requires JavaScript"
+  }
+  </script>
+
+  <!-- Inline CSS -->
   <style>
     /* Base Styles */
     body {
@@ -32,7 +70,11 @@
       background: #1e1e1e;
     }
     h1 {
+      margin-bottom: 10px;
+    }
+    p {
       margin-bottom: 20px;
+      font-size: 1.1em;
     }
     /* Timer Display */
     #timer-display {
@@ -94,40 +136,49 @@
   </style>
 </head>
 <body>
-  <div id="app">
-    <h1>Pomodoro Timer</h1>
+  <main id="app">
+    <h1>Advanced Pomodoro Timer</h1>
+    <p>Stay focused and productive with our advanced Pomodoro Timer. Customize session lengths, get notified with alerts, and switch to dark mode for late-night work.</p>
+    
     <!-- Timer Display -->
     <div id="timer-display">25:00</div>
+    
     <!-- Controls -->
     <div id="controls">
       <button id="start-btn">Start</button>
       <button id="pause-btn" disabled>Pause</button>
       <button id="reset-btn" disabled>Reset</button>
     </div>
+    
     <!-- Modes -->
     <div id="modes">
       <button class="mode-btn active" data-time="25">Pomodoro</button>
       <button class="mode-btn" data-time="5">Short Break</button>
       <button class="mode-btn" data-time="15">Long Break</button>
     </div>
+    
     <!-- Custom Time Setting -->
     <div id="settings">
       <label for="customTime">Custom Minutes:</label>
       <input type="number" id="customTime" value="25" min="1" />
       <button id="set-custom">Set Custom</button>
     </div>
+    
     <!-- Progress Bar -->
     <div id="progress-bar">
       <div id="progress"></div>
     </div>
+    
     <!-- Dark Mode Toggle -->
     <div id="dark-mode">
       <button id="toggle-dark">Toggle Dark Mode</button>
     </div>
-  </div>
-  
+  </main>
+
+  <!-- Sound Alert -->
   <audio id="alert-sound" src="https://www.soundjay.com/buttons/sounds/beep-07.mp3"></audio>
   
+  <!-- JavaScript -->
   <script>
     // Timer Variables
     let timerDuration = 25 * 60; // in seconds
@@ -183,7 +234,6 @@
           remainingTime--;
           updateDisplay(remainingTime);
         } else {
-          // Timer complete actions
           clearInterval(timerInterval);
           isRunning = false;
           startBtn.disabled = false;
@@ -230,7 +280,6 @@
         modeDuration = minutes * 60;
         remainingTime = modeDuration;
         updateDisplay(remainingTime);
-        // Reset timer state if running
         clearInterval(timerInterval);
         isRunning = false;
         startBtn.disabled = false;
@@ -246,7 +295,6 @@
         modeDuration = customMinutes * 60;
         remainingTime = modeDuration;
         updateDisplay(remainingTime);
-        // Remove active class from preset mode buttons
         modeBtns.forEach(b => b.classList.remove('active'));
         clearInterval(timerInterval);
         isRunning = false;
@@ -259,7 +307,6 @@
     // Dark Mode Toggle
     darkToggle.addEventListener('click', () => {
       document.body.classList.toggle('dark-mode');
-      // Save user preference
       localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
     });
     
@@ -273,7 +320,7 @@
     pauseBtn.addEventListener('click', pauseTimer);
     resetBtn.addEventListener('click', resetTimer);
     
-    // Optional: Allow keyboard shortcuts (Space to start/pause, R to reset)
+    // Optional: Keyboard Shortcuts (Space to start/pause, R to reset)
     document.addEventListener('keydown', (e) => {
       if (e.code === 'Space') {
         e.preventDefault();
