@@ -1,65 +1,110 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Advanced CSS Minifier</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    .container { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 90%; max-width: 1000px; }
-    h1 { margin-top: 0; }
-    textarea { width: 100%; height: 200px; margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; }
-    .options, .presets, .custom-preset { margin-bottom: 1rem; }
-    .options label, .presets label, .custom-preset label { margin-right: 1rem; display: inline-block; margin-bottom: 0.5rem; }
-    button { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: #007acc; color: #fff; cursor: pointer; margin-top: 0.5rem; }
-    button:hover { background: #005fa3; }
-    .copy-btn { background: #28a745; margin-left: 1rem; }
+    body { background: #f4f4f4; margin: 0; padding: 0; }
+    textarea { font-family: monospace; }
+    .copy-btn { background: #28a745; }
     .copy-btn:hover { background: #1c7c31; }
-    .stats { font-size: 0.9rem; color: #333; margin-top: 1rem; }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Advanced CSS Minifier</h1>
-    <textarea id="inputCss" placeholder="Paste your CSS here..."></textarea>
-    <div class="presets">
-      <strong>Compression Presets:</strong>
-      <label><input type="radio" name="preset" value="none" checked> None</label>
-      <label><input type="radio" name="preset" value="basic"> Basic</label>
-      <label><input type="radio" name="preset" value="aggressive"> Aggressive</label>
+  <div class="container py-5">
+    <div class="bg-white p-4 rounded shadow">
+      <h1 class="mb-4">Advanced CSS Minifier</h1>
+
+      <div class="mb-3">
+        <label class="form-label">Input CSS:</label>
+        <textarea id="inputCss" class="form-control" rows="8" placeholder="Paste your CSS here..."></textarea>
+      </div>
+
+      <div class="mb-3">
+        <strong>Compression Presets:</strong><br />
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="preset" value="none" checked>
+          <label class="form-check-label">None</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="preset" value="basic">
+          <label class="form-check-label">Basic</label>
+        </div>
+        <div class="form-check form-check-inline">
+          <input class="form-check-input" type="radio" name="preset" value="aggressive">
+          <label class="form-check-label">Aggressive</label>
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-auto">
+          <label class="col-form-label">Custom Preset Name:</label>
+        </div>
+        <div class="col-auto">
+          <input type="text" class="form-control" id="presetName">
+        </div>
+        <div class="col-auto">
+          <button onclick="saveCustomPreset()" class="btn btn-secondary">Save Preset</button>
+          <button onclick="loadCustomPreset()" class="btn btn-secondary">Load Preset</button>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <strong>Minification Options:</strong><br />
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="removeComments" checked>
+          <label class="form-check-label">Remove Comments</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="collapseWhitespace" checked>
+          <label class="form-check-label">Collapse Whitespace</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="shortenHex" checked>
+          <label class="form-check-label">Shorten Hex Colors</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="removeZeroUnits" checked>
+          <label class="form-check-label">Remove Zero Units</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="removeLastSemicolon" checked>
+          <label class="form-check-label">Remove Last Semicolon</label>
+        </div>
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" id="mergeDuplicateSelectors" checked>
+          <label class="form-check-label">Merge Duplicate Selectors</label>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <button id="minifyBtn" class="btn btn-primary">Minify CSS</button>
+        <button class="btn copy-btn text-white" onclick="copyToClipboard()">Copy to Clipboard</button>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Minified CSS:</label>
+        <textarea id="outputCss" class="form-control" rows="8" readonly placeholder="Minified CSS will appear here..."></textarea>
+      </div>
+
+      <div class="text-muted" id="stats"></div>
     </div>
-    <div class="custom-preset">
-      <label>Custom Preset Name: <input type="text" id="presetName"></label>
-      <button onclick="saveCustomPreset()">Save Preset</button>
-      <button onclick="loadCustomPreset()">Load Preset</button>
-    </div>
-    <div class="options">
-      <label><input type="checkbox" id="removeComments" checked> Remove Comments</label>
-      <label><input type="checkbox" id="collapseWhitespace" checked> Collapse Whitespace</label>
-      <label><input type="checkbox" id="shortenHex" checked> Shorten Hex Colors</label>
-      <label><input type="checkbox" id="removeZeroUnits" checked> Remove Zero Units</label>
-      <label><input type="checkbox" id="removeLastSemicolon" checked> Remove Last Semicolon</label>
-      <label><input type="checkbox" id="mergeDuplicateSelectors" checked> Merge Duplicate Selectors</label>
-    </div>
-    <button id="minifyBtn">Minify CSS</button>
-    <button class="copy-btn" onclick="copyToClipboard()">Copy to Clipboard</button>
-    <h2>Minified CSS</h2>
-    <textarea id="outputCss" readonly placeholder="Minified CSS will appear here..."></textarea>
-    <div class="stats" id="stats"></div>
-  </div>  <script>
+  </div>
+
+  <script>
     function removeComments(css) {
-      return css.replace(/\/\*[\s\S]*?\*\//g, '');
+      return css.replace(/\\/\\*[\\s\\S]*?\\*\\//g, '');
     }
     function collapseWhitespace(css) {
-      return css.replace(/\s+/g, ' ')
-                .replace(/\s*([{};:,])\s*/g, '$1')
-                .trim();
+      return css.replace(/\\s+/g, ' ').replace(/\\s*([{};:,])\\s*/g, '$1').trim();
     }
     function shortenHex(css) {
-      return css.replace(/#([0-9a-fA-F])\1([0-9a-fA-F])\2([0-9a-fA-F])\3/g, '#$1$2$3');
+      return css.replace(/#([0-9a-fA-F])\\1([0-9a-fA-F])\\2([0-9a-fA-F])\\3/g, '#$1$2$3');
     }
     function removeZeroUnits(css) {
-      return css.replace(/(?<=[:\s])0(?:px|em|rem|%|in|cm|mm|ex|pt|pc)/g, '0');
+      return css.replace(/(?<=[:\\s])0(?:px|em|rem|%|in|cm|mm|ex|pt|pc)/g, '0');
     }
     function removeLastSemicolon(css) {
       return css.replace(/;}/g, '}');
@@ -76,7 +121,7 @@
 
     function applyPreset(preset) {
       const options = getOptionElements();
-      switch(preset) {
+      switch (preset) {
         case 'basic':
           options.removeComments.checked = true;
           options.collapseWhitespace.checked = true;
@@ -95,14 +140,13 @@
       }
     }
 
-    document.querySelectorAll('input[name="preset"]').forEach(radio => {
+    document.querySelectorAll('input[name=\"preset\"]').forEach(radio => {
       radio.addEventListener('change', () => applyPreset(radio.value));
     });
 
     document.getElementById('minifyBtn').addEventListener('click', () => {
       let original = document.getElementById('inputCss').value;
       let css = original;
-
       const opts = getOptionElements();
       if (opts.removeComments.checked) css = removeComments(css);
       if (opts.removeZeroUnits.checked) css = removeZeroUnits(css);
@@ -110,7 +154,6 @@
       if (opts.collapseWhitespace.checked) css = collapseWhitespace(css);
       if (opts.removeLastSemicolon.checked) css = removeLastSemicolon(css);
       if (opts.mergeDuplicateSelectors.checked) css = mergeDuplicateSelectors(css);
-
       document.getElementById('outputCss').value = css;
 
       const originalSize = original.length;
@@ -122,7 +165,6 @@
     function copyToClipboard() {
       const output = document.getElementById('outputCss');
       output.select();
-      output.setSelectionRange(0, 99999);
       document.execCommand('copy');
       alert('Minified CSS copied to clipboard!');
     }
@@ -162,5 +204,6 @@
       }
       alert(`Preset '${name}' loaded.`);
     }
-  </script></body>
+  </script>
+</body>
 </html>
