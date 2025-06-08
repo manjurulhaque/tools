@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Advanced Barcode Generator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    header {
+      background: #007bff;
+      color: #fff;
+      padding: 20px;
+      width: 100%;
+      text-align: center;
+    }
+    .container {
+      margin: 30px;
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      max-width: 600px;
+      width: 100%;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 10px 20px;
+      background: #28a745;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    button:hover {
+      background: #218838;
+    }
+    .barcode-container {
+      margin-top: 20px;
+      text-align: center;
+    }
+    canvas {
+      border: 1px solid #ddd;
+      margin-bottom: 10px;
+    }
+    @media(max-width: 600px) {
+      .container {
+        margin: 15px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Advanced Barcode Generator</h1>
+  </header>
+  <div class="container">
+    <div class="form-group">
+      <label for="barcodeText">Enter Text/Number:</label>
+      <input type="text" id="barcodeText" placeholder="Enter barcode data" value="123456789012">
+    </div>
+    <div class="form-group">
+      <label for="barcodeType">Select Barcode Type:</label>
+      <select id="barcodeType">
+        <option value="CODE128">CODE128</option>
+        <option value="CODE39">CODE39</option>
+        <option value="EAN13">EAN13</option>
+        <option value="EAN8">EAN8</option>
+        <option value="UPC">UPC</option>
+        <!-- Add more supported types if needed -->
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="barcodeWidth">Barcode Width (per bar):</label>
+      <input type="number" id="barcodeWidth" value="2" min="1" max="10">
+    </div>
+    <div class="form-group">
+      <label for="barcodeHeight">Barcode Height (px):</label>
+      <input type="number" id="barcodeHeight" value="100" min="50" max="300">
+    </div>
+    <button id="generateBtn">Generate Barcode</button>
+    <div class="barcode-container">
+      <canvas id="barcodeCanvas"></canvas>
+      <br>
+      <button id="downloadBtn">Download as PNG</button>
+    </div>
+  </div>
+  
+  <!-- Include JsBarcode library from CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+  <script>
+    const generateBtn = document.getElementById('generateBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const barcodeCanvas = document.getElementById('barcodeCanvas');
+    
+    function generateBarcode() {
+      const text = document.getElementById('barcodeText').value.trim();
+      const type = document.getElementById('barcodeType').value;
+      const width = parseFloat(document.getElementById('barcodeWidth').value) || 2;
+      const height = parseFloat(document.getElementById('barcodeHeight').value) || 100;
+      
+      if (text === "") {
+        alert("Please enter some text or numbers for the barcode.");
+        return;
+      }
+      
+      try {
+        JsBarcode(barcodeCanvas, text, {
+          format: type,
+          lineColor: "#000",
+          width: width,
+          height: height,
+          displayValue: true,
+          fontOptions: "bold",
+          margin: 10,
+          background: "#fff"
+        });
+      } catch (e) {
+        alert("Error generating barcode: " + e.message);
+      }
+    }
+    
+    generateBtn.addEventListener('click', generateBarcode);
+    
+    downloadBtn.addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.href = barcodeCanvas.toDataURL("image/png");
+      link.download = 'barcode.png';
+      link.click();
+    });
+    
+    // Generate a default barcode on initial load
+    generateBarcode();
+  </script>
+</body>
+</html>
