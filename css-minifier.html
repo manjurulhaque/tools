@@ -6,11 +6,11 @@
   <title>Advanced CSS Minifier</title>
   <style>
     body { font-family: Arial, sans-serif; background: #f4f4f4; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-    .container { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 90%; max-width: 900px; }
+    .container { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); width: 90%; max-width: 1000px; }
     h1 { margin-top: 0; }
     textarea { width: 100%; height: 200px; margin-bottom: 1rem; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-family: monospace; }
-    .options { margin-bottom: 1rem; }
-    .options label { margin-right: 1rem; display: inline-block; margin-bottom: 0.5rem; }
+    .options, .presets, .custom-preset { margin-bottom: 1rem; }
+    .options label, .presets label, .custom-preset label { margin-right: 1rem; display: inline-block; margin-bottom: 0.5rem; }
     button { padding: 0.5rem 1rem; border: none; border-radius: 4px; background: #007acc; color: #fff; cursor: pointer; margin-top: 0.5rem; }
     button:hover { background: #005fa3; }
     .copy-btn { background: #28a745; margin-left: 1rem; }
@@ -22,6 +22,17 @@
   <div class="container">
     <h1>Advanced CSS Minifier</h1>
     <textarea id="inputCss" placeholder="Paste your CSS here..."></textarea>
+    <div class="presets">
+      <strong>Compression Presets:</strong>
+      <label><input type="radio" name="preset" value="none" checked> None</label>
+      <label><input type="radio" name="preset" value="basic"> Basic</label>
+      <label><input type="radio" name="preset" value="aggressive"> Aggressive</label>
+    </div>
+    <div class="custom-preset">
+      <label>Custom Preset Name: <input type="text" id="presetName"></label>
+      <button onclick="saveCustomPreset()">Save Preset</button>
+      <button onclick="loadCustomPreset()">Load Preset</button>
+    </div>
     <div class="options">
       <label><input type="checkbox" id="removeComments" checked> Remove Comments</label>
       <label><input type="checkbox" id="collapseWhitespace" checked> Collapse Whitespace</label>
@@ -63,16 +74,42 @@
       return Object.entries(rules).map(([s, p]) => `${s}{${p}}`).join('');
     }
 
+    function applyPreset(preset) {
+      const options = getOptionElements();
+      switch(preset) {
+        case 'basic':
+          options.removeComments.checked = true;
+          options.collapseWhitespace.checked = true;
+          options.shortenHex.checked = false;
+          options.removeZeroUnits.checked = false;
+          options.removeLastSemicolon.checked = false;
+          options.mergeDuplicateSelectors.checked = false;
+          break;
+        case 'aggressive':
+          Object.values(options).forEach(opt => opt.checked = true);
+          break;
+        case 'none':
+        default:
+          Object.values(options).forEach(opt => opt.checked = false);
+          break;
+      }
+    }
+
+    document.querySelectorAll('input[name="preset"]').forEach(radio => {
+      radio.addEventListener('change', () => applyPreset(radio.value));
+    });
+
     document.getElementById('minifyBtn').addEventListener('click', () => {
       let original = document.getElementById('inputCss').value;
       let css = original;
 
-      if (document.getElementById('removeComments').checked) css = removeComments(css);
-      if (document.getElementById('removeZeroUnits').checked) css = removeZeroUnits(css);
-      if (document.getElementById('shortenHex').checked) css = shortenHex(css);
-      if (document.getElementById('collapseWhitespace').checked) css = collapseWhitespace(css);
-      if (document.getElementById('removeLastSemicolon').checked) css = removeLastSemicolon(css);
-      if (document.getElementById('mergeDuplicateSelectors').checked) css = mergeDuplicateSelectors(css);
+      const opts = getOptionElements();
+      if (opts.removeComments.checked) css = removeComments(css);
+      if (opts.removeZeroUnits.checked) css = removeZeroUnits(css);
+      if (opts.shortenHex.checked) css = shortenHex(css);
+      if (opts.collapseWhitespace.checked) css = collapseWhitespace(css);
+      if (opts.removeLastSemicolon.checked) css = removeLastSemicolon(css);
+      if (opts.mergeDuplicateSelectors.checked) css = mergeDuplicateSelectors(css);
 
       document.getElementById('outputCss').value = css;
 
@@ -88,6 +125,42 @@
       output.setSelectionRange(0, 99999);
       document.execCommand('copy');
       alert('Minified CSS copied to clipboard!');
+    }
+
+    function getOptionElements() {
+      return {
+        removeComments: document.getElementById('removeComments'),
+        collapseWhitespace: document.getElementById('collapseWhitespace'),
+        shortenHex: document.getElementById('shortenHex'),
+        removeZeroUnits: document.getElementById('removeZeroUnits'),
+        removeLastSemicolon: document.getElementById('removeLastSemicolon'),
+        mergeDuplicateSelectors: document.getElementById('mergeDuplicateSelectors')
+      };
+    }
+
+    function saveCustomPreset() {
+      const name = document.getElementById('presetName').value.trim();
+      if (!name) return alert('Please enter a name for your custom preset.');
+      const options = getOptionElements();
+      const preset = {};
+      for (const key in options) {
+        preset[key] = options[key].checked;
+      }
+      localStorage.setItem('cssMinifierPreset_' + name, JSON.stringify(preset));
+      alert(`Preset '${name}' saved.`);
+    }
+
+    function loadCustomPreset() {
+      const name = document.getElementById('presetName').value.trim();
+      if (!name) return alert('Please enter a preset name to load.');
+      const stored = localStorage.getItem('cssMinifierPreset_' + name);
+      if (!stored) return alert(`No preset found with name '${name}'.`);
+      const preset = JSON.parse(stored);
+      const options = getOptionElements();
+      for (const key in preset) {
+        if (options[key]) options[key].checked = preset[key];
+      }
+      alert(`Preset '${name}' loaded.`);
     }
   </script></body>
 </html>
