@@ -3,46 +3,12 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>
-			Advanced Pomodoro Timer - Boost Productivity with Time Management
-		</title>
+		<title>Advanced Pomodoro Timer</title>
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
 		<meta
 			name="description"
-			content="Use this advanced Pomodoro Timer with customizable time settings, break modes, sound alerts, and notifications to improve your focus and productivity."
+			content="An advanced Pomodoro Timer for managing tasks and boosting productivity with sound alerts and notifications."
 		/>
-		<link rel="canonical" href="https://yourdomain.com/" />
-		<link rel="icon" href="favicon.ico" type="image/x-icon" />
-
-		<!-- Open Graph / Twitter -->
-		<meta property="og:title" content="Advanced Pomodoro Timer" />
-		<meta
-			property="og:description"
-			content="Customizable Pomodoro timer to help manage time and productivity. Includes alerts and progress tracking."
-		/>
-		<meta property="og:type" content="website" />
-		<meta property="og:url" content="https://yourdomain.com/" />
-		<meta property="og:image" content="https://yourdomain.com/preview.png" />
-		<meta name="twitter:card" content="summary_large_image" />
-		<meta name="twitter:title" content="Advanced Pomodoro Timer" />
-		<meta
-			name="twitter:description"
-			content="Customizable Pomodoro timer with alerts, custom duration, and responsive layout."
-		/>
-		<meta name="twitter:image" content="https://yourdomain.com/preview.png" />
-
-		<!-- JSON-LD Schema -->
-		<script type="application/ld+json">
-			{
-				"@context": "https://schema.org",
-				"@type": "WebApplication",
-				"name": "Advanced Pomodoro Timer",
-				"url": "https://yourdomain.com/",
-				"applicationCategory": "ProductivityApplication",
-				"operatingSystem": "All",
-				"description": "An advanced Pomodoro Timer for managing tasks and boosting productivity with sound alerts and notifications.",
-				"browserRequirements": "Requires JavaScript"
-			}
-		</script>
 
 		<!-- Bootstrap 5 CSS -->
 		<link
@@ -77,20 +43,39 @@
 				color: #fff !important;
 			}
 
+			/* --- Navbar Style (from uploaded file) --- */
 			.navbar {
+				position: absolute;
+				top: 0;
+				width: 100%;
 				background: rgba(0, 0, 0, 0.4) !important;
 				backdrop-filter: blur(10px);
+				-webkit-backdrop-filter: blur(10px);
 				border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+				z-index: 1000;
 			}
-			.navbar .navbar-brand,
+			.navbar .navbar-brand {
+				color: #fff !important;
+				font-size: 1.75rem !important;
+				font-weight: 600;
+			}
 			.navbar .nav-link,
 			.navbar .dropdown-toggle {
 				color: #fff !important;
+				transition: color 0.3s;
 			}
 			.navbar .nav-link:hover,
 			.navbar .dropdown-item:hover {
 				color: #ddd !important;
 			}
+			.navbar-toggler {
+				border-color: rgba(255, 255, 255, 0.7);
+			}
+			.navbar-toggler-icon {
+				background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+			}
+
+			/* --- Footer Style (from uploaded file) --- */
 			.footer {
 				background: rgba(0, 0, 0, 0.8);
 				color: #fff;
@@ -102,6 +87,7 @@
 				color: #4b6cb7;
 				text-decoration: none;
 				margin: 0 0.5rem;
+				transition: color 0.3s;
 			}
 			.footer a:hover {
 				color: #82aaff;
@@ -110,7 +96,7 @@
 	</head>
 	<body>
 		<!-- Navbar -->
-		<nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+		<nav class="navbar navbar-expand-lg navbar-dark">
 			<div class="container">
 				<a class="navbar-brand" href="#">MANJURUL</a>
 				<button
@@ -225,7 +211,10 @@
 			</div>
 		</footer>
 
-		<!-- JavaScript for Timer -->
+		<!-- Bootstrap JS Bundle -->
+		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+		<!-- Timer Logic -->
 		<script>
 			let timerDuration = 25 * 60;
 			let remainingTime = timerDuration;
@@ -372,8 +361,5 @@
 				}
 			});
 		</script>
-
-		<!-- Bootstrap JS Bundle -->
-		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 	</body>
 </html>
