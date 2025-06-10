@@ -73,6 +73,27 @@
 							/>
 						</div>
 
+						<div class="col-md-6">
+							<label for="dotStyle" class="form-label">Dot Style</label>
+							<select class="form-select" id="dotStyle">
+								<option value="rounded" selected>Rounded</option>
+								<option value="dots">Dots</option>
+								<option value="square">Square</option>
+							</select>
+						</div>
+
+						<div class="col-md-6">
+							<label for="errorCorrection" class="form-label"
+								>Error Correction Level</label
+							>
+							<select class="form-select" id="errorCorrection">
+								<option value="L">L - Low</option>
+								<option value="M" selected>M - Medium</option>
+								<option value="Q">Q - Quartile</option>
+								<option value="H">H - High</option>
+							</select>
+						</div>
+
 						<div class="col-md-12">
 							<label for="logo" class="form-label"
 								>Upload Logo (Optional)</label
@@ -84,6 +105,16 @@
 								accept="image/*"
 							/>
 						</div>
+
+						<div class="col-md-12">
+							<label for="filename" class="form-label">Download Filename</label>
+							<input
+								type="text"
+								class="form-control"
+								id="filename"
+								placeholder="qr-code"
+							/>
+						</div>
 					</div>
 
 					<div class="d-grid mt-4">
@@ -93,15 +124,27 @@
 					</div>
 
 					<div id="qrcode" class="my-4"></div>
+					<div id="qr-preview" class="text-center text-muted small mb-3"></div>
 
-					<div class="d-grid">
-						<button
-							class="btn btn-success"
-							id="download-btn"
-							style="display: none"
-						>
-							Download QR Code
-						</button>
+					<div class="row">
+						<div class="col-md-6 d-grid">
+							<button
+								class="btn btn-success"
+								id="download-png"
+								style="display: none"
+							>
+								Download PNG
+							</button>
+						</div>
+						<div class="col-md-6 d-grid">
+							<button
+								class="btn btn-secondary"
+								id="download-svg"
+								style="display: none"
+							>
+								Download SVG
+							</button>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -116,19 +159,34 @@
 		<script>
 			const qrCodeContainer = document.getElementById("qrcode");
 			const generateBtn = document.getElementById("generate-btn");
-			const downloadBtn = document.getElementById("download-btn");
+			const downloadPngBtn = document.getElementById("download-png");
+			const downloadSvgBtn = document.getElementById("download-svg");
+			const preview = document.getElementById("qr-preview");
+
 			let qrCode;
 
 			generateBtn.addEventListener("click", () => {
 				const text =
-					document.getElementById("text").value || "https://example.com";
-				const size = parseInt(document.getElementById("size").value) || 300;
-				const margin = parseInt(document.getElementById("margin").value) || 10;
+					document.getElementById("text").value.trim() || "https://example.com";
+				const size = parseInt(document.getElementById("size").value);
+				const margin = parseInt(document.getElementById("margin").value);
 				const dotColor = document.getElementById("dotColor").value;
 				const bgColor = document.getElementById("bgColor").value;
+				const dotStyle = document.getElementById("dotStyle").value;
+				const errorCorrection =
+					document.getElementById("errorCorrection").value;
+				const filename =
+					document.getElementById("filename").value.trim() || "qr-code";
 				const logoFile = document.getElementById("logo").files[0];
 
+				// Validation
+				if (isNaN(size) || size <= 0 || isNaN(margin) || margin < 0) {
+					alert("Please enter valid positive numbers for size and margin.");
+					return;
+				}
+
 				qrCodeContainer.innerHTML = "";
+				preview.textContent = "";
 
 				const options = {
 					width: size,
@@ -136,9 +194,12 @@
 					data: text,
 					image: "",
 					margin: margin,
+					qrOptions: {
+						errorCorrectionLevel: errorCorrection,
+					},
 					dotsOptions: {
 						color: dotColor,
-						type: "rounded",
+						type: dotStyle,
 					},
 					backgroundOptions: {
 						color: bgColor,
@@ -152,7 +213,15 @@
 				const generateQR = (opts) => {
 					qrCode = new QRCodeStyling(opts);
 					qrCode.append(qrCodeContainer);
-					downloadBtn.style.display = "block";
+					preview.innerHTML = `QR Code for: <code>${text}</code>`;
+					downloadPngBtn.style.display = "block";
+					downloadSvgBtn.style.display = "block";
+
+					// Attach filename to download buttons
+					downloadPngBtn.onclick = () =>
+						qrCode.download({ name: filename, extension: "png" });
+					downloadSvgBtn.onclick = () =>
+						qrCode.download({ name: filename, extension: "svg" });
 				};
 
 				if (logoFile) {
@@ -164,12 +233,6 @@
 					reader.readAsDataURL(logoFile);
 				} else {
 					generateQR(options);
-				}
-			});
-
-			downloadBtn.addEventListener("click", () => {
-				if (qrCode) {
-					qrCode.download({ name: "qr-code", extension: "png" });
 				}
 			});
 		</script>
