@@ -1,151 +1,281 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Advanced Barcode Generator</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body {
-      background: #f8f9fa;
-    }
-    canvas {
-      border: 1px dashed #6c757d;
-      background: #ffffff;
-      max-width: 100%;
-      height: auto;
-    }
-  </style>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<title>Advanced Barcode Generator</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!-- Bootstrap CSS -->
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<style>
+			body {
+				background: #f8f9fa;
+			}
+			canvas,
+			svg {
+				border: 1px dashed #6c757d;
+				background: #ffffff;
+				max-width: 100%;
+				height: auto;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container py-4">
+			<div class="text-center mb-4">
+				<h1 class="text-primary">Advanced Barcode Generator</h1>
+				<p class="text-muted">
+					Supports multiple formats and customizable styles
+				</p>
+			</div>
 
-<div class="container py-4">
-  <div class="text-center mb-4">
-    <h1 class="text-primary">Advanced Barcode Generator</h1>
-    <p class="text-muted">Supports multiple formats and customizable styles</p>
-  </div>
+			<div class="row g-3">
+				<div class="col-md-6">
+					<label for="barcodeText" class="form-label">Text / Number</label>
+					<input
+						type="text"
+						id="barcodeText"
+						class="form-control"
+						value="123456789012"
+						aria-label="Barcode Text"
+					/>
+				</div>
+				<div class="col-md-6">
+					<label for="barcodeType" class="form-label">Barcode Type</label>
+					<select
+						id="barcodeType"
+						class="form-select"
+						aria-label="Barcode Type"
+					>
+						<option value="CODE128">CODE128</option>
+						<option value="CODE39">CODE39</option>
+						<option value="EAN13">EAN13</option>
+						<option value="EAN8">EAN8</option>
+						<option value="UPC">UPC</option>
+						<option value="ITF14">ITF-14</option>
+						<option value="MSI">MSI</option>
+						<option value="Pharmacode">Pharmacode</option>
+						<option value="CODABAR">Codabar</option>
+					</select>
+				</div>
 
-  <div class="row g-3">
-    <div class="col-md-6">
-      <label for="barcodeText" class="form-label">Text / Number</label>
-      <input type="text" id="barcodeText" class="form-control" value="123456789012">
-    </div>
-    <div class="col-md-6">
-      <label for="barcodeType" class="form-label">Barcode Type</label>
-      <select id="barcodeType" class="form-select">
-        <option value="CODE128">CODE128</option>
-        <option value="CODE39">CODE39</option>
-        <option value="EAN13">EAN13</option>
-        <option value="EAN8">EAN8</option>
-        <option value="UPC">UPC</option>
-        <option value="ITF14">ITF-14</option>
-        <option value="MSI">MSI</option>
-        <option value="Pharmacode">Pharmacode</option>
-        <option value="CODABAR">Codabar</option>
-      </select>
-    </div>
+				<div class="col-md-4">
+					<label for="barcodeWidth" class="form-label">Width (bar)</label>
+					<input
+						type="number"
+						id="barcodeWidth"
+						class="form-control"
+						value="2"
+						min="1"
+						max="10"
+						aria-label="Barcode Width"
+					/>
+				</div>
+				<div class="col-md-4">
+					<label for="barcodeHeight" class="form-label">Height (px)</label>
+					<input
+						type="number"
+						id="barcodeHeight"
+						class="form-control"
+						value="100"
+						min="50"
+						max="300"
+						aria-label="Barcode Height"
+					/>
+				</div>
+				<div class="col-md-4">
+					<label for="fontSize" class="form-label">Font Size</label>
+					<input
+						type="number"
+						id="fontSize"
+						class="form-control"
+						value="16"
+						min="8"
+						max="30"
+						aria-label="Font Size"
+					/>
+				</div>
 
-    <div class="col-md-4">
-      <label for="barcodeWidth" class="form-label">Width (bar)</label>
-      <input type="number" id="barcodeWidth" class="form-control" value="2" min="1" max="10">
-    </div>
-    <div class="col-md-4">
-      <label for="barcodeHeight" class="form-label">Height (px)</label>
-      <input type="number" id="barcodeHeight" class="form-control" value="100" min="50" max="300">
-    </div>
-    <div class="col-md-4">
-      <label for="fontSize" class="form-label">Font Size</label>
-      <input type="number" id="fontSize" class="form-control" value="16" min="8" max="30">
-    </div>
+				<div class="col-md-4">
+					<label for="lineColor" class="form-label">Line Color</label>
+					<input
+						type="color"
+						id="lineColor"
+						class="form-control form-control-color"
+						value="#000000"
+						aria-label="Line Color"
+					/>
+				</div>
+				<div class="col-md-4">
+					<label for="bgColor" class="form-label">Background Color</label>
+					<input
+						type="color"
+						id="bgColor"
+						class="form-control form-control-color"
+						value="#ffffff"
+						aria-label="Background Color"
+					/>
+				</div>
+				<div class="col-md-4">
+					<label for="textColor" class="form-label">Text Color</label>
+					<input
+						type="color"
+						id="textColor"
+						class="form-control form-control-color"
+						value="#000000"
+						aria-label="Text Color"
+					/>
+				</div>
 
-    <div class="col-md-4">
-      <label for="lineColor" class="form-label">Line Color</label>
-      <input type="color" id="lineColor" class="form-control form-control-color" value="#000000">
-    </div>
-    <div class="col-md-4">
-      <label for="bgColor" class="form-label">Background Color</label>
-      <input type="color" id="bgColor" class="form-control form-control-color" value="#ffffff">
-    </div>
-    <div class="col-md-4">
-      <label for="textColor" class="form-label">Text Color</label>
-      <input type="color" id="textColor" class="form-control form-control-color" value="#000000">
-    </div>
+				<div class="col-md-4">
+					<label for="margin" class="form-label">Margin</label>
+					<input
+						type="number"
+						id="margin"
+						class="form-control"
+						value="10"
+						min="0"
+						max="50"
+						aria-label="Margin"
+					/>
+				</div>
+				<div class="col-md-4 d-flex align-items-end">
+					<div class="form-check">
+						<input
+							type="checkbox"
+							id="showText"
+							class="form-check-input"
+							checked
+							aria-label="Show Barcode Text"
+						/>
+						<label for="showText" class="form-check-label"
+							>Show Barcode Text</label
+						>
+					</div>
+				</div>
+				<div class="col-md-4 d-flex align-items-end justify-content-end">
+					<button
+						id="generateBtn"
+						class="btn btn-success w-100"
+						aria-label="Generate Barcode"
+					>
+						Generate Barcode
+					</button>
+				</div>
+				<div class="col-md-4 d-flex align-items-end">
+					<button
+						id="resetBtn"
+						class="btn btn-secondary w-100"
+						aria-label="Reset Fields"
+					>
+						Reset
+					</button>
+				</div>
+			</div>
 
-    <div class="col-md-4">
-      <label for="margin" class="form-label">Margin</label>
-      <input type="number" id="margin" class="form-control" value="10" min="0" max="50">
-    </div>
-    <div class="col-md-4 d-flex align-items-end">
-      <div class="form-check">
-        <input type="checkbox" id="showText" class="form-check-input" checked>
-        <label for="showText" class="form-check-label">Show Barcode Text</label>
-      </div>
-    </div>
-    <div class="col-md-4 d-flex align-items-end justify-content-end">
-      <button id="generateBtn" class="btn btn-success w-100">Generate Barcode</button>
-    </div>
-  </div>
+			<div class="text-center my-4">
+				<canvas id="barcodeCanvas" height="150"></canvas>
+				<div class="mt-2">
+					<button id="downloadBtn" class="btn btn-primary">Download PNG</button>
+				</div>
+				<p class="text-muted mt-2">
+					Tip: EAN13 requires 12 digits, UPC requires 11 digits.
+				</p>
+			</div>
+		</div>
 
-  <div class="text-center my-4">
-    <canvas id="barcodeCanvas" width="500" height="150"></canvas>
-    <div class="mt-2">
-      <button id="downloadBtn" class="btn btn-primary">Download PNG</button>
-    </div>
-    <p class="text-muted mt-2">Tip: EAN13 requires 12 digits, UPC requires 11 digits.</p>
-  </div>
-</div>
+		<!-- JsBarcode Library -->
+		<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+		<script>
+			const canvas = document.getElementById("barcodeCanvas");
 
-<!-- JsBarcode Library -->
-<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-<script>
-  const canvas = document.getElementById("barcodeCanvas");
+			function generateBarcode() {
+				const text = document.getElementById("barcodeText").value.trim();
+				const format = document.getElementById("barcodeType").value;
+				const width = parseFloat(document.getElementById("barcodeWidth").value);
+				const height = parseFloat(
+					document.getElementById("barcodeHeight").value
+				);
+				const fontSize = parseFloat(document.getElementById("fontSize").value);
+				const lineColor = document.getElementById("lineColor").value;
+				const background = document.getElementById("bgColor").value;
+				const textColor = document.getElementById("textColor").value;
+				const margin = parseInt(document.getElementById("margin").value);
+				const displayValue = document.getElementById("showText").checked;
 
-  function generateBarcode() {
-    const text = document.getElementById("barcodeText").value.trim();
-    const format = document.getElementById("barcodeType").value;
-    const width = parseFloat(document.getElementById("barcodeWidth").value);
-    const height = parseFloat(document.getElementById("barcodeHeight").value);
-    const fontSize = parseFloat(document.getElementById("fontSize").value);
-    const lineColor = document.getElementById("lineColor").value;
-    const background = document.getElementById("bgColor").value;
-    const textColor = document.getElementById("textColor").value;
-    const margin = parseInt(document.getElementById("margin").value);
-    const displayValue = document.getElementById("showText").checked;
+				// Validate input length for specific formats
+				if (
+					(format === "EAN13" && text.length !== 12) ||
+					(format === "UPC" && text.length !== 11)
+				) {
+					clearCanvas();
+					alert(
+						`For ${format}, input must be ${
+							format === "EAN13" ? "12" : "11"
+						} digits.`
+					);
+					return;
+				}
 
-    try {
-      JsBarcode(canvas, text, {
-        format: format,
-        lineColor: lineColor,
-        background: background,
-        width: width,
-        height: height,
-        displayValue: displayValue,
-        fontSize: fontSize,
-        margin: margin,
-        textMargin: 5,
-        fontOptions: "bold",
-        textAlign: "center",
-        font: "monospace",
-        text: displayValue ? text : "",
-        textColor: textColor
-      });
-    } catch (e) {
-      alert("Error: " + e.message);
-    }
-  }
+				// Adjust canvas width dynamically
+				canvas.width = Math.max(300, text.length * width * 2);
 
-  document.getElementById("generateBtn").addEventListener("click", generateBarcode);
-  document.getElementById("downloadBtn").addEventListener("click", () => {
-    const link = document.createElement("a");
-    link.download = "barcode.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  });
+				try {
+					JsBarcode(canvas, text, {
+						format: format,
+						lineColor: lineColor,
+						background: background,
+						width: width,
+						height: height,
+						displayValue: displayValue,
+						fontSize: fontSize,
+						margin: margin,
+						textMargin: 5,
+						fontOptions: "bold",
+						textAlign: "center",
+						font: "monospace",
+						text: displayValue ? text : "",
+						textColor: textColor,
+					});
+				} catch (e) {
+					clearCanvas();
+					alert("Error: " + e.message);
+				}
+			}
 
-  // Auto-generate once on load
-  generateBarcode();
-</script>
+			function clearCanvas() {
+				const ctx = canvas.getContext("2d");
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			}
 
-</body>
+			document
+				.getElementById("generateBtn")
+				.addEventListener("click", generateBarcode);
+			document.getElementById("downloadBtn").addEventListener("click", () => {
+				const link = document.createElement("a");
+				link.download = "barcode.png";
+				link.href = canvas.toDataURL("image/png");
+				link.click();
+			});
+
+			document.getElementById("resetBtn").addEventListener("click", () => {
+				document.getElementById("barcodeText").value = "123456789012";
+				document.getElementById("barcodeType").value = "CODE128";
+				document.getElementById("barcodeWidth").value = 2;
+				document.getElementById("barcodeHeight").value = 100;
+				document.getElementById("fontSize").value = 16;
+				document.getElementById("lineColor").value = "#000000";
+				document.getElementById("bgColor").value = "#ffffff";
+				document.getElementById("textColor").value = "#000000";
+				document.getElementById("margin").value = 10;
+				document.getElementById("showText").checked = true;
+				generateBarcode();
+			});
+
+			// Auto-generate once on load
+			generateBarcode();
+		</script>
+	</body>
 </html>
