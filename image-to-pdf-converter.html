@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta
+			name="description"
+			content="Free online tool to convert images to PDF. Easily upload, preview, compress, and arrange your images to create a downloadable PDF file. Supports JPG, PNG, WebP, and HEIC."
+		/>
+		<meta
+			name="keywords"
+			content="image to pdf, convert image to pdf, jpg to pdf, png to pdf, free image converter, compress images to pdf, online image pdf maker"
+		/>
+		<meta name="author" content="Manjurul Haque" />
+		<title>Free Image to PDF Converter - Online Tool</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles.css" />
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/heic2any@0.0.3/dist/heic2any.min.js"></script>
+	</head>
+	<body class="bg-light">
+		<div class="container py-5">
+			<header class="mb-4 text-center">
+				<h1 class="display-5 fw-bold">Free Image to PDF Converter</h1>
+				<p class="lead">
+					Easily convert your JPG, PNG, WebP, and HEIC images into a single PDF
+					file. Upload, preview, compress, and download your PDF instantly – no
+					sign-up required!
+				</p>
+			</header>
+
+			<!-- Dropzone -->
+			<div
+				id="dropZone"
+				class="border border-3 border-primary rounded-3 text-center p-5 mb-4 bg-white"
+				style="cursor: pointer"
+			>
+				<p class="mb-0 text-muted">Click or drag & drop images here</p>
+				<input
+					type="file"
+					id="imageFiles"
+					accept="image/*"
+					multiple
+					class="d-none"
+				/>
+			</div>
+
+			<!-- Image Preview -->
+			<div id="preview" class="row g-2 mb-3"></div>
+			<div id="fileInfo" class="mb-3 text-muted">No files selected</div>
+
+			<!-- Settings -->
+			<div class="row g-3 mb-4">
+				<div class="col-md-4">
+					<label class="form-label">Compression Quality</label>
+					<select class="form-select" id="compressionSelect">
+						<option value="1">High (No Compression)</option>
+						<option value="0.8" selected>Medium</option>
+						<option value="0.5">Low</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Layout</label>
+					<select class="form-select" id="layoutSelect">
+						<option value="single" selected>Single Image per Page</option>
+						<option value="grid-2">2 Images per Page</option>
+						<option value="grid-4">4 Images per Page</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Page Size</label>
+					<select class="form-select" id="pageSizeSelect">
+						<option value="595,842" selected>A4</option>
+						<option value="612,792">US Letter</option>
+						<option value="custom">Custom</option>
+					</select>
+				</div>
+				<div class="col-md-4 d-none" id="customSizeInputs">
+					<label class="form-label">Custom Width (pt)</label>
+					<input
+						type="number"
+						class="form-control"
+						id="customWidthInput"
+						placeholder="e.g., 600"
+					/>
+					<label class="form-label mt-2">Custom Height (pt)</label>
+					<input
+						type="number"
+						class="form-control"
+						id="customHeightInput"
+						placeholder="e.g., 800"
+					/>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Orientation</label>
+					<select class="form-select" id="orientationSelect">
+						<option value="portrait" selected>Portrait</option>
+						<option value="landscape">Landscape</option>
+					</select>
+				</div>
+				<div class="col-md-4">
+					<label class="form-label">Max Image Width (px)</label>
+					<input
+						type="number"
+						id="maxWidth"
+						class="form-control"
+						placeholder="Optional"
+					/>
+					<label class="form-label mt-2">Max Image Height (px)</label>
+					<input
+						type="number"
+						id="maxHeight"
+						class="form-control"
+						placeholder="Optional"
+					/>
+				</div>
+			</div>
+
+			<!-- Convert Button -->
+			<div class="text-center">
+				<button id="convertBtn" class="btn btn-primary btn-lg">
+					Convert to PDF
+				</button>
+				<div
+					id="spinner"
+					class="spinner-border text-primary ms-3"
+					role="status"
+					style="display: none"
+				>
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</div>
+
+			<!-- Download Link -->
+			<div id="downloadDiv" class="text-center mt-4"></div>
+
+			<section class="mt-5">
+				<h2 class="h4">Online Image to PDF Converter — Fast, Free & Private</h2>
+				<p>
+					Convert your images to PDF quickly and securely using our powerful
+					online tool. Whether it's
+					<strong>JPG, PNG, WebP, HEIC, or HEIF</strong> files, our converter
+					turns them into high-quality PDFs with full control over layout,
+					compression, and size. No uploads, no watermarks, and no sign-ups
+					required.
+				</p>
+
+				<!-- Benefits -->
+				<h3 class="h5 mt-4">✨ Key Features & Benefits</h3>
+				<ul>
+					<li>
+						<strong>Free and unlimited</strong>: Convert as many images as you
+						need — 100% free.
+					</li>
+					<li>
+						<strong>Supports all major formats</strong>: Including JPEG, PNG,
+						HEIC, WebP, and HEIF.
+					</li>
+					<li>
+						<strong>Drag-and-drop simplicity</strong>: Reorder images before
+						conversion with intuitive thumbnail previews.
+					</li>
+					<li>
+						<strong>Local processing</strong>: Everything happens in your
+						browser. Your files never leave your device.
+					</li>
+					<li>
+						<strong>Flexible layout</strong>: Choose portrait/landscape,
+						multiple images per page, and custom page size.
+					</li>
+					<li>
+						<strong>Image compression</strong>: Control quality and output size
+						to balance clarity and file size.
+					</li>
+				</ul>
+
+				<!-- Use Cases -->
+				<h3 class="h5 mt-4">📂 Common Use Cases</h3>
+				<p>Our image-to-PDF converter is ideal for:</p>
+				<ul>
+					<li>Creating printable photo books or portfolios</li>
+					<li>Compiling scanned documents or receipts</li>
+					<li>Archiving notes, homework, and reports</li>
+					<li>Converting mobile photos to PDF for email</li>
+					<li>Organizing art projects and creative work</li>
+				</ul>
+
+				<!-- How It Works -->
+				<h3 class="h5 mt-4">⚙️ How to Convert Images to PDF Online</h3>
+				<ol>
+					<li>Click or drag and drop your image files into the upload area.</li>
+					<li>
+						Customize layout: choose page size, orientation, and images per
+						page.
+					</li>
+					<li>Optionally resize or compress images for optimized output.</li>
+					<li>Click "Convert to PDF" and download your document instantly.</li>
+				</ol>
+
+				<!-- Format Support -->
+				<h3 class="h5 mt-4">📸 Supported Image Formats</h3>
+				<p>We support a wide range of image types, including:</p>
+				<ul>
+					<li>
+						<strong>JPG/JPEG</strong>: Most common for photography and
+						screenshots
+					</li>
+					<li>
+						<strong>PNG</strong>: Ideal for web graphics with transparency
+					</li>
+					<li>
+						<strong>HEIC/HEIF</strong>: Used by iPhones and iPads (converted
+						automatically)
+					</li>
+					<li>
+						<strong>WebP</strong>: Modern format used by Chrome and Android
+						(fully supported)
+					</li>
+				</ul>
+
+				<!-- Performance -->
+				<h3 class="h5 mt-4">🚀 Fast, Private, and Secure</h3>
+				<p>
+					Unlike other PDF tools, our converter runs completely in your browser
+					using modern JavaScript APIs. This means:
+				</p>
+				<ul>
+					<li><strong>No file uploads</strong>: Nothing is sent to a server</li>
+					<li>
+						<strong>Fast processing</strong>: Images are converted instantly
+					</li>
+					<li>
+						<strong>Maximum privacy</strong>: Your files never leave your device
+					</li>
+				</ul>
+
+				<!-- Mobile Compatibility -->
+				<h3 class="h5 mt-4">📱 Works on All Devices</h3>
+				<p>
+					Whether you're on a desktop, laptop, tablet, or smartphone, our
+					converter is fully responsive and optimized for every screen size.
+					Simply open your browser and start converting!
+				</p>
+
+				<!-- FAQ -->
+				<h3 class="h5 mt-4">❓ Frequently Asked Questions</h3>
+				<details class="mb-2">
+					<summary><strong>Is this tool really free?</strong></summary>
+					<p>
+						Yes, it's completely free to use with no hidden fees or watermarks.
+					</p>
+				</details>
+				<details class="mb-2">
+					<summary>
+						<strong>Can I rearrange images before converting?</strong>
+					</summary>
+					<p>
+						Yes! Simply drag and drop thumbnails to reorder them before
+						converting to PDF.
+					</p>
+				</details>
+				<details class="mb-2">
+					<summary><strong>Does it work offline?</strong></summary>
+					<p>
+						Yes — if the page is loaded, you can convert files without an
+						internet connection.
+					</p>
+				</details>
+				<details class="mb-2">
+					<summary><strong>Is it secure?</strong></summary>
+					<p>
+						All file processing is done locally in your browser — nothing is
+						uploaded or shared.
+					</p>
+				</details>
+
+				<!-- Final CTA -->
+				<h3 class="h5 mt-4">📥 Try It Now — Free Image to PDF Converter</h3>
+				<p>
+					Ready to create your PDF? Just drop your images above and click
+					"Convert to PDF" — it’s that simple. No registration, no limitations,
+					no hassle.
+				</p>
+			</section>
+
+			<!-- SEO Footer -->
+			<footer class="mt-5 pt-4 border-top text-center small text-muted">
+				<p>
+					&copy; 2025 Free Image to PDF Converter | Created by Manjurul Haque
+				</p>
+				<p>
+					Supports JPG, PNG, WebP, and HEIC formats. 100% secure and
+					browser-based. No upload or registration needed.
+				</p>
+			</footer>
+		</div>
+
+		<script src="image_to_pdf_converter.js"></script>
+	</body>
+</html>
