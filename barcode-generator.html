@@ -16,6 +16,7 @@
 			canvas {
 				border: 1px dashed #6c757d;
 				background: #ffffff;
+				width: 100%;
 				max-width: 100%;
 				height: auto;
 			}
@@ -25,29 +26,17 @@
 				width: 100%;
 				background: rgba(0, 0, 0, 0.4) !important;
 				backdrop-filter: blur(10px);
-				-webkit-backdrop-filter: blur(10px);
 				border-bottom: 1px solid rgba(255, 255, 255, 0.3);
 				z-index: 1000;
 			}
-			.navbar .navbar-brand {
-				color: #fff !important;
-				font-size: 1.75rem !important;
-				font-weight: 600;
-			}
+			.navbar .navbar-brand,
 			.navbar .nav-link,
 			.navbar .dropdown-toggle {
 				color: #fff !important;
-				transition: color 0.3s;
 			}
 			.navbar .nav-link:hover,
 			.navbar .dropdown-item:hover {
 				color: #ddd !important;
-			}
-			.navbar-toggler {
-				border-color: rgba(255, 255, 255, 0.7);
-			}
-			.navbar-toggler-icon {
-				background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 30 30' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba%28255,255,255,0.7%29' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
 			}
 			.footer {
 				background: rgba(0, 0, 0, 0.8);
@@ -57,9 +46,8 @@
 			}
 			.footer a {
 				color: #4b6cb7;
-				text-decoration: none;
 				margin: 0 0.5rem;
-				transition: color 0.3s;
+				text-decoration: none;
 			}
 			.footer a:hover {
 				color: #82aaff;
@@ -75,9 +63,6 @@
 					type="button"
 					data-bs-toggle="collapse"
 					data-bs-target="#navbarNav"
-					aria-controls="navbarNav"
-					aria-expanded="false"
-					aria-label="Toggle navigation"
 				>
 					<span class="navbar-toggler-icon"></span>
 				</button>
@@ -96,17 +81,13 @@
 								id="featuresDropdown"
 								role="button"
 								data-bs-toggle="dropdown"
-								aria-expanded="false"
 								>Tools</a
 							>
-							<ul
-								class="dropdown-menu dropdown-menu-end"
-								aria-labelledby="featuresDropdown"
-							>
+							<ul class="dropdown-menu dropdown-menu-end">
 								<li>
 									<a class="dropdown-item" href="#feature1">Image Tools</a>
 								</li>
-								<li><a class="dropdown-item" href="#feature2">Pdf Tools</a></li>
+								<li><a class="dropdown-item" href="#feature2">PDF Tools</a></li>
 								<li>
 									<a class="dropdown-item" href="#feature3"
 										>Data & Code Tools</a
@@ -132,6 +113,7 @@
 					Supports multiple formats and customizable styles
 				</p>
 			</div>
+
 			<form>
 				<div class="row g-3">
 					<div class="col-md-6">
@@ -141,22 +123,28 @@
 							id="barcodeText"
 							class="form-control"
 							value="123456789012"
-							pattern="\d*"
+							required
 						/>
+						<div id="charCount" class="form-text"></div>
 					</div>
 					<div class="col-md-6">
 						<label for="barcodeType" class="form-label">Barcode Type</label>
 						<select id="barcodeType" class="form-select">
-							<option value="CODE128">CODE128</option>
-							<option value="CODE39">CODE39</option>
-							<option value="EAN13">EAN13</option>
-							<option value="EAN8">EAN8</option>
+							<option value="CODE128">CODE128 (General Use)</option>
+							<option value="CODE128A">CODE128A (Uppercase + Control)</option>
+							<option value="CODE128B">CODE128B (Uppercase + Lowercase)</option>
+							<option value="CODE128C">CODE128C (Digits Only)</option>
+							<option value="EAN13">EAN-13</option>
+							<option value="EAN8">EAN-8</option>
 							<option value="UPC">UPC</option>
 							<option value="ITF14">ITF-14</option>
 							<option value="MSI">MSI</option>
 							<option value="Pharmacode">Pharmacode</option>
-							<option value="CODABAR">Codabar</option>
+							<option value="Codabar">Codabar</option>
+							<option value="CODE39">Code39</option>
+							<option value="CODE93">Code93</option>
 						</select>
+						<div id="formatHint" class="form-text text-muted mt-1"></div>
 					</div>
 					<div class="col-md-4">
 						<label for="barcodeWidth" class="form-label">Width (bar)</label>
@@ -164,7 +152,7 @@
 							type="number"
 							id="barcodeWidth"
 							class="form-control"
-							value="2"
+							value="1"
 							min="1"
 							max="10"
 						/>
@@ -175,7 +163,7 @@
 							type="number"
 							id="barcodeHeight"
 							class="form-control"
-							value="100"
+							value="60"
 							min="50"
 							max="300"
 						/>
@@ -247,6 +235,7 @@
 							type="button"
 							id="generateBtn"
 							class="btn btn-success w-100"
+							disabled
 						>
 							Generate Barcode
 						</button>
@@ -260,15 +249,12 @@
 			</form>
 
 			<div class="text-center my-4">
-				<canvas id="barcodeCanvas" height="150"></canvas>
+				<canvas id="barcodeCanvas"></canvas>
 				<div class="mt-2">
 					<button type="button" id="downloadBtn" class="btn btn-primary">
 						Download PNG
 					</button>
 				</div>
-				<p class="text-muted mt-2">
-					Tip: EAN13 requires 12 digits, UPC requires 11 digits.
-				</p>
 			</div>
 		</div>
 
@@ -287,60 +273,100 @@
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 		<script>
 			const canvas = document.getElementById("barcodeCanvas");
-			function generateBarcode() {
-				const text = document.getElementById("barcodeText").value.trim();
-				const format = document.getElementById("barcodeType").value;
-				const width = parseFloat(document.getElementById("barcodeWidth").value);
-				const height = parseFloat(
-					document.getElementById("barcodeHeight").value
-				);
-				const fontSize = parseFloat(document.getElementById("fontSize").value);
-				const lineColor = document.getElementById("lineColor").value;
-				const background = document.getElementById("bgColor").value;
-				const margin = parseInt(document.getElementById("margin").value);
-				const displayValue = document.getElementById("showText").checked;
+			const barcodeText = document.getElementById("barcodeText");
+			const barcodeType = document.getElementById("barcodeType");
+			const charCount = document.getElementById("charCount");
+			const generateBtn = document.getElementById("generateBtn");
+			const formatHint = document.getElementById("formatHint");
 
-				if (
-					(format === "EAN13" && text.length !== 12) ||
-					(format === "UPC" && text.length !== 11)
-				) {
-					clearCanvas();
-					alert(
-						`For ${format}, input must be ${
-							format === "EAN13" ? "12" : "11"
-						} digits.`
-					);
-					return;
+			const formatLengths = {
+				EAN13: 12,
+				EAN8: 7,
+				UPC: 11,
+				ITF14: 13,
+				CODE128C: 12,
+			};
+
+			function clearCanvas() {
+				const ctx = canvas.getContext("2d");
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			}
+
+			function updateFormatHint() {
+				const format = barcodeType.value;
+				const hints = {
+					EAN13: "EAN-13 requires exactly 12 numeric digits.",
+					EAN8: "EAN-8 requires 7 numeric digits.",
+					UPC: "UPC requires 11 numeric digits.",
+					ITF14: "ITF-14 requires 13 numeric digits.",
+					CODE128C: "CODE128C supports only even number of digits.",
+					CODE39: "Code39: A-Z, 0-9, space, and - . $ / + %",
+					CODE93: "Code93: Full ASCII support.",
+				};
+				formatHint.textContent = hints[format] || "";
+			}
+
+			function validateInput() {
+				const format = barcodeType.value;
+				const text = barcodeText.value.trim();
+				let isValid = true;
+				let limit = formatLengths[format];
+
+				if (limit && text.length !== limit) {
+					isValid = false;
 				}
 
-				canvas.width = Math.max(300, text.length * width * 2);
-				canvas.height = height + 50;
+				if (format === "CODE128C" && text.length % 2 !== 0) {
+					isValid = false;
+				}
+
+				if (format === "CODE39" && !/^[0-9A-Z \-.\$/+%]*$/.test(text)) {
+					isValid = false;
+				}
+
+				if (format === "CODE93" && !/^[\x00-\x7F]*$/.test(text)) {
+					isValid = false;
+				}
+
+				charCount.textContent = limit
+					? `${text.length} of ${limit}`
+					: `${text.length} characters`;
+				charCount.classList.toggle("text-danger", !isValid);
+
+				generateBtn.disabled = !isValid;
+			}
+
+			function generateBarcode() {
+				const text = barcodeText.value.trim();
+				const format = barcodeType.value;
 
 				try {
 					JsBarcode(canvas, text, {
 						format,
-						lineColor,
-						background,
-						width,
-						height,
-						displayValue,
-						fontSize,
-						margin,
-						textMargin: 5,
+						lineColor: lineColor.value,
+						background: bgColor.value,
+						width: parseFloat(barcodeWidth.value),
+						height: parseFloat(barcodeHeight.value),
+						displayValue: showText.checked,
+						fontSize: parseFloat(fontSize.value),
+						margin: parseInt(margin.value),
 						fontOptions: "bold",
-						textAlign: "center",
 						font: "monospace",
-						text: displayValue ? text : "",
+						textAlign: "center",
+						text: showText.checked ? text : "",
+						textColor: textColor.value,
 					});
 				} catch (e) {
 					clearCanvas();
 					alert("Error: " + e.message);
 				}
 			}
-			function clearCanvas() {
-				const ctx = canvas.getContext("2d");
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-			}
+
+			barcodeText.addEventListener("input", validateInput);
+			barcodeType.addEventListener("change", () => {
+				updateFormatHint();
+				validateInput();
+			});
 			document
 				.getElementById("generateBtn")
 				.addEventListener("click", generateBarcode);
@@ -351,18 +377,23 @@
 				link.click();
 			});
 			document.getElementById("resetBtn").addEventListener("click", () => {
-				document.getElementById("barcodeText").value = "123456789012";
-				document.getElementById("barcodeType").value = "CODE128";
-				document.getElementById("barcodeWidth").value = 2;
-				document.getElementById("barcodeHeight").value = 100;
-				document.getElementById("fontSize").value = 16;
-				document.getElementById("lineColor").value = "#000000";
-				document.getElementById("bgColor").value = "#ffffff";
-				document.getElementById("textColor").value = "#000000";
-				document.getElementById("margin").value = 10;
-				document.getElementById("showText").checked = true;
+				barcodeText.value = "123456789012";
+				barcodeType.value = "CODE128";
+				barcodeWidth.value = 2;
+				barcodeHeight.value = 100;
+				fontSize.value = 16;
+				lineColor.value = "#000000";
+				bgColor.value = "#ffffff";
+				textColor.value = "#000000";
+				margin.value = 10;
+				showText.checked = true;
+				updateFormatHint();
+				validateInput();
 				generateBarcode();
 			});
+
+			updateFormatHint();
+			validateInput();
 			generateBarcode();
 		</script>
 	</body>
