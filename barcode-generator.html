@@ -114,7 +114,9 @@
 				</p>
 			</div>
 
-			<form>
+			<div id="errorBox" class="alert alert-danger d-none" role="alert"></div>
+
+			<form novalidate>
 				<div class="row g-3">
 					<div class="col-md-6">
 						<label for="barcodeText" class="form-label">Text / Number</label>
@@ -124,6 +126,7 @@
 							class="form-control"
 							value="123456789012"
 							required
+							aria-describedby="charCount"
 						/>
 						<div id="charCount" class="form-text"></div>
 					</div>
@@ -152,7 +155,7 @@
 							type="number"
 							id="barcodeWidth"
 							class="form-control"
-							value="1"
+							value="2"
 							min="1"
 							max="10"
 						/>
@@ -163,7 +166,7 @@
 							type="number"
 							id="barcodeHeight"
 							class="form-control"
-							value="60"
+							value="100"
 							min="50"
 							max="300"
 						/>
@@ -249,7 +252,11 @@
 			</form>
 
 			<div class="text-center my-4">
-				<canvas id="barcodeCanvas"></canvas>
+				<canvas
+					id="barcodeCanvas"
+					aria-label="Generated Barcode Image"
+					role="img"
+				></canvas>
 				<div class="mt-2">
 					<button type="button" id="downloadBtn" class="btn btn-primary">
 						Download PNG
@@ -278,6 +285,7 @@
 			const charCount = document.getElementById("charCount");
 			const generateBtn = document.getElementById("generateBtn");
 			const formatHint = document.getElementById("formatHint");
+			const errorBox = document.getElementById("errorBox");
 
 			const formatLengths = {
 				EAN13: 12,
@@ -286,6 +294,15 @@
 				ITF14: 13,
 				CODE128C: 12,
 			};
+
+			function showError(message) {
+				errorBox.textContent = message;
+				errorBox.classList.remove("d-none");
+			}
+
+			function hideError() {
+				errorBox.classList.add("d-none");
+			}
 
 			function clearCanvas() {
 				const ctx = canvas.getContext("2d");
@@ -310,55 +327,47 @@
 				const format = barcodeType.value;
 				const text = barcodeText.value.trim();
 				let isValid = true;
-				let limit = formatLengths[format];
+				const limit = formatLengths[format];
 
-				if (limit && text.length !== limit) {
+				if (limit && text.length !== limit) isValid = false;
+				if (format === "CODE128C" && text.length % 2 !== 0) isValid = false;
+				if (format === "CODE39" && !/^[0-9A-Z \-.\$/+%]*$/.test(text))
 					isValid = false;
-				}
-
-				if (format === "CODE128C" && text.length % 2 !== 0) {
+				if (format === "CODE93" && !/^[\x00-\x7F]*$/.test(text))
 					isValid = false;
-				}
-
-				if (format === "CODE39" && !/^[0-9A-Z \-.\$/+%]*$/.test(text)) {
-					isValid = false;
-				}
-
-				if (format === "CODE93" && !/^[\x00-\x7F]*$/.test(text)) {
-					isValid = false;
-				}
 
 				charCount.textContent = limit
 					? `${text.length} of ${limit}`
 					: `${text.length} characters`;
 				charCount.classList.toggle("text-danger", !isValid);
-
+				barcodeText.classList.toggle("is-invalid", !isValid);
 				generateBtn.disabled = !isValid;
+
+				if (!isValid) showError("Invalid input for selected barcode type.");
+				else hideError();
 			}
 
 			function generateBarcode() {
-				const text = barcodeText.value.trim();
-				const format = barcodeType.value;
-
 				try {
-					JsBarcode(canvas, text, {
-						format,
+					JsBarcode(canvas, barcodeText.value.trim(), {
+						format: barcodeType.value,
 						lineColor: lineColor.value,
 						background: bgColor.value,
-						width: parseFloat(barcodeWidth.value),
-						height: parseFloat(barcodeHeight.value),
+						width: +barcodeWidth.value,
+						height: +barcodeHeight.value,
 						displayValue: showText.checked,
-						fontSize: parseFloat(fontSize.value),
-						margin: parseInt(margin.value),
+						fontSize: +fontSize.value,
+						margin: +margin.value,
 						fontOptions: "bold",
 						font: "monospace",
 						textAlign: "center",
-						text: showText.checked ? text : "",
+						text: showText.checked ? barcodeText.value.trim() : "",
 						textColor: textColor.value,
 					});
+					hideError();
 				} catch (e) {
 					clearCanvas();
-					alert("Error: " + e.message);
+					showError("Error: " + e.message);
 				}
 			}
 
@@ -367,9 +376,7 @@
 				updateFormatHint();
 				validateInput();
 			});
-			document
-				.getElementById("generateBtn")
-				.addEventListener("click", generateBarcode);
+			generateBtn.addEventListener("click", generateBarcode);
 			document.getElementById("downloadBtn").addEventListener("click", () => {
 				const link = document.createElement("a");
 				link.download = "barcode.png";
@@ -392,9 +399,9 @@
 				generateBarcode();
 			});
 
+			// Initialize
 			updateFormatHint();
 			validateInput();
-			generateBarcode();
 		</script>
 	</body>
 </html>
