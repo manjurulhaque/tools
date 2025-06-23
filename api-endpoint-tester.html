@@ -89,11 +89,17 @@
 				display: flex;
 				gap: 0.5rem;
 			}
+			.buttons-bar {
+				display: flex;
+				justify-content: space-between;
+				gap: 0.5rem;
+			}
 		</style>
 	</head>
 	<body>
 		<div id="sidebar">
 			<h2>History</h2>
+			<button id="clearHistoryBtn">Clear History</button>
 			<ul id="history"></ul>
 		</div>
 		<div id="main">
@@ -114,6 +120,7 @@
 					</select>
 					<button id="sendBtn">Send</button>
 				</div>
+				<button id="copyCurlBtn">Copy as cURL</button>
 			</div>
 			<div class="section">
 				<h2>Headers</h2>
@@ -256,7 +263,46 @@
 				}
 			}
 
-			// Load saved history on startup
+			document.getElementById("clearHistoryBtn").onclick = () => {
+				if (confirm("Clear all request history?")) {
+					historyData = [];
+					localStorage.removeItem("apiHistory");
+					renderHistory();
+				}
+			};
+
+			document.getElementById("copyCurlBtn").onclick = () => {
+				const url = document.getElementById("url").value;
+				const method = document.getElementById("method").value;
+				const headers = [];
+				headersList.querySelectorAll(".kv-row").forEach((r) => {
+					const [k, v] = r.querySelectorAll("input");
+					if (k.value) headers.push(`-H "${k.value}: ${v.value}"`);
+				});
+				const params = new URLSearchParams();
+				paramsList.querySelectorAll(".kv-row").forEach((r) => {
+					const [k, v] = r.querySelectorAll("input");
+					if (k.value) params.append(k.value, v.value);
+				});
+				let finalUrl = url;
+				const queryString = params.toString();
+				if (queryString) finalUrl += "?" + queryString;
+
+				let data = document.getElementById("body").value;
+				let bodyFlag = "";
+				if (method !== "GET" && method !== "DELETE" && data.trim()) {
+					bodyFlag = `--data '${data.replace(/'/g, "\\'")}'`;
+				}
+
+				const curl = `curl -X ${method} ${headers.join(
+					" "
+				)} ${bodyFlag} "${finalUrl}"`;
+
+				navigator.clipboard.writeText(curl).then(() => {
+					alert("cURL command copied to clipboard!");
+				});
+			};
+
 			loadHistoryFromStorage();
 		</script>
 	</body>
