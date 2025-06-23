@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced API Endpoint Tester</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
+    body { display: flex; height: 100vh; }
+    #sidebar { width: 300px; background: #f4f4f4; border-right: 1px solid #ccc; overflow-y: auto; padding: 1rem; }
+    #main { flex: 1; display: flex; flex-direction: column; }
+    h2 { margin-bottom: 0.5rem; }
+    .section { margin-bottom: 1rem; }
+    label { font-weight: bold; display: block; margin: .5rem 0 .2rem; }
+    input, select, textarea, button { width: 100%; padding: .5rem; margin-bottom: .5rem; border: 1px solid #ccc; border-radius: 4px; }
+    #headers-list, #params-list { max-height: 150px; overflow-y: auto; margin-bottom: .5rem; }
+    .kv-row { display: flex; gap: .5rem; margin-bottom: .3rem; }
+    .kv-row input { flex: 1; }
+    .kv-row button { flex: 0 0 auto; }
+    #response { flex: 1; background: #1e1e1e; color: #ddd; padding: 1rem; overflow-y: auto; white-space: pre-wrap; font-family: monospace; }
+    #history { list-style: none; }
+    #history li { padding: .5rem; border-bottom: 1px solid #ccc; cursor: pointer; }
+    #history li:hover { background: #e0e0e0; }
+    .flex { display: flex; gap: .5rem; }
+  </style>
+</head>
+<body>
+  <div id="sidebar">
+    <h2>History</h2>
+    <ul id="history"></ul>
+  </div>
+  <div id="main">
+    <div class="section">
+      <label for="url">Endpoint URL</label>
+      <input type="text" id="url" placeholder="https://api.example.com/data" />
+      <div class="flex">
+        <select id="method">
+          <option>GET</option>
+          <option>POST</option>
+          <option>PUT</option>
+          <option>PATCH</option>
+          <option>DELETE</option>
+        </select>
+        <button id="sendBtn">Send</button>
+      </div>
+    </div>
+    <div class="section">
+      <h2>Headers</h2>
+      <div id="headers-list"></div>
+      <button data-list="headers-list" class="add-kv">Add Header</button>
+    </div>
+    <div class="section">
+      <h2>Query Params</nobr></h2>
+      <div id="params-list"></div>
+      <button data-list="params-list" class="add-kv">Add Param</button>
+    </div>
+    <div class="section">
+      <h2>Body (JSON)</h2>
+      <textarea id="body" rows="5" placeholder='{"key":"value"}'></textarea>
+    </div>
+    <div class="section">
+      <h2>Response</h2>
+      <div id="response">Awaiting request...</div>
+    </div>
+  </div>
+
+  <script>
+    const headersList = document.getElementById('headers-list');
+    const paramsList = document.getElementById('params-list');
+    const addBtns = document.querySelectorAll('.add-kv');
+    const historyEl = document.getElementById('history');
+    let historyData = [];
+
+    function addRow(listId) {
+      const container = document.getElementById(listId);
+      const row = document.createElement('div');
+      row.className = 'kv-row';
+      row.innerHTML = `
+        <input placeholder="Key" />
+        <input placeholder="Value" />
+        <button title="Remove">✕</button>
+      `;
+      row.querySelector('button').onclick = () => row.remove();
+      container.appendChild(row);
+    }
+    addBtns.forEach(btn => btn.onclick = () => addRow(btn.dataset.list));
+
+    document.getElementById('sendBtn').onclick = async () => {
+      const url = document.getElementById('url').value;
+      const method = document.getElementById('method').value;
+      const headers = {};
+      headersList.querySelectorAll('.kv-row').forEach(r => {
+        const [k, v] = r.querySelectorAll('input');
+        if (k.value) headers[k.value] = v.value;
+      });
+      const params = new URLSearchParams();
+      paramsList.querySelectorAll('.kv-row').forEach(r => {
+        const [k, v] = r.querySelectorAll('input');
+        if (k.value) params.append(k.value, v.value);
+      });
+      let finalUrl = url;
+      if ([...params].length) finalUrl += '?' + params;
+      const options = { method, headers };
+      if (method !== 'GET' && method !== 'DELETE') {
+        try { options.body = JSON.stringify(JSON.parse(document.getElementById('body').value)); }
+        catch { options.body = document.getElementById('body').value; }
+      }
+      const start = performance.now();
+      try {
+        const res = await fetch(finalUrl, options);
+        const time = (performance.now() - start).toFixed(2);
+        const text = await res.text();
+        let formatted;
+        try { formatted = JSON.stringify(JSON.parse(text), null, 2); }
+        catch { formatted = text; }
+        document.getElementById('response').textContent =
+          `Status: ${res.status} ${res.statusText}\nTime: ${time}ms\nSize: ${text.length} bytes\n\n${formatted}`;
+        addHistory({ url: finalUrl, method, headers, body: document.getElementById('body').value });
+      } catch (err) {
+        document.getElementById('response').textContent = 'Error: ' + err;
+      }
+    };
+
+    function addHistory(entry) {
+      historyData.unshift(entry);
+      if (historyData.length > 50) historyData.pop();
+      renderHistory();
+    }
+    function renderHistory() {
+      historyEl.innerHTML = '';
+      historyData.forEach((h, i) => {
+        const li = document.createElement('li');
+        li.textContent = `[${h.method}] ${h.url}`;
+        li.onclick = () => loadHistory(i);
+        historyEl.appendChild(li);
+      });
+    }
+    function loadHistory(index) {
+      const h = historyData[index];
+      document.getElementById('url').value = h.url;
+      document.getElementById('method').value = h.method;
+      document.getElementById('body').value = h.body;
+      headersList.innerHTML = '';
+      paramsList.innerHTML = '';
+      for (const k in h.headers) {
+        addRow('headers-list');
+        const last = headersList.lastElementChild;
+        last.querySelectorAll('input')[0].value = k;
+        last.querySelectorAll('input')[1].value = h.headers[k];
+      }
+    }
+  </script>
+</body>
+</html>
