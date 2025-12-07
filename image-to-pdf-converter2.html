@@ -16,11 +16,36 @@
 <style>
   :root{
     --bg:#f5f7fb; --panel:#fff; --accent:#1f6feb; --muted:#667085;
-    --radius:10px;
+    --radius:10px; --nav-h:64px; --footer-bg:linear-gradient(180deg,#fff,#fbfdff);
   }
   html,body{height:100%; margin:0; font-family:Inter, Roboto, Arial, sans-serif; background:var(--bg); color:#0b1220;}
+  /* NAV */
+  .nav {
+    position:sticky; top:0; z-index:60;
+    height:var(--nav-h); display:flex; align-items:center; gap:20px;
+    padding:0 18px; background:linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85));
+    border-bottom:1px solid rgba(15,23,42,0.04); backdrop-filter: blur(6px);
+  }
+  .nav .brand { display:flex; gap:12px; align-items:center; text-decoration:none; color:inherit; }
+  .logo {
+    width:44px; height:44px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--accent), #69b3ff); color:white; font-weight:700; font-size:16px;
+    box-shadow:0 4px 14px rgba(31,111,235,0.12);
+  }
+  /* no text label — logo only per request */
+  /* move links to right */
+  .nav .links { margin-left:auto; display:flex; gap:12px; align-items:center; }
+  .nav a.link { color:var(--muted); text-decoration:none; padding:8px 10px; border-radius:8px; font-size:14px; }
+  .nav a.link.active { color:var(--accent); background:rgba(31,111,235,0.06); font-weight:600; }
+  .nav .actions { display:none; } /* intentionally minimal per request */
+
+  /* App container */
+  .container {
+    max-width:1200px; margin:20px auto; padding:0 18px;
+  }
+
   .app {
-    max-width:1200px; margin:28px auto; padding:22px; background:linear-gradient(180deg,#ffffff 0%, #fbfdff 100%); border-radius:14px; box-shadow:0 8px 30px rgba(20,30,60,0.06);
+    margin-top:6px; padding:22px; background:linear-gradient(180deg,#ffffff 0%, #fbfdff 100%); border-radius:14px; box-shadow:0 8px 30px rgba(20,30,60,0.06);
   }
   h1{margin:0 0 12px; font-size:20px;}
   .top {display:flex; gap:18px; align-items:flex-start;}
@@ -60,159 +85,218 @@
   .top-right { display:flex; gap:8px; align-items:center; margin-left:auto; }
   .muted { color:var(--muted); font-size:13px; }
   .help { font-size:13px; color:var(--muted); margin-top:8px; }
+
+  /* SIMPLIFIED FOOTER */
+  footer.simple-footer {
+    margin-top:18px; padding:14px 8px; text-align:center; color:var(--muted);
+    font-size:13px;
+  }
+  footer.simple-footer .links { display:inline-flex; gap:14px; align-items:center; flex-wrap:wrap; }
+  footer.simple-footer a { color:var(--muted); text-decoration:none; }
+  footer.simple-footer a:hover { text-decoration:underline; }
+
+  /* Responsive */
+  @media (max-width:960px){
+    .top { flex-direction:column; }
+    .right { width:100%; }
+    .nav .links { display:flex; gap:10px; }
+  }
 </style>
 </head>
 <body>
-<div class="app">
-  <div style="display:flex;align-items:center;gap:12px;">
-    <h1>Advanced Image → PDF Converter</h1>
-    <div class="muted">Client-side, privacy-first. Reorder, crop, rotate, compress, watermark, set page size and export.</div>
+
+<!-- NAVIGATION -->
+<nav class="nav" role="navigation" aria-label="Main navigation">
+  <!-- logo only; removed "Image → PDF" button/text -->
+  <div class="brand" aria-hidden="false" style="align-items:center;">
+    <div class="logo" aria-hidden="true" title="Brand logo">
+      <!-- Inline SVG brand logo -->
+      <svg width="28" height="28" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+        <defs>
+          <linearGradient id="g1" x1="0" x2="1" y1="0" y2="1">
+            <stop offset="0" stop-color="#1f6feb"/>
+            <stop offset="1" stop-color="#69b3ff"/>
+          </linearGradient>
+        </defs>
+        <rect x="4" y="4" width="56" height="56" rx="10" fill="url(#g1)"/>
+        <path d="M20 40 L20 24 L28 24 C31.5 24 34 25.8 34 29 C34 32.2 31.5 34 28 34 L22 34" fill="white"/>
+        <path d="M36 24 L44 24 L44 40 L36 40 C32.7 40 30 37.3 30 34 L30 30 C30 26.7 32.7 24 36 24 Z" fill="white" opacity="0.94"/>
+      </svg>
+    </div>
   </div>
-  <div class="top" style="margin-top:12px;">
-    <div class="left">
-      <div id="dropzone" class="dropzone" tabindex="0">
-        <div style="font-weight:700">Drag & drop images here</div>
-        <div class="muted">or click to browse. Supports PNG, JPEG, WebP. Paste images too (Ctrl+V).</div>
-        <div class="controls">
-          <input id="fileInput" type="file" accept="image/*" multiple style="display:none"/>
-          <button class="btn" id="btnBrowse">Browse files</button>
-          <button class="btn secondary" id="btnClear">Clear all</button>
-          <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
-            <label class="muted" style="margin:0 6px 0 0">Images</label>
-            <div id="count" class="muted">0</div>
+
+  <!-- Links moved to the right -->
+  <div class="links" role="menubar" aria-label="Primary">
+    <a class="link active" href="#" onclick="event.preventDefault()">Home</a>
+    <a class="link" href="#features" onclick="event.preventDefault(); document.getElementById('features')?.scrollIntoView({behavior:'smooth'})">Features</a>
+    <a class="link" href="#" onclick="event.preventDefault()">Help</a>
+    <a class="link" href="#" onclick="event.preventDefault()">About</a>
+  </div>
+</nav>
+
+<!-- MAIN CONTAINER -->
+<div class="container">
+  <div class="app" id="mainApp">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <h1>Advanced Image → PDF Converter</h1>
+      <div class="muted">Client-side, privacy-first. Reorder, crop, rotate, compress, watermark, set page size and export.</div>
+    </div>
+
+    <div class="top" style="margin-top:12px;">
+      <div class="left">
+        <div id="dropzone" class="dropzone" tabindex="0">
+          <div style="font-weight:700">Drag & drop images here</div>
+          <div class="muted">or click to browse. Supports PNG, JPEG, WebP. Paste images too (Ctrl+V).</div>
+          <div class="controls">
+            <input id="fileInput" type="file" accept="image/*" multiple style="display:none"/>
+            <button class="btn" id="btnBrowse">Browse files</button>
+            <button class="btn secondary" id="btnClear">Clear all</button>
+            <div style="margin-left:auto; display:flex; gap:6px; align-items:center;">
+              <label class="muted" style="margin:0 6px 0 0">Images</label>
+              <div id="count" class="muted">0</div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div id="thumbs" class="thumbs" aria-live="polite"></div>
+        <div id="thumbs" class="thumbs" aria-live="polite"></div>
 
-      <div class="section-title">Selected image settings</div>
-      <div style="display:flex; gap:10px; flex-wrap:wrap;">
-        <div style="flex:1; min-width:220px;">
-          <label>Global fit mode</label>
-          <select id="fitMode">
-            <option value="contain">Fit (contain)</option>
-            <option value="cover">Fill (cover)</option>
-            <option value="stretch">Stretch (may distort)</option>
-            <option value="center">Center (no scale)</option>
+        <div class="section-title">Selected image settings</div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div style="flex:1; min-width:220px;">
+            <label>Global fit mode</label>
+            <select id="fitMode">
+              <option value="contain">Fit (contain)</option>
+              <option value="cover">Fill (cover)</option>
+              <option value="stretch">Stretch (may distort)</option>
+              <option value="center">Center (no scale)</option>
+            </select>
+          </div>
+          <div style="width:150px;">
+            <label>Compression quality</label>
+            <input id="quality" type="range" min="0.2" max="1" step="0.05" value="0.9"/>
+          </div>
+          <div style="width:130px;">
+            <label>DPI</label>
+            <input id="dpi" type="number" min="72" max="600" value="150"/>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:8px;">
+          <button id="btnRotateLeft" class="smallbtn" style="padding:8px 10px;">Rotate ⟲</button>
+          <button id="btnRotateRight" class="smallbtn" style="padding:8px 10px;">Rotate ⟳</button>
+          <button id="btnCrop" class="smallbtn" style="padding:8px 10px;">Open Crop</button>
+          <button id="btnAutoOrient" class="smallbtn" style="padding:8px 10px;">Auto-orient (EXIF)</button>
+        </div>
+
+        <div class="section-title">Watermark</div>
+        <div style="display:flex; gap:8px; align-items:center;">
+          <input id="watermarkText" type="text" placeholder="Optional watermark text (e.g. Confidential)"/>
+          <input id="watermarkOpacity" type="range" min="0" max="1" step="0.05" value="0.25" style="width:120px"/>
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <label style="width:90px">Font size</label>
+          <input id="watermarkSize" type="number" min="8" max="72" value="24" style="width:80px"/>
+          <label style="width:90px">Position</label>
+          <select id="watermarkPos" style="width:160px">
+            <option value="center">Center</option>
+            <option value="top-left">Top-left</option>
+            <option value="top-right">Top-right</option>
+            <option value="bottom-left">Bottom-left</option>
+            <option value="bottom-right">Bottom-right</option>
           </select>
         </div>
-        <div style="width:150px;">
-          <label>Compression quality</label>
-          <input id="quality" type="range" min="0.2" max="1" step="0.05" value="0.9"/>
+
+        <div class="help">Tip: crop or rotate specific thumbnails by selecting the thumbnail controls; re-order pages by dragging thumbnails.</div>
+      </div>
+
+      <div class="right">
+        <div class="field">
+          <label>Page size</label>
+          <select id="pageSize">
+            <option value="A4">A4 (210 × 297 mm)</option>
+            <option value="Letter">Letter (8.5 × 11 in)</option>
+            <option value="Legal">Legal (8.5 × 14 in)</option>
+            <option value="Custom">Custom (mm)</option>
+          </select>
         </div>
-        <div style="width:130px;">
-          <label>DPI</label>
-          <input id="dpi" type="number" min="72" max="600" value="150"/>
+        <div id="customSizeRow" style="display:none; gap:8px; margin-bottom:12px;">
+          <div>
+            <label>Width (mm)</label>
+            <input id="customW" type="number" min="10" value="210"/>
+          </div>
+          <div>
+            <label>Height (mm)</label>
+            <input id="customH" type="number" min="10" value="297"/>
+          </div>
         </div>
-      </div>
 
-      <div style="display:flex; gap:10px; margin-top:8px;">
-        <button id="btnRotateLeft" class="smallbtn" style="padding:8px 10px;">Rotate ⟲</button>
-        <button id="btnRotateRight" class="smallbtn" style="padding:8px 10px;">Rotate ⟳</button>
-        <button id="btnCrop" class="smallbtn" style="padding:8px 10px;">Open Crop</button>
-        <button id="btnAutoOrient" class="smallbtn" style="padding:8px 10px;">Auto-orient (EXIF)</button>
-      </div>
-
-      <div class="section-title">Watermark</div>
-      <div style="display:flex; gap:8px; align-items:center;">
-        <input id="watermarkText" type="text" placeholder="Optional watermark text (e.g. Confidential)"/>
-        <input id="watermarkOpacity" type="range" min="0" max="1" step="0.05" value="0.25" style="width:120px"/>
-      </div>
-      <div style="display:flex; gap:8px; margin-top:8px;">
-        <label style="width:90px">Font size</label>
-        <input id="watermarkSize" type="number" min="8" max="72" value="24" style="width:80px"/>
-        <label style="width:90px">Position</label>
-        <select id="watermarkPos" style="width:160px">
-          <option value="center">Center</option>
-          <option value="top-left">Top-left</option>
-          <option value="top-right">Top-right</option>
-          <option value="bottom-left">Bottom-left</option>
-          <option value="bottom-right">Bottom-right</option>
-        </select>
-      </div>
-
-      <div class="help">Tip: crop or rotate specific thumbnails by selecting the thumbnail controls; re-order pages by dragging thumbnails.</div>
-    </div>
-
-    <div class="right">
-      <div class="field">
-        <label>Page size</label>
-        <select id="pageSize">
-          <option value="A4">A4 (210 × 297 mm)</option>
-          <option value="Letter">Letter (8.5 × 11 in)</option>
-          <option value="Legal">Legal (8.5 × 14 in)</option>
-          <option value="Custom">Custom (mm)</option>
-        </select>
-      </div>
-      <div id="customSizeRow" style="display:none; gap:8px; margin-bottom:12px;">
-        <div>
-          <label>Width (mm)</label>
-          <input id="customW" type="number" min="10" value="210"/>
+        <div class="field">
+          <label>Orientation</label>
+          <select id="orientation">
+            <option value="portrait">Portrait</option>
+            <option value="landscape">Landscape</option>
+          </select>
         </div>
-        <div>
-          <label>Height (mm)</label>
-          <input id="customH" type="number" min="10" value="297"/>
+
+        <div class="field">
+          <label>Margins (mm)</label>
+          <input id="margins" type="number" min="0" value="10"/>
         </div>
-      </div>
 
-      <div class="field">
-        <label>Orientation</label>
-        <select id="orientation">
-          <option value="portrait">Portrait</option>
-          <option value="landscape">Landscape</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>Margins (mm)</label>
-        <input id="margins" type="number" min="0" value="10"/>
-      </div>
-
-      <div class="field">
-        <label>PDF metadata</label>
-        <input id="pdfTitle" type="text" placeholder="Title"/>
-        <input id="pdfAuthor" type="text" placeholder="Author" style="margin-top:8px"/>
-        <input id="pdfSubject" type="text" placeholder="Subject" style="margin-top:8px"/>
-      </div>
-
-      <div class="field">
-        <label>Output filename</label>
-        <input id="outName" type="text" value="document.pdf" />
-      </div>
-
-      <div class="field">
-        <label>Advanced options</label>
-        <div style="display:flex; gap:8px;">
-          <label style="display:flex; gap:6px; align-items:center;"><input id="embedAsJpg" type="checkbox" checked/> Embed as JPEG when possible</label>
+        <div class="field">
+          <label>PDF metadata</label>
+          <input id="pdfTitle" type="text" placeholder="Title"/>
+          <input id="pdfAuthor" type="text" placeholder="Author" style="margin-top:8px"/>
+          <input id="pdfSubject" type="text" placeholder="Subject" style="margin-top:8px"/>
         </div>
-      </div>
 
-      <div class="generate">
-        <button class="btn" id="btnGenerate">Generate PDF</button>
-        <button class="btn secondary" id="btnPreview">Preview 1st page</button>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div class="progress"><i id="progressBar"></i></div>
-        <div style="display:flex; gap:10px; margin-top:8px; align-items:center;">
-          <div class="muted">Status:</div>
-          <div id="status" class="muted">Idle</div>
+        <div class="field">
+          <label>Output filename</label>
+          <input id="outName" type="text" value="document.pdf" />
         </div>
-      </div>
 
-      <div class="footer">
-        <div>Compatible with modern browsers. Large files may consume memory. For very large batches, consider server-side processing.</div>
+        <div class="field">
+          <label>Advanced options</label>
+          <div style="display:flex; gap:8px;">
+            <label style="display:flex; gap:6px; align-items:center;"><input id="embedAsJpg" type="checkbox" checked/> Embed as JPEG when possible</label>
+          </div>
+        </div>
+
+        <div class="generate">
+          <button class="btn" id="btnGenerate">Generate PDF</button>
+          <button class="btn secondary" id="btnPreview">Preview 1st page</button>
+        </div>
+
+        <div style="margin-top:12px;">
+          <div class="progress"><i id="progressBar"></i></div>
+          <div style="display:flex; gap:10px; margin-top:8px; align-items:center;">
+            <div class="muted">Status:</div>
+            <div id="status" class="muted">Idle</div>
+          </div>
+        </div>
+
+        <!-- NOTE: the previously present note about browser/memory/large batches was removed per your request -->
       </div>
     </div>
   </div>
+
+  <!-- SIMPLE FOOTER -->
+  <footer class="simple-footer" role="contentinfo" aria-label="Footer">
+    <div class="links" role="navigation" aria-label="Footer links">
+      <a href="#" onclick="event.preventDefault(); document.getElementById('mainApp').scrollIntoView({behavior:'smooth'})">Home</a>
+      <a href="#features" onclick="event.preventDefault(); alert('Features — demo')">Features</a>
+      <a href="#" onclick="event.preventDefault()">Privacy</a>
+      <a href="#" onclick="event.preventDefault()">Terms</a>
+      <span style="margin-left:14px;color:var(--muted)">© <span id="year"></span> Your Company</span>
+    </div>
+  </footer>
 </div>
 
-<!-- Crop modal -->
+<!-- CROP MODAL -->
 <div id="modal" class="modal" aria-hidden="true">
-  <div class="cropper-container">
+  <div class="cropper-container" role="dialog" aria-modal="true" aria-labelledby="cropTitle">
     <div style="display:flex; align-items:center; gap:10px;">
-      <div style="font-weight:700">Crop / Adjust</div>
+      <div id="cropTitle" style="font-weight:700; color:white">Crop / Adjust</div>
       <div class="top-right">
         <button id="cropRotateLeft" class="small">Rotate ⟲</button>
         <button id="cropRotateRight" class="small">Rotate ⟳</button>
@@ -220,7 +304,7 @@
       </div>
     </div>
     <div class="crop-area">
-      <img id="cropImg" style="max-width:100%; max-height:100%; display:block;" />
+      <img id="cropImg" style="max-width:100%; max-height:100%; display:block;" alt="Image for cropping"/>
     </div>
     <div class="crop-controls">
       <button id="cropCancel" class="small">Cancel</button>
@@ -230,15 +314,7 @@
 </div>
 
 <script>
-/*
-  Advanced Image -> PDF Converter
-  - Uses pdf-lib to build PDF pages.
-  - Thumbnails store per-image state: rotation, cropRect, filename, imageDataURL, originalFile, index
-  - Reordering via SortableJS.
-  - Crop using Cropper.js in modal.
-  - EXIF orientation read with ExifReader.
-*/
-
+/* JavaScript preserved from previous implementation with no references to removed nav elements. */
 const { PDFDocument, StandardFonts, rgb } = window.PDFLib;
 
 const dropzone = document.getElementById('dropzone');
@@ -267,34 +343,25 @@ const watermarkSizeEl = document.getElementById('watermarkSize');
 const watermarkPosEl = document.getElementById('watermarkPos');
 const embedAsJpgEl = document.getElementById('embedAsJpg');
 
-let images = []; // array of {id, file, dataUrl, rotation, cropData, name, width, height}
+document.getElementById('year').textContent = new Date().getFullYear();
+
+let images = [];
 let currentCropIndex = null;
 let cropper = null;
 
-/* Utility: create unique id */
-function uid() { return Math.random().toString(36).slice(2,9); }
-
-/* Handle page size preset -> mm -> points conversion later (1 pt = 1/72 in). We'll convert mm to points. */
-function mmToPoints(mm) { return mm * 2.8346456693; } // 1 mm = 2.8346456693 points
-
-const PAGE_PRESETS = {
-  'A4': { w_mm:210, h_mm:297 },
-  'Letter': { w_in:8.5, h_in:11 },
-  'Legal': { w_in:8.5, h_in:14 }
-};
-
+function uid(){ return Math.random().toString(36).slice(2,9); }
+function mmToPoints(mm){ return mm * 2.8346456693; }
+const PAGE_PRESETS = { 'A4': { w_mm:210, h_mm:297 }, 'Letter': { w_in:8.5, h_in:11 }, 'Legal': { w_in:8.5, h_in:14 } };
 function updateCount(){ countEl.textContent = images.length; }
 
-/* Add file list events */
 btnBrowse.addEventListener('click', ()=> fileInput.click());
 fileInput.addEventListener('change', (e)=> handleFiles(e.target.files));
 btnClear.addEventListener('click', ()=> { images = []; renderThumbs(); });
 
-/* Drag & drop support */
-;['dragenter','dragover'].forEach(ev => {
+['dragenter','dragover'].forEach(ev => {
   dropzone.addEventListener(ev, (e)=> { e.preventDefault(); e.stopPropagation(); dropzone.classList.add('dragover');});
 });
-;['dragleave','drop'].forEach(ev => {
+['dragleave','drop'].forEach(ev => {
   dropzone.addEventListener(ev, (e)=> { e.preventDefault(); e.stopPropagation(); dropzone.classList.remove('dragover');});
 });
 dropzone.addEventListener('drop', (e)=>{
@@ -303,14 +370,13 @@ dropzone.addEventListener('drop', (e)=>{
 });
 dropzone.addEventListener('click', ()=> fileInput.click());
 
-/* Paste support */
 window.addEventListener('paste', (e)=>{
   if(e.clipboardData){
     const items = e.clipboardData.items;
     const list = [];
     for(let i=0;i<items.length;i++){
       const it = items[i];
-      if(it.type.indexOf('image') !== -1){
+      if(it.type && it.type.indexOf && it.type.indexOf('image') !== -1){
         const file = it.getAsFile();
         if(file) list.push(file);
       }
@@ -319,33 +385,25 @@ window.addEventListener('paste', (e)=>{
   }
 });
 
-/* Handle reading files */
 async function handleFiles(fileList){
-  const files = Array.from(fileList).filter(f=>f.type.startsWith('image/'));
+  const files = Array.from(fileList).filter(f=>f && f.type && f.type.startsWith && f.type.startsWith('image/'));
   if(files.length === 0) return;
   status('Reading ' + files.length + ' files...');
   for(const f of files){
     const id = uid();
     const dataUrl = await fileToDataURL(f);
-    // read natural size
     const dims = await getImageSize(dataUrl);
-    // attempt read EXIF orientation
     let orientation = 1;
     try{
       const tags = ExifReader.load(await f.arrayBuffer());
       if(tags && tags.Orientation && tags.Orientation.value) orientation = tags.Orientation.value;
-    }catch(err){ /* ignore */ }
-
-    images.push({
-      id, file: f, name: f.name, dataUrl, rotation: 0, cropData: null,
-      width: dims.width, height: dims.height, exifOrientation: orientation
-    });
+    }catch(err){}
+    images.push({ id, file: f, name: f.name, dataUrl, rotation: 0, cropData: null, width: dims.width, height: dims.height, exifOrientation: orientation });
   }
   renderThumbs();
   status('Loaded ' + images.length + ' images');
 }
 
-/* helper read file to dataURL */
 function fileToDataURL(file){
   return new Promise((resolve, reject)=>{
     const fr = new FileReader();
@@ -363,7 +421,6 @@ function getImageSize(dataUrl){
   });
 }
 
-/* Render thumbnails */
 function renderThumbs(){
   thumbsEl.innerHTML = '';
   images.forEach((img, index) => {
@@ -374,22 +431,20 @@ function renderThumbs(){
       <img src="${img.dataUrl}" alt="${escapeHtml(img.name)}"/>
       <div style="font-size:12px; text-align:center; word-break:break-word;">${escapeHtml(img.name)}</div>
       <div class="actions">
-        <button class="smallbtn rotate-left">⟲</button>
-        <button class="smallbtn rotate-right">⟳</button>
-        <button class="smallbtn crop">Crop</button>
-        <button class="smallbtn remove">✕</button>
+        <button class="smallbtn rotate-left" title="Rotate left">⟲</button>
+        <button class="smallbtn rotate-right" title="Rotate right">⟳</button>
+        <button class="smallbtn crop" title="Crop">Crop</button>
+        <button class="smallbtn remove" title="Remove">✕</button>
       </div>
     `;
     thumbsEl.appendChild(div);
 
-    // attach listeners
     div.querySelector('.rotate-left').addEventListener('click', ()=> { rotateImage(img.id, -90); });
     div.querySelector('.rotate-right').addEventListener('click', ()=> { rotateImage(img.id, 90); });
     div.querySelector('.crop').addEventListener('click', ()=> { openCrop(img.id); });
     div.querySelector('.remove').addEventListener('click', ()=> { removeImage(img.id); });
   });
 
-  // Enable reorder via SortableJS
   Sortable.create(thumbsEl, {
     animation: 150,
     onEnd(evt){
@@ -403,38 +458,27 @@ function renderThumbs(){
 
   updateCount();
 }
-
-/* escape simple html */
 function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
-/* Rotate image */
 function rotateImage(id, deg){
   const it = images.find(i=>i.id===id);
   if(!it) return;
   it.rotation = (it.rotation + deg + 3600) % 360;
-  // rotate visual preview by drawing to canvas immediately to update dataUrl
   applyTransformsToImage(it).then(() => renderThumbs());
 }
-
-/* Remove image */
 function removeImage(id){
   images = images.filter(i=>i.id!==id);
   renderThumbs();
 }
 
-/* Apply rotation/crop to produce a new dataURL (non-destructive if desired). We'll mutate dataUrl for previews. */
 async function applyTransformsToImage(imgObj){
-  // Load image
   const img = await loadImage(imgObj.dataUrl);
-  // create canvas sized to crop or full image
   let sx=0, sy=0, sW=img.width, sH=img.height;
   if(imgObj.cropData){
     sx = imgObj.cropData.x; sy = imgObj.cropData.y;
     sW = imgObj.cropData.width; sH = imgObj.cropData.height;
   }
-  // create offscreen canvas
   const tmp = document.createElement('canvas');
-  // consider rotation and swap dims if needed
   const rot = (imgObj.rotation || 0) % 360;
   if(rot % 180 === 0){
     tmp.width = sW; tmp.height = sH;
@@ -442,17 +486,14 @@ async function applyTransformsToImage(imgObj){
     tmp.width = sH; tmp.height = sW;
   }
   const ctx = tmp.getContext('2d');
-  // apply rotation about center
   ctx.translate(tmp.width/2, tmp.height/2);
   ctx.rotate(rot * Math.PI / 180);
   ctx.drawImage(img, sx, sy, sW, sH, -sW/2, -sH/2, sW, sH);
   const newDataUrl = tmp.toDataURL('image/png');
   imgObj.dataUrl = newDataUrl;
-  // update width/height to reflect new image
   imgObj.width = tmp.width; imgObj.height = tmp.height;
 }
 
-/* load image as HTMLImageElement from dataURL */
 function loadImage(dataUrl){
   return new Promise((res, rej)=>{
     const im = new Image();
@@ -462,7 +503,7 @@ function loadImage(dataUrl){
   });
 }
 
-/* Crop modal logic (Cropper.js) */
+/* Crop modal */
 const modal = document.getElementById('modal');
 const cropImgEl = document.getElementById('cropImg');
 const cropApply = document.getElementById('cropApply');
@@ -480,7 +521,6 @@ function openCrop(id){
   modal.classList.add('show');
   modal.setAttribute('aria-hidden','false');
 
-  // create cropper
   if(cropper) cropper.destroy();
   cropper = new Cropper(cropImgEl, {
     viewMode: 1,
@@ -496,28 +536,20 @@ function openCrop(id){
   cropReset.onclick = ()=> cropper.reset();
 }
 
-cropCancel.addEventListener('click', ()=> {
-  closeCrop();
-});
+cropCancel.addEventListener('click', ()=> { closeCrop(); });
 cropApply.addEventListener('click', async ()=> {
   if(currentCropIndex == null) return;
-  const cData = cropper.getData(true); // get data relative to image natural size
-  // cData keys: x, y, width, height, rotate, scaleX, scaleY
-  // We'll apply cropping + rotation to the image data and update images[currentCropIndex].dataUrl
+  const cData = cropper.getData(true);
   const obj = images[currentCropIndex];
-  // create canvas to store cropped result
   const img = await loadImage(obj.dataUrl);
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(cData.width);
   canvas.height = Math.round(cData.height);
   const ctx = canvas.getContext('2d');
-  // handle rotation by drawing into temp then using rotate transforms if needed
-  // We use drawImage with the crop rectangle from source image (natural coordinates)
   ctx.drawImage(img, cData.x, cData.y, cData.width, cData.height, 0, 0, cData.width, cData.height);
   const newDataUrl = canvas.toDataURL('image/png');
   obj.dataUrl = newDataUrl;
   obj.width = canvas.width; obj.height = canvas.height;
-  // clear cropData, rotation reset because applied
   obj.cropData = null;
   obj.rotation = 0;
   closeCrop();
@@ -531,13 +563,12 @@ function closeCrop(){
   currentCropIndex = null;
 }
 
-/* Apply EXIF orientation to correct images automatically */
+/* EXIF auto-orient */
 async function autoOrientAll(){
   status('Auto-orienting images...');
   for(const it of images){
     const o = it.exifOrientation || 1;
     if(o === 1) continue;
-    // convert orientation to rotation/flip
     const canvasResult = await applyExifOrientation(it.dataUrl, o);
     it.dataUrl = canvasResult;
     it.rotation = 0;
@@ -548,7 +579,6 @@ async function autoOrientAll(){
 }
 document.getElementById('btnAutoOrient').addEventListener('click', autoOrientAll);
 
-/* apply EXIF orientation */
 async function applyExifOrientation(dataUrl, orientation){
   const img = await loadImage(dataUrl);
   const w = img.naturalWidth, h = img.naturalHeight;
@@ -559,26 +589,22 @@ async function applyExifOrientation(dataUrl, orientation){
   } else {
     canvas.width = w; canvas.height = h;
   }
-  // transform context based on orientation (1 normal)
   switch(orientation){
-    case 2: ctx.transform(-1,0,0,1,w,0); break; // flip horizontal
-    case 3: ctx.translate(w,h); ctx.rotate(Math.PI); break; // rotate 180
-    case 4: ctx.transform(1,0,0,-1,0,h); break; // flip vertical
-    case 5: ctx.transform(0,1,1,0,0,0); break; // transpose
-    case 6: ctx.translate(h,0); ctx.rotate(Math.PI/2); break; // rotate 90
-    case 7: ctx.transform(0,-1,-1,0,h,w); break; // transverse
-    case 8: ctx.translate(0,w); ctx.rotate(-Math.PI/2); break; // rotate -90
+    case 2: ctx.transform(-1,0,0,1,w,0); break;
+    case 3: ctx.translate(w,h); ctx.rotate(Math.PI); break;
+    case 4: ctx.transform(1,0,0,-1,0,h); break;
+    case 5: ctx.transform(0,1,1,0,0,0); break;
+    case 6: ctx.translate(h,0); ctx.rotate(Math.PI/2); break;
+    case 7: ctx.transform(0,-1,-1,0,h,w); break;
+    case 8: ctx.translate(0,w); ctx.rotate(-Math.PI/2); break;
     default: break;
   }
   ctx.drawImage(img,0,0);
   return canvas.toDataURL('image/png');
 }
 
-/* Simple rotation via canvas for preview update implemented earlier on rotateImage */
-
-/* Escape hatch for buttons */
+/* Bulk rotate/crop */
 document.getElementById('btnRotateLeft').addEventListener('click', ()=>{
-  // rotate selected? We'll rotate all images (global) for convenience
   images.forEach(i=> i.rotation = (i.rotation - 90 + 360) % 360);
   Promise.all(images.map(i=> applyTransformsToImage(i))).then(()=> renderThumbs());
 });
@@ -587,15 +613,13 @@ document.getElementById('btnRotateRight').addEventListener('click', ()=>{
   Promise.all(images.map(i=> applyTransformsToImage(i))).then(()=> renderThumbs());
 });
 document.getElementById('btnCrop').addEventListener('click', ()=>{
-  // open crop on first image as convenience
   if(images.length>0) openCrop(images[0].id);
 });
 
-/* Generate PDF logic */
+/* PDF generation */
 btnGenerate.addEventListener('click', ()=> generatePDF({preview:false}));
 btnPreview.addEventListener('click', ()=> generatePDF({preview:true}));
 
-/* Page size calculation */
 function computePageSizePoints(){
   const preset = pageSizeEl.value;
   let wPt, hPt;
@@ -607,7 +631,6 @@ function computePageSizePoints(){
     const p = PAGE_PRESETS.A4;
     wPt = mmToPoints(p.w_mm); hPt = mmToPoints(p.h_mm);
   } else {
-    // inches values
     const p = PAGE_PRESETS[preset];
     const wIn = p.w_in; const hIn = p.h_in;
     wPt = wIn * 72; hPt = hIn * 72;
@@ -616,7 +639,6 @@ function computePageSizePoints(){
   return {wPt, hPt};
 }
 
-/* Main generator */
 async function generatePDF({ preview=false } = {}){
   if(images.length === 0){ alert('Add images first'); return; }
   btnGenerate.disabled = true;
@@ -652,14 +674,10 @@ async function generatePDF({ preview=false } = {}){
       status(`Processing image ${idx+1} / ${pagesCount}`);
       progress( Math.round((idx/pagesCount) * 100) );
 
-      // prepare processed image as Blob via canvas (apply quality & dpi)
       const processed = await renderImageForPdf(imgObj, { dpi, quality, fitMode, targetPtWidth: wPt - 2*marginPt, targetPtHeight: hPt - 2*marginPt });
-      // processed: { mime, blob, width_px, height_px }
 
-      // embed into pdf-lib
       let embeddedImage;
       if(embedAsJpg && processed.mime === 'image/png'){
-        // try converting PNG to JPEG to save space
         const jpegBlob = await blobToJpeg(processed.blob, quality);
         const arrayBuf = await jpegBlob.arrayBuffer();
         embeddedImage = await pdfDoc.embedJpg(arrayBuf);
@@ -670,16 +688,14 @@ async function generatePDF({ preview=false } = {}){
         const arrayBuf = await processed.blob.arrayBuffer();
         embeddedImage = await pdfDoc.embedJpg(arrayBuf);
       } else {
-        // fallback to PNG embed
         const arrayBuf = await processed.blob.arrayBuffer();
         embeddedImage = await pdfDoc.embedPng(arrayBuf);
       }
 
       const page = pdfDoc.addPage([wPt, hPt]);
-      // calculate placement based on fit mode
       const targetW = wPt - 2*marginPt;
       const targetH = hPt - 2*marginPt;
-      const imgWpt = (processed.width_px / processed.dpi) * 72; // px / dpi * 72
+      const imgWpt = (processed.width_px / processed.dpi) * 72;
       const imgHpt = (processed.height_px / processed.dpi) * 72;
       let drawW = imgWpt, drawH = imgHpt;
 
@@ -695,19 +711,15 @@ async function generatePDF({ preview=false } = {}){
         drawW = imgWpt; drawH = imgHpt;
       }
 
-      // compute coordinates to center within margins
       let x = marginPt + (targetW - drawW)/2;
       let y = marginPt + (targetH - drawH)/2;
 
-      // If center mode and image bigger than target, clip to page edges by aligning center but image may overflow - pdf-lib will draw outside but page size remains. We'll simply center.
       page.drawImage(embeddedImage, { x, y, width: drawW, height: drawH });
 
-      // watermark
       if(watermarkText){
         const helv = await pdfDoc.embedFont(StandardFonts.Helvetica);
         const wmSize = watermarkSize;
         const textWidth = helv.widthOfTextAtSize(watermarkText, wmSize);
-        const textHeight = helv.heightAtSize(wmSize);
         let tx = 0, ty = 0;
         if(watermarkPos === 'center'){ tx = (wPt - textWidth)/2; ty = (hPt - wmSize)/2; }
         if(watermarkPos === 'top-left'){ tx = marginPt; ty = hPt - marginPt - wmSize; }
@@ -723,7 +735,6 @@ async function generatePDF({ preview=false } = {}){
         });
       }
 
-      // small delay permit UI update
       await sleep(10);
     }
 
@@ -732,7 +743,6 @@ async function generatePDF({ preview=false } = {}){
     const pdfBytes = await pdfDoc.save();
     const blob = new Blob([pdfBytes], {type:'application/pdf'});
     if(preview){
-      // open first page as blob URL in new tab
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');
     } else {
@@ -750,19 +760,12 @@ async function generatePDF({ preview=false } = {}){
   }
 }
 
-/* Helper: Render image into properly sized canvas blob suitable for embedding, respecting DPI and quality.
-   Return object: { mime, blob, width_px, height_px, dpi }
-*/
 async function renderImageForPdf(imgObj, { dpi=150, quality=0.9, fitMode='contain', targetPtWidth, targetPtHeight }){
-  // load image
   const img = await loadImage(imgObj.dataUrl);
-  // apply rotation if present (we assume rotation already applied to dataUrl for thumbnails; but ensure)
-  // compute target pixel dimensions: targetPtWidth is in points; convert to px targetPx = targetPt * dpi / 72
   const targetPxW = Math.round(targetPtWidth * dpi / 72);
   const targetPxH = Math.round(targetPtHeight * dpi / 72);
 
   let srcW = img.naturalWidth, srcH = img.naturalHeight;
-  // determine effective draw size in px based on fit mode
   let drawW = srcW, drawH = srcH;
   if(fitMode === 'contain'){
     const scale = Math.min(targetPxW / srcW, targetPxH / srcH, 1);
@@ -776,20 +779,14 @@ async function renderImageForPdf(imgObj, { dpi=150, quality=0.9, fitMode='contai
     drawW = srcW; drawH = srcH;
   }
 
-  // create canvas sized to drawW x drawH (but ensure at least 1px)
   const canvas = document.createElement('canvas');
   canvas.width = Math.max(1, drawW);
   canvas.height = Math.max(1, drawH);
   const ctx = canvas.getContext('2d');
-
-  // fill white background for JPEG compatibility
   ctx.fillStyle = '#ffffff';
   ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  // draw scaled image
   ctx.drawImage(img, 0, 0, srcW, srcH, 0,0, canvas.width, canvas.height);
 
-  // produce blob (JPEG or PNG based on preference)
   const preferJpg = embedAsJpgEl.checked;
   let mime = 'image/png';
   let blob;
@@ -797,15 +794,12 @@ async function renderImageForPdf(imgObj, { dpi=150, quality=0.9, fitMode='contai
     blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
     mime = 'image/jpeg';
   } else {
-    // Use PNG to preserve transparency if present
-    // If PNG and original had no alpha consider converting to JPEG to save space - but user chose checkbox to control that
     blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     mime = 'image/png';
   }
   return { mime, blob, width_px: canvas.width, height_px: canvas.height, dpi };
 }
 
-/* convert blob PNG -> JPEG */
 async function blobToJpeg(blob, quality=0.9){
   const url = URL.createObjectURL(blob);
   const img = await loadImage(url);
@@ -818,34 +812,23 @@ async function blobToJpeg(blob, quality=0.9){
   return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', quality));
 }
 
-/* small helpers */
 function sleep(ms){ return new Promise(r => setTimeout(r, ms)); }
 function progress(p){ progressBar.style.width = (p) + '%'; }
 function status(s){ statusEl.textContent = s; }
 
-/* Convert canvas element width style to progress */
 (function initUI(){
-  // custom page size toggle
   pageSizeEl.addEventListener('change', ()=> {
     if(pageSizeEl.value === 'Custom') customSizeRow.style.display = 'flex';
     else customSizeRow.style.display = 'none';
   });
 
-  // initial render
   renderThumbs();
 })();
 
-/* simple debug utility to log image info */
-function listImages(){
-  console.table(images.map(i=>({name:i.name, w:i.width, h:i.height, rot:i.rotation})));
-}
-
-/* Expose listImages in window for debugging (dev only) */
+function listImages(){ console.table(images.map(i=>({name:i.name, w:i.width, h:i.height, rot:i.rotation}))); }
 window.listImages = listImages;
 
-/* initial status */
 status('Idle');
-
 </script>
 </body>
 </html>
