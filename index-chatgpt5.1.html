@@ -7,7 +7,6 @@
   <meta name="description" content="A curated directory of web tools for developers, designers and marketers. Search, favorite, and launch tools instantly." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
-
   <style>
     :root{
       --bg:#f7fbff;
@@ -26,6 +25,7 @@
       font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
       background:linear-gradient(180deg, var(--bg), #eef6ff 60%);
       color:var(--text);
+      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
     }
 
     .container{max-width:var(--max-width); margin:0 auto; padding:36px 20px;}
@@ -72,7 +72,7 @@
       display:flex; align-items:center; gap:8px; background:var(--surface); padding:8px 12px;
       border-radius:10px; box-shadow:var(--shadow);
     }
-    .search input{border:0; outline:0; background:transparent; width:200px;}
+    .search input{border:0; outline:0; background:transparent; width:200px; color:var(--text);}
 
     .select{
       padding:8px 12px; border-radius:10px; background:var(--surface); border:0; box-shadow:var(--shadow);
@@ -85,9 +85,10 @@
     .tool-card{
       background:var(--surface); border-radius:12px; padding:14px; box-shadow:var(--shadow);
       display:flex; flex-direction:column; gap:10px;
-      transition:0.15s ease;
+      transition:0.15s ease; cursor:pointer;
     }
     .tool-card:hover{transform:translateY(-5px); box-shadow:0 22px 40px rgba(12,20,40,0.12)}
+    .tool-card:focus{outline:3px solid rgba(37,99,235,0.12); outline-offset:4px;}
 
     .meta{display:flex; gap:10px; align-items:center;}
     .tool-icon{
@@ -100,18 +101,22 @@
 
     .action{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent;cursor:pointer;font-size:13px;font-weight:600;}
 
-    #empty{text-align:center;margin-top:20px;color:var(--muted);}
+    #empty{text-align:center;margin-top:20px;color:var(--muted); display:none}
 
     footer{margin-top:40px; text-align:center; color:var(--muted); font-size:14px;}
 
-    /* Modal */
-    #modalBackdrop{
-      display:none; position:fixed; inset:0;background:rgba(3,7,18,0.5); z-index:90;
-      align-items:center; justify-content:center;
+    @media (max-width:900px){
+      .features{flex-direction:row; gap:10px}
+      .hero{flex-direction:column-reverse; align-items:flex-start}
     }
-    .modal{
-      background:var(--surface); width:min(600px,90%); padding:18px; border-radius:12px; box-shadow:var(--shadow);
+    @media (max-width:560px){
+      nav{flex-direction:column; align-items:flex-start; gap:12px;}
+      .search input{width:140px;}
+      .features{flex-direction:column; gap:10px}
     }
+
+    .muted{color:var(--muted)}
+    .center{display:flex; align-items:center; justify-content:center}
   </style>
 </head>
 
@@ -135,7 +140,7 @@
       </div>
     </nav>
 
-    <!-- HERO (no preview card, no Beta section) -->
+    <!-- HERO -->
     <section class="hero">
       <span class="eyebrow">Productivity suite</span>
       <h2>Discover fast, reliable web tools for teams and individuals</h2>
@@ -146,7 +151,7 @@
         <button class="btn">How it works</button>
       </div>
 
-      <div class="features">
+      <div class="features" aria-hidden="false">
         <div class="feature">
           <h4>Curated</h4>
           <p>High-quality tools selected for speed and privacy.</p>
@@ -171,24 +176,25 @@
         </div>
 
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <div class="search">
-            <input id="search" type="search" placeholder="Search tools ( / )">
+          <div class="search" title="Search tools">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <input id="search" type="search" placeholder="Search tools ( / )" aria-label="Search tools">
           </div>
 
-          <select id="category" class="select">
+          <select id="category" class="select" aria-label="Filter by category">
             <option value="all">All categories</option>
           </select>
 
-          <select id="sort" class="select">
+          <select id="sort" class="select" aria-label="Sort tools">
             <option value="alpha">A → Z</option>
             <option value="relevance">Relevance</option>
           </select>
 
-          <button id="favoritesFilter" class="btn">Favorites</button>
+          <button id="favoritesFilter" class="btn" aria-pressed="false" title="Toggle favorites">Favorites</button>
         </div>
       </div>
 
-      <div id="toolsGrid" class="grid"></div>
+      <div id="toolsGrid" class="grid" aria-live="polite"></div>
       <div id="empty">No tools found.</div>
     </section>
 
@@ -197,28 +203,8 @@
     </footer>
   </div>
 
-  <!-- MODAL -->
-  <div id="modalBackdrop">
-    <div class="modal">
-      <div style="display:flex; justify-content:space-between; align-items:center;">
-        <div>
-          <h3 id="modalTitle" style="margin:0"></h3>
-          <div id="modalCategory" style="font-size:13px;color:var(--muted);margin-top:6px;"></div>
-        </div>
-        <button id="modalClose" class="btn">Close</button>
-      </div>
-
-      <p id="modalDesc" style="color:var(--muted); margin-top:14px;"></p>
-
-      <div style="display:flex; gap:10px; margin-top:14px;">
-        <a id="modalUrl" href="#" target="_blank" class="btn primary" style="text-decoration:none;">Open tool</a>
-        <button id="modalFav" class="btn">Add favorite</button>
-        <button id="copyLink" class="btn">Copy link</button>
-      </div>
-    </div>
-  </div>
-
   <script>
+    // Tool dataset (no dates)
     const TOOLS = [
       { id:'url-shortener', name:'URL Shortener', description:'Create short links with analytics.', category:'Utilities', url:'https://example.com/url-shortener' },
       { id:'color-picker', name:'Color Picker', description:'Pick colors and convert formats.', category:'Design', url:'https://example.com/color-picker' },
@@ -230,103 +216,92 @@
       { id:'json-to-csv', name:'JSON → CSV', description:'Convert JSON to CSV instantly.', category:'Developer', url:'https://example.com/json-to-csv' }
     ];
 
+    // App state
     const state = {
-      query:'',
-      category:'all',
-      sort:'alpha',
-      favoritesOnly:false,
-      favorites:new Set(JSON.parse(localStorage.getItem('wt:favorites') || '[]'))
+      query: '',
+      category: 'all',
+      sort: 'alpha',
+      favoritesOnly: false,
+      favorites: new Set(JSON.parse(localStorage.getItem('wt:favorites') || '[]'))
     };
 
-    // DOM
+    // DOM refs
     const grid = document.getElementById('toolsGrid');
     const emptyEl = document.getElementById('empty');
-
     const searchInput = document.getElementById('search');
     const categorySelect = document.getElementById('category');
     const sortSelect = document.getElementById('sort');
     const favFilterBtn = document.getElementById('favoritesFilter');
 
-    // Modal DOM
-    const modalBackdrop = document.getElementById('modalBackdrop');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalDesc = document.getElementById('modalDesc');
-    const modalCategory = document.getElementById('modalCategory');
-    const modalUrl = document.getElementById('modalUrl');
-    const modalFavBtn = document.getElementById('modalFav');
-    const modalClose = document.getElementById('modalClose');
-    const copyLinkBtn = document.getElementById('copyLink');
-
-    function init(){
+    // Init
+    function init() {
       document.getElementById('year').textContent = new Date().getFullYear();
 
-      // Populate categories
-      [...new Set(TOOLS.map(t=>t.category))].sort().forEach(c=>{
-        const opt=document.createElement('option'); opt.value=c; opt.textContent=c;
+      // categories
+      const cats = Array.from(new Set(TOOLS.map(t => t.category))).sort();
+      for (const c of cats) {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c;
         categorySelect.appendChild(opt);
+      }
+
+      // handlers
+      searchInput.addEventListener('input', () => { state.query = searchInput.value.trim().toLowerCase(); render(); });
+      categorySelect.addEventListener('change', () => { state.category = categorySelect.value; render(); });
+      sortSelect.addEventListener('change', () => { state.sort = sortSelect.value; render(); });
+      favFilterBtn.addEventListener('click', () => { state.favoritesOnly = !state.favoritesOnly; favFilterBtn.setAttribute('aria-pressed', state.favoritesOnly); render(); });
+
+      // keyboard shortcuts: / to search, f to toggle favorites, Enter on focused card opens
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/') { e.preventDefault(); searchInput.focus(); }
+        if (e.key === 'f' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); favFilterBtn.click(); }
       });
 
-      // Handlers
-      searchInput.addEventListener('input', e=>{state.query=e.target.value.toLowerCase(); render();});
-      categorySelect.addEventListener('change', e=>{state.category=e.target.value; render();});
-      sortSelect.addEventListener('change', e=>{state.sort=e.target.value; render();});
-      favFilterBtn.addEventListener('click', ()=>{
-        state.favoritesOnly=!state.favoritesOnly;
-        favFilterBtn.setAttribute('aria-pressed',state.favoritesOnly);
-        render();
-      });
-
-      document.getElementById('ctaBrowse').addEventListener('click',()=>{
-        document.getElementById('tools-heading')?.scrollIntoView({ behavior:'smooth' });
-      });
-
-      window.addEventListener('keydown', e=>{
-        if(e.key==='/'){e.preventDefault(); searchInput.focus();}
-        if(e.key==='Escape') closeModal();
-      });
-
-      modalClose.addEventListener('click', closeModal);
-      modalBackdrop.addEventListener('click', e=>{if(e.target===modalBackdrop) closeModal();});
-      copyLinkBtn.addEventListener('click', copyModalLink);
-      modalFavBtn.addEventListener('click', ()=>{
-        const id=modalFavBtn.dataset.id;
-        toggleFavorite(id);
-        modalFavBtn.textContent = state.favorites.has(id) ? 'Remove favorite' : 'Add favorite';
-        render();
+      // CTA behavior
+      document.getElementById('ctaBrowse').addEventListener('click', () => {
+        document.getElementById('toolsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
       });
 
       render();
     }
 
-    function render(){
-      let results = TOOLS.filter(t=>{
-        if(state.category!=='all' && t.category!==state.category) return false;
-        if(state.favoritesOnly && !state.favorites.has(t.id)) return false;
-        if(state.query && !(t.name+' '+t.description+' '+t.category).toLowerCase().includes(state.query)) return false;
+    // Render
+    function render() {
+      let results = TOOLS.filter(t => {
+        if (state.category !== 'all' && t.category !== state.category) return false;
+        if (state.favoritesOnly && !state.favorites.has(t.id)) return false;
+        if (state.query && !(t.name + ' ' + t.description + ' ' + t.category).toLowerCase().includes(state.query)) return false;
         return true;
       });
 
-      // sorting
-      if(state.sort==='alpha') results.sort((a,b)=>a.name.localeCompare(b.name));
-      if(state.sort==='relevance' && state.query){
-        results.sort((a,b)=>{
-          const ai=(a.name+' '+a.description).toLowerCase().indexOf(state.query);
-          const bi=(b.name+' '+b.description).toLowerCase().indexOf(state.query);
-          return ai-bi;
+      if (state.sort === 'alpha') results.sort((a,b) => a.name.localeCompare(b.name));
+      if (state.sort === 'relevance' && state.query) {
+        results.sort((a,b) => {
+          const ai = (a.name + ' ' + a.description).toLowerCase().indexOf(state.query);
+          const bi = (b.name + ' ' + b.description).toLowerCase().indexOf(state.query);
+          return ai - bi;
         });
       }
 
-      grid.innerHTML='';
-      if(results.length===0){ emptyEl.style.display='block'; return; }
-      emptyEl.style.display='none';
+      grid.innerHTML = '';
+      if (results.length === 0) {
+        emptyEl.style.display = 'block';
+        return;
+      } else {
+        emptyEl.style.display = 'none';
+      }
 
-      results.forEach(t=>{
-        const el=document.createElement('div');
-        el.className='tool-card';
-        el.innerHTML=`
+      for (const t of results) {
+        const card = document.createElement('article');
+        card.className = 'tool-card';
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', `Open ${t.name}`);
+        card.innerHTML = `
           <div class="meta">
-            <div class="tool-icon">${initials(t.name)}</div>
-            <div>
+            <div class="tool-icon" aria-hidden="true">${initials(t.name)}</div>
+            <div style="flex:1">
               <h4 class="tool-title">${escapeHtml(t.name)}</h4>
               <p class="tool-desc">${escapeHtml(t.description)}</p>
             </div>
@@ -335,60 +310,62 @@
             <div class="tag">${escapeHtml(t.category)}</div>
             <div style="display:flex; gap:8px;">
               <button class="action open">Open</button>
-              <button class="action details">Details</button>
-              <button class="action favorite">${state.favorites.has(t.id) ? '★' : '☆'}</button>
+              <button class="action favorite" aria-pressed="${state.favorites.has(t.id) ? 'true' : 'false'}">${state.favorites.has(t.id) ? '★' : '☆'}</button>
             </div>
           </div>
         `;
 
-        el.querySelector('.open').addEventListener('click', ()=>window.open(t.url,'_blank'));
-        el.querySelector('.details').addEventListener('click', ()=>openModal(t));
-        el.querySelector('.favorite').addEventListener('click', e=>{
-          toggleFavorite(t.id);
-          e.target.textContent=state.favorites.has(t.id)?'★':'☆';
-          render();
+        // clicking card opens tool
+        card.addEventListener('click', (e) => {
+          // if user clicked favorite button, don't navigate
+          if (e.target.closest('.favorite')) return;
+          if (e.target.closest('.open')) {
+            window.open(t.url, '_blank', 'noopener');
+            return;
+          }
+          window.open(t.url, '_blank', 'noopener');
         });
 
-        el.addEventListener('keydown', e=>{if(e.key==='Enter') openModal(t);});
-        grid.appendChild(el);
-      });
+        // keyboard: Enter opens
+        card.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter') window.open(t.url, '_blank', 'noopener');
+        });
+
+        // open button
+        card.querySelector('.open').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          window.open(t.url, '_blank', 'noopener');
+        });
+
+        // favorite button
+        card.querySelector('.favorite').addEventListener('click', (ev) => {
+          ev.stopPropagation();
+          toggleFavorite(t.id);
+          render(); // re-render to update UI and favorites filter
+        });
+
+        grid.appendChild(card);
+      }
     }
 
-    function openModal(tool){
-      modalTitle.textContent=tool.name;
-      modalDesc.textContent=tool.description;
-      modalCategory.textContent=tool.category;
-      modalUrl.href=tool.url;
-      modalFavBtn.dataset.id=tool.id;
-      modalFavBtn.textContent=state.favorites.has(tool.id)?'Remove favorite':'Add favorite';
-
-      modalBackdrop.style.display='flex';
-      modalClose.focus();
-    }
-    function closeModal(){ modalBackdrop.style.display='none'; }
-
-    function copyModalLink(){
-      const url=modalUrl.href;
-      navigator.clipboard.writeText(url).then(()=>{
-        copyLinkBtn.textContent='Copied';
-        setTimeout(()=>copyLinkBtn.textContent='Copy link', 1500);
-      });
-    }
-
-    function toggleFavorite(id){
-      if(state.favorites.has(id)) state.favorites.delete(id);
+    // Favorites
+    function toggleFavorite(id) {
+      if (state.favorites.has(id)) state.favorites.delete(id);
       else state.favorites.add(id);
-      localStorage.setItem('wt:favorites', JSON.stringify([...state.favorites]));
+      localStorage.setItem('wt:favorites', JSON.stringify(Array.from(state.favorites)));
     }
 
-    function initials(name){
-      const parts=name.split(' ');
-      return (parts[0][0] + (parts[1]?.[0]||'')).toUpperCase();
+    // Helpers
+    function initials(name) {
+      const parts = name.split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+      return (parts[0][0] + parts[1][0]).toUpperCase();
     }
-    function escapeHtml(str){
-      return str.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s]));
     }
 
+    // Boot
     init();
   </script>
 </body>
