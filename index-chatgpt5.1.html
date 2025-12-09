@@ -7,6 +7,7 @@
   <meta name="description" content="A curated directory of web tools for developers, designers and marketers. Search, favorite, and launch tools instantly." />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+
   <style>
     :root{
       --bg:#f7fbff;
@@ -15,427 +16,379 @@
       --text:#0f1724;
       --accent:#2563eb;
       --accent-2:#7c3aed;
-      --glass: rgba(255,255,255,0.6);
-      --radius:12px;
-      --shadow: 0 10px 30px rgba(12,20,40,0.08);
-      --max-width:1100px;
+      --shadow:0 10px 30px rgba(12,20,40,0.08);
+      --max-width:1000px;
     }
+
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
-      margin:0; font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-      background:linear-gradient(180deg,var(--bg), #eef6ff 60%);
-      color:var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      margin:0;
+      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
+      background:linear-gradient(180deg, var(--bg), #eef6ff 60%);
+      color:var(--text);
     }
 
     .container{max-width:var(--max-width); margin:0 auto; padding:36px 20px;}
 
-    nav{display:flex; align-items:center; justify-content:space-between; gap:16px; margin-bottom:24px;}
-    .brand{display:flex; align-items:center; gap:14px;}
+    /* NAV */
+    nav{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
+    .brand{display:flex; gap:12px; align-items:center;}
     .logo{
-      width:52px; height:52px; border-radius:10px; display:inline-grid; place-items:center; color:white;
-      font-weight:800; font-size:18px;
-      background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      width:50px; height:50px; border-radius:10px; display:grid; place-items:center;
+      background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; font-weight:800; font-size:18px;
       box-shadow:var(--shadow);
     }
-    .brand h1{margin:0;font-size:18px;letter-spacing:-0.2px}
-    .nav-actions{display:flex; gap:10px; align-items:center;}
     .btn{
-      appearance:none; border:0; background:var(--surface); padding:10px 14px; border-radius:10px; box-shadow:var(--shadow);
-      cursor:pointer; color:var(--text); font-weight:600; font-size:14px;
+      padding:9px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:600; background:var(--surface); box-shadow:var(--shadow);
     }
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white; box-shadow:0 8px 28px rgba(37,99,235,0.14);}
+    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white;}
 
-    .hero{display:flex; gap:28px; align-items:center; margin-bottom:28px; flex-wrap:wrap;}
-    .hero-left{flex:1; min-width:280px}
-    .eyebrow{display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(37,99,235,0.08); color:var(--accent); font-weight:600; font-size:13px; margin-bottom:12px;}
-    .hero h2{margin:0; font-size:32px; line-height:1.04;}
-    .lead{color:var(--muted); margin:12px 0 16px; max-width:56ch;}
+    /* HERO (simple) */
+    .hero{margin:28px 0;}
+    .eyebrow{
+      display:inline-block; padding:6px 12px; border-radius:999px;
+      background:rgba(37,99,235,0.09); color:var(--accent); font-weight:600; font-size:13px;
+      margin-bottom:14px;
+    }
+    .hero h2{margin:0; font-size:34px; line-height:1.1; max-width:600px;}
+    .lead{color:var(--muted); margin:14px 0 20px; max-width:580px;}
     .hero-ctas{display:flex; gap:12px; flex-wrap:wrap;}
-    .hero-visual{flex:0 0 420px; min-width:240px; display:flex; justify-content:center; align-items:center;}
-    .card-visual{
-      width:100%; max-width:380px; border-radius:14px; padding:14px; background:linear-gradient(180deg, rgba(255,255,255,0.85), rgba(255,255,255,0.7));
-      box-shadow:0 18px 40px rgba(12,20,40,0.08); border:1px solid rgba(11,22,40,0.03);
+
+    /* Features (compact) */
+    .features{display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;}
+    .feature{
+      background:var(--surface); padding:12px 14px; border-radius:12px; box-shadow:var(--shadow);
+      flex:1; min-width:200px;
     }
+    .feature h4{margin:6px 0 4px;font-size:15px}
+    .feature p{margin:0;color:var(--muted); font-size:13px;}
 
-    .features{display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;}
-    .feature{background:var(--surface); padding:10px 12px; border-radius:10px; box-shadow:var(--shadow); min-width:160px;}
-    .feature h4{margin:6px 0 6px; font-size:14px}
-    .feature p{margin:0;color:var(--muted);font-size:13px}
-
-    .tools-header{display:flex; align-items:center; justify-content:space-between; gap:12px; margin:22px 0 10px;}
-    .controls{display:flex; gap:10px; align-items:center; flex-wrap:wrap;}
+    /* Tools Section */
+    .tools-header{
+      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;
+      margin:30px 0 10px; gap:12px;
+    }
     .search{
-      display:flex; align-items:center; gap:8px; background:var(--surface); padding:8px 12px; border-radius:10px; box-shadow:var(--shadow);
-      min-width:240px;
+      display:flex; align-items:center; gap:8px; background:var(--surface); padding:8px 12px;
+      border-radius:10px; box-shadow:var(--shadow);
     }
-    .search input{border:0; outline:0; background:transparent; font-size:14px; width:220px; color:var(--text);}
-    .select{appearance:none; border:0; padding:8px 12px; border-radius:10px; background:var(--surface); box-shadow:var(--shadow); font-size:14px;}
-    .pill{padding:8px 12px; border-radius:999px; background:rgba(15,23,36,0.04); font-weight:600; color:var(--muted); font-size:13px;}
+    .search input{border:0; outline:0; background:transparent; width:200px;}
+
+    .select{
+      padding:8px 12px; border-radius:10px; background:var(--surface); border:0; box-shadow:var(--shadow);
+    }
 
     .grid{
       display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-top:12px;
     }
+
     .tool-card{
-      background:var(--surface); border-radius:12px; padding:14px; box-shadow:var(--shadow); display:flex; flex-direction:column; gap:10px;
-      transition:transform .16s ease, box-shadow .16s ease;
+      background:var(--surface); border-radius:12px; padding:14px; box-shadow:var(--shadow);
+      display:flex; flex-direction:column; gap:10px;
+      transition:0.15s ease;
     }
-    .tool-card:hover{transform:translateY(-6px); box-shadow:0 26px 50px rgba(12,20,40,0.12)}
-    .meta{display:flex; gap:12px; align-items:center}
-    .tool-icon{width:52px;height:52px;border-radius:12px; display:grid; place-items:center; color:white; font-weight:700; background:linear-gradient(135deg,var(--accent),var(--accent-2))}
-    .tool-title{margin:0;font-size:15px;font-weight:700}
-    .tool-desc{margin:0;color:var(--muted); font-size:13px}
-    .tag{display:inline-block; padding:6px 10px; border-radius:999px; background:rgba(15,23,36,0.04); font-size:12px; color:var(--muted)}
+    .tool-card:hover{transform:translateY(-5px); box-shadow:0 22px 40px rgba(12,20,40,0.12)}
 
-    .card-actions{display:flex; gap:8px; margin-top:auto;}
-    .action{flex:1; padding:8px 10px; border-radius:10px; border:1px solid rgba(0,0,0,0.06); background:transparent; cursor:pointer; font-weight:600;}
-
-    #empty{display:none; margin-top:18px; color:var(--muted); text-align:center}
-
-    footer{margin-top:30px; text-align:center; color:var(--muted); font-size:14px; padding-bottom:24px;}
-
-    @media (max-width:900px){
-      .features{flex-direction:row; gap:10px}
-      .hero{flex-direction:column-reverse; align-items:flex-start}
-      .hero-visual{align-self:stretch}
+    .meta{display:flex; gap:10px; align-items:center;}
+    .tool-icon{
+      width:50px;height:50px;border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
+      display:grid; place-items:center; font-weight:700; color:white;
     }
-    @media (max-width:560px){
-      nav{flex-direction:column; align-items:flex-start; gap:12px;}
-      .search input{width:140px;}
-      .features{flex-direction:column; gap:10px}
-    }
+    .tool-title{margin:0;font-weight:700;font-size:15px}
+    .tool-desc{margin:0;color:var(--muted);font-size:13px}
+    .tag{display:inline-block;background:rgba(15,23,42,0.05); padding:6px 10px; border-radius:999px; font-size:12px;color:var(--muted)}
 
-    .muted{color:var(--muted)}
-    .center{display:flex; align-items:center; justify-content:center}
+    .action{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent;cursor:pointer;font-size:13px;font-weight:600;}
+
+    #empty{text-align:center;margin-top:20px;color:var(--muted);}
+
+    footer{margin-top:40px; text-align:center; color:var(--muted); font-size:14px;}
+
+    /* Modal */
+    #modalBackdrop{
+      display:none; position:fixed; inset:0;background:rgba(3,7,18,0.5); z-index:90;
+      align-items:center; justify-content:center;
+    }
+    .modal{
+      background:var(--surface); width:min(600px,90%); padding:18px; border-radius:12px; box-shadow:var(--shadow);
+    }
   </style>
 </head>
+
 <body>
   <div class="container">
-    <nav aria-label="Top navigation">
+
+    <!-- NAV -->
+    <nav>
       <div class="brand">
-        <div class="logo" aria-hidden="true">WT</div>
+        <div class="logo">WT</div>
         <div>
-          <h1>Web Tools</h1>
-          <div class="muted" style="font-size:13px">A curated suite of online utilities</div>
+          <h1 style="margin:0;font-size:18px;">Web Tools</h1>
+          <div style="font-size:13px;color:var(--muted)">A curated suite of online utilities</div>
         </div>
       </div>
 
-      <div class="nav-actions">
+      <div style="display:flex; gap:10px;">
         <button class="btn">Docs</button>
         <button class="btn">Sign in</button>
         <button class="btn primary">Get started</button>
       </div>
     </nav>
 
-    <!-- HERO -->
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-left">
-        <span class="eyebrow">Productivity suite</span>
-        <h2 id="hero-title">Discover fast, reliable web tools for teams and individuals</h2>
-        <p class="lead">Search, launch and favorite the utilities you rely on — from formatters and validators to SEO checks and image tools. Designed for speed, built for reliability.</p>
-        <div class="hero-ctas">
-          <button class="btn primary" id="ctaBrowse">Browse tools</button>
-          <button class="btn" id="ctaLearn">How it works</button>
-          <span class="pill">No credit card • Free tier</span>
-        </div>
+    <!-- HERO (no preview card, no Beta section) -->
+    <section class="hero">
+      <span class="eyebrow">Productivity suite</span>
+      <h2>Discover fast, reliable web tools for teams and individuals</h2>
+      <p class="lead">Search, launch and favorite essential utilities for development, design and marketing — all in one place.</p>
 
-        <div class="features" aria-hidden="false">
-          <div class="feature">
-            <h4>Curated</h4>
-            <p>Hand-picked tools that meet performance and privacy standards.</p>
-          </div>
-          <div class="feature">
-            <h4>Instant access</h4>
-            <p>Open tools in a new tab with a single click — no signup required for many utilities.</p>
-          </div>
-          <div class="feature">
-            <h4>Favorites</h4>
-            <p>Save frequently used tools in your browser for quick access.</p>
-          </div>
-        </div>
+      <div class="hero-ctas">
+        <button class="btn primary" id="ctaBrowse">Browse tools</button>
+        <button class="btn">How it works</button>
       </div>
 
-      <div class="hero-visual" aria-hidden="true">
-        <div class="card-visual">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <div>
-              <div style="font-weight:800; font-size:18px">Your Tools</div>
-              <div class="muted" style="font-size:13px">Launch quickly</div>
-            </div>
-            <div class="pill">Beta</div>
-          </div>
-
-          <div style="display:grid; gap:10px;">
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <div style="display:flex; gap:12px; align-items:center">
-                <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; display:grid; place-items:center; font-weight:800">U</div>
-                <div>
-                  <div style="font-weight:700">URL Shortener</div>
-                  <div class="muted" style="font-size:13px">Short links & stats</div>
-                </div>
-              </div>
-              <div><button class="btn">Open</button></div>
-            </div>
-
-            <div style="display:flex; align-items:center; justify-content:space-between;">
-              <div style="display:flex; gap:12px; align-items:center">
-                <div style="width:44px;height:44px;border-radius:8px;background:linear-gradient(135deg,var(--accent-2),var(--accent)); color:white; display:grid; place-items:center; font-weight:800">C</div>
-                <div>
-                  <div style="font-weight:700">Color Picker</div>
-                  <div class="muted" style="font-size:13px">HEX / RGB / HSL</div>
-                </div>
-              </div>
-              <div><button class="btn">Open</button></div>
-            </div>
-          </div>
+      <div class="features">
+        <div class="feature">
+          <h4>Curated</h4>
+          <p>High-quality tools selected for speed and privacy.</p>
+        </div>
+        <div class="feature">
+          <h4>Instant Access</h4>
+          <p>Launch tools instantly — no installation required.</p>
+        </div>
+        <div class="feature">
+          <h4>Favorites</h4>
+          <p>Star tools to save them in your browser for quick access.</p>
         </div>
       </div>
     </section>
 
-    <!-- Tools listing -->
-    <section aria-labelledby="tools-heading">
+    <!-- TOOLS -->
+    <section>
       <div class="tools-header">
         <div>
-          <h3 id="tools-heading" style="margin:0">Tools</h3>
-          <div class="muted" style="font-size:13px">Quickly find utilities for development, design and marketing.</div>
+          <h3 style="margin:0;">Tools</h3>
+          <div style="font-size:13px;color:var(--muted)">Find utilities by category or search.</div>
         </div>
 
-        <div class="controls" role="region" aria-label="Tool controls">
-          <div class="search" title="Search tools">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <input id="search" type="search" placeholder="Search tools (press /)" aria-label="Search tools">
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <div class="search">
+            <input id="search" type="search" placeholder="Search tools ( / )">
           </div>
 
-          <select id="category" class="select" aria-label="Filter by category">
+          <select id="category" class="select">
             <option value="all">All categories</option>
           </select>
 
-          <select id="sort" class="select" aria-label="Sort tools">
+          <select id="sort" class="select">
             <option value="alpha">A → Z</option>
             <option value="relevance">Relevance</option>
           </select>
 
-          <button id="favoritesFilter" class="btn" aria-pressed="false" title="Toggle favorites">Favorites</button>
+          <button id="favoritesFilter" class="btn">Favorites</button>
         </div>
       </div>
 
-      <div id="toolsGrid" class="grid" aria-live="polite"></div>
-      <div id="empty" class="muted" style="display:none; margin-top:18px;">No tools match your filters.</div>
+      <div id="toolsGrid" class="grid"></div>
+      <div id="empty">No tools found.</div>
     </section>
 
     <footer>
-      <div class="muted">© <span id="year"></span> Web Tools — Built for speed. Privacy-respecting.</div>
+      © <span id="year"></span> Web Tools — Built for speed and simplicity.
     </footer>
   </div>
 
-  <!-- Modal (tool detail) -->
-  <div id="modalBackdrop" style="display:none; position:fixed; inset:0; background:rgba(3,7,18,0.5); align-items:center; justify-content:center; z-index:90;">
-    <div style="background:var(--surface); border-radius:12px; padding:18px; width:min(720px,94%); box-shadow:var(--shadow);">
-      <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+  <!-- MODAL -->
+  <div id="modalBackdrop">
+    <div class="modal">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
         <div>
-          <h3 id="modalTitle" style="margin:0">Tool</h3>
-          <div id="modalCategory" class="muted" style="font-size:13px; margin-top:6px"></div>
+          <h3 id="modalTitle" style="margin:0"></h3>
+          <div id="modalCategory" style="font-size:13px;color:var(--muted);margin-top:6px;"></div>
         </div>
-        <div style="display:flex; gap:8px;">
-          <button id="copyLink" class="btn">Copy link</button>
-          <button id="modalClose" class="btn">Close</button>
-        </div>
+        <button id="modalClose" class="btn">Close</button>
       </div>
 
-      <p id="modalDesc" class="muted" style="margin-top:12px"></p>
+      <p id="modalDesc" style="color:var(--muted); margin-top:14px;"></p>
 
       <div style="display:flex; gap:10px; margin-top:14px;">
-        <a id="modalUrl" href="#" target="_blank" rel="noopener" class="btn primary" style="text-decoration:none">Open tool</a>
+        <a id="modalUrl" href="#" target="_blank" class="btn primary" style="text-decoration:none;">Open tool</a>
         <button id="modalFav" class="btn">Add favorite</button>
+        <button id="copyLink" class="btn">Copy link</button>
       </div>
     </div>
   </div>
 
   <script>
-    // DATA
     const TOOLS = [
       { id:'url-shortener', name:'URL Shortener', description:'Create short links with analytics.', category:'Utilities', url:'https://example.com/url-shortener' },
       { id:'color-picker', name:'Color Picker', description:'Pick colors and convert formats.', category:'Design', url:'https://example.com/color-picker' },
       { id:'json-beautify', name:'JSON Beautify', description:'Format and validate JSON.', category:'Developer', url:'https://example.com/json-beautify' },
       { id:'image-compressor', name:'Image Compressor', description:'Compress images for web use.', category:'Media', url:'https://example.com/image-compressor' },
-      { id:'regex-tester', name:'Regex Tester', description:'Build and test regular expressions.', category:'Developer', url:'https://example.com/regex-tester' },
-      { id:'markdown-preview', name:'Markdown Preview', description:'Live markdown editor and export.', category:'Writing', url:'https://example.com/markdown-preview' },
+      { id:'regex-tester', name:'Regex Tester', description:'Build and test regex patterns.', category:'Developer', url:'https://example.com/regex-tester' },
+      { id:'markdown-preview', name:'Markdown Preview', description:'Live markdown editor.', category:'Writing', url:'https://example.com/markdown-preview' },
       { id:'seo-checker', name:'SEO Checker', description:'Quick SEO audit tool.', category:'Marketing', url:'https://example.com/seo-checker' },
-      { id:'json-to-csv', name:'JSON → CSV', description:'Convert JSON to CSV quickly.', category:'Developer', url:'https://example.com/json-to-csv' }
+      { id:'json-to-csv', name:'JSON → CSV', description:'Convert JSON to CSV instantly.', category:'Developer', url:'https://example.com/json-to-csv' }
     ];
 
-    // STATE
     const state = {
-      query: '',
-      category: 'all',
-      sort: 'alpha',
-      favoritesOnly: false,
-      favorites: new Set(JSON.parse(localStorage.getItem('wt:favorites') || '[]'))
+      query:'',
+      category:'all',
+      sort:'alpha',
+      favoritesOnly:false,
+      favorites:new Set(JSON.parse(localStorage.getItem('wt:favorites') || '[]'))
     };
 
-    // DOM refs
+    // DOM
     const grid = document.getElementById('toolsGrid');
+    const emptyEl = document.getElementById('empty');
+
     const searchInput = document.getElementById('search');
     const categorySelect = document.getElementById('category');
     const sortSelect = document.getElementById('sort');
     const favFilterBtn = document.getElementById('favoritesFilter');
-    const emptyEl = document.getElementById('empty');
 
-    // Modal refs
+    // Modal DOM
     const modalBackdrop = document.getElementById('modalBackdrop');
     const modalTitle = document.getElementById('modalTitle');
     const modalDesc = document.getElementById('modalDesc');
     const modalCategory = document.getElementById('modalCategory');
     const modalUrl = document.getElementById('modalUrl');
+    const modalFavBtn = document.getElementById('modalFav');
     const modalClose = document.getElementById('modalClose');
     const copyLinkBtn = document.getElementById('copyLink');
-    const modalFavBtn = document.getElementById('modalFav');
 
-    function init() {
+    function init(){
       document.getElementById('year').textContent = new Date().getFullYear();
 
-      const cats = Array.from(new Set(TOOLS.map(t => t.category))).sort();
-      for (const c of cats) {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
+      // Populate categories
+      [...new Set(TOOLS.map(t=>t.category))].sort().forEach(c=>{
+        const opt=document.createElement('option'); opt.value=c; opt.textContent=c;
         categorySelect.appendChild(opt);
-      }
+      });
 
-      // handlers
-      searchInput.addEventListener('input', (e) => { state.query = e.target.value.trim().toLowerCase(); render(); });
-      categorySelect.addEventListener('change', (e) => { state.category = e.target.value; render(); });
-      sortSelect.addEventListener('change', (e) => { state.sort = e.target.value; render(); });
-      favFilterBtn.addEventListener('click', () => { state.favoritesOnly = !state.favoritesOnly; favFilterBtn.setAttribute('aria-pressed', state.favoritesOnly); render(); });
+      // Handlers
+      searchInput.addEventListener('input', e=>{state.query=e.target.value.toLowerCase(); render();});
+      categorySelect.addEventListener('change', e=>{state.category=e.target.value; render();});
+      sortSelect.addEventListener('change', e=>{state.sort=e.target.value; render();});
+      favFilterBtn.addEventListener('click', ()=>{
+        state.favoritesOnly=!state.favoritesOnly;
+        favFilterBtn.setAttribute('aria-pressed',state.favoritesOnly);
+        render();
+      });
 
-      window.addEventListener('keydown', (e) => {
-        if (e.key === '/') { e.preventDefault(); searchInput.focus(); }
-        if (e.key === 'f' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); favFilterBtn.click(); }
-        if (e.key === 'Escape') closeModal();
+      document.getElementById('ctaBrowse').addEventListener('click',()=>{
+        document.getElementById('tools-heading')?.scrollIntoView({ behavior:'smooth' });
+      });
+
+      window.addEventListener('keydown', e=>{
+        if(e.key==='/'){e.preventDefault(); searchInput.focus();}
+        if(e.key==='Escape') closeModal();
       });
 
       modalClose.addEventListener('click', closeModal);
-      modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
+      modalBackdrop.addEventListener('click', e=>{if(e.target===modalBackdrop) closeModal();});
       copyLinkBtn.addEventListener('click', copyModalLink);
-      modalFavBtn.addEventListener('click', () => {
-        const id = modalFavBtn.dataset.id;
-        if (!id) return;
+      modalFavBtn.addEventListener('click', ()=>{
+        const id=modalFavBtn.dataset.id;
         toggleFavorite(id);
         modalFavBtn.textContent = state.favorites.has(id) ? 'Remove favorite' : 'Add favorite';
         render();
       });
 
-      document.getElementById('ctaBrowse').addEventListener('click', () => document.getElementById('tools-heading').scrollIntoView({ behavior: 'smooth', block: 'start' }));
-
       render();
     }
 
-    function render() {
-      let results = TOOLS.filter(t => {
-        if (state.category !== 'all' && t.category !== state.category) return false;
-        if (state.favoritesOnly && !state.favorites.has(t.id)) return false;
-        if (state.query && !(t.name + ' ' + t.description + ' ' + t.category).toLowerCase().includes(state.query)) return false;
+    function render(){
+      let results = TOOLS.filter(t=>{
+        if(state.category!=='all' && t.category!==state.category) return false;
+        if(state.favoritesOnly && !state.favorites.has(t.id)) return false;
+        if(state.query && !(t.name+' '+t.description+' '+t.category).toLowerCase().includes(state.query)) return false;
         return true;
       });
 
-      if (state.sort === 'alpha') results.sort((a,b) => a.name.localeCompare(b.name));
-      if (state.sort === 'relevance' && state.query) {
-        results.sort((a,b) => {
-          const ai = (a.name + ' ' + a.description).toLowerCase().indexOf(state.query);
-          const bi = (b.name + ' ' + b.description).toLowerCase().indexOf(state.query);
-          return ai - bi;
+      // sorting
+      if(state.sort==='alpha') results.sort((a,b)=>a.name.localeCompare(b.name));
+      if(state.sort==='relevance' && state.query){
+        results.sort((a,b)=>{
+          const ai=(a.name+' '+a.description).toLowerCase().indexOf(state.query);
+          const bi=(b.name+' '+b.description).toLowerCase().indexOf(state.query);
+          return ai-bi;
         });
       }
 
-      grid.innerHTML = '';
-      if (results.length === 0) {
-        emptyEl.style.display = 'block';
-        return;
-      } else {
-        emptyEl.style.display = 'none';
-      }
+      grid.innerHTML='';
+      if(results.length===0){ emptyEl.style.display='block'; return; }
+      emptyEl.style.display='none';
 
-      for (const t of results) {
-        const card = document.createElement('article');
-        card.className = 'tool-card';
-        card.tabIndex = 0;
-        card.innerHTML = `
+      results.forEach(t=>{
+        const el=document.createElement('div');
+        el.className='tool-card';
+        el.innerHTML=`
           <div class="meta">
-            <div class="tool-icon" aria-hidden="true">${initials(t.name)}</div>
-            <div style="flex:1">
+            <div class="tool-icon">${initials(t.name)}</div>
+            <div>
               <h4 class="tool-title">${escapeHtml(t.name)}</h4>
               <p class="tool-desc">${escapeHtml(t.description)}</p>
             </div>
           </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
             <div class="tag">${escapeHtml(t.category)}</div>
             <div style="display:flex; gap:8px;">
-              <button class="action open" aria-label="Open ${escapeHtml(t.name)}">Open</button>
-              <button class="action details" aria-label="Details for ${escapeHtml(t.name)}">Details</button>
-              <button class="action favorite" aria-pressed="${state.favorites.has(t.id) ? 'true' : 'false'}">${state.favorites.has(t.id) ? '★' : '☆'}</button>
+              <button class="action open">Open</button>
+              <button class="action details">Details</button>
+              <button class="action favorite">${state.favorites.has(t.id) ? '★' : '☆'}</button>
             </div>
           </div>
         `;
 
-        card.querySelector('.open').addEventListener('click', () => window.open(t.url, '_blank', 'noopener'));
-        card.querySelector('.details').addEventListener('click', () => openModal(t));
-        card.querySelector('.favorite').addEventListener('click', (e) => {
+        el.querySelector('.open').addEventListener('click', ()=>window.open(t.url,'_blank'));
+        el.querySelector('.details').addEventListener('click', ()=>openModal(t));
+        el.querySelector('.favorite').addEventListener('click', e=>{
           toggleFavorite(t.id);
-          e.currentTarget.setAttribute('aria-pressed', state.favorites.has(t.id));
-          e.currentTarget.textContent = state.favorites.has(t.id) ? '★' : '☆';
+          e.target.textContent=state.favorites.has(t.id)?'★':'☆';
           render();
         });
 
-        card.addEventListener('keydown', (e) => { if (e.key === 'Enter') openModal(t); });
-
-        grid.appendChild(card);
-      }
-    }
-
-    function openModal(tool) {
-      modalTitle.textContent = tool.name;
-      modalDesc.textContent = tool.description;
-      modalCategory.textContent = tool.category;
-      modalUrl.href = tool.url;
-      modalUrl.textContent = 'Open tool';
-
-      modalFavBtn.dataset.id = tool.id;
-      modalFavBtn.textContent = state.favorites.has(tool.id) ? 'Remove favorite' : 'Add favorite';
-
-      modalBackdrop.style.display = 'flex';
-      modalClose.focus();
-    }
-    function closeModal() {
-      modalBackdrop.style.display = 'none';
-      modalFavBtn.dataset.id = '';
-    }
-    function copyModalLink() {
-      const url = modalUrl.href;
-      if (!url) return;
-      navigator.clipboard?.writeText(url).then(() => {
-        copyLinkBtn.textContent = 'Copied';
-        setTimeout(() => copyLinkBtn.textContent = 'Copy link', 1500);
-      }).catch(() => {
-        prompt('Copy link:', url);
+        el.addEventListener('keydown', e=>{if(e.key==='Enter') openModal(t);});
+        grid.appendChild(el);
       });
     }
 
-    function toggleFavorite(id) {
-      if (state.favorites.has(id)) state.favorites.delete(id);
+    function openModal(tool){
+      modalTitle.textContent=tool.name;
+      modalDesc.textContent=tool.description;
+      modalCategory.textContent=tool.category;
+      modalUrl.href=tool.url;
+      modalFavBtn.dataset.id=tool.id;
+      modalFavBtn.textContent=state.favorites.has(tool.id)?'Remove favorite':'Add favorite';
+
+      modalBackdrop.style.display='flex';
+      modalClose.focus();
+    }
+    function closeModal(){ modalBackdrop.style.display='none'; }
+
+    function copyModalLink(){
+      const url=modalUrl.href;
+      navigator.clipboard.writeText(url).then(()=>{
+        copyLinkBtn.textContent='Copied';
+        setTimeout(()=>copyLinkBtn.textContent='Copy link', 1500);
+      });
+    }
+
+    function toggleFavorite(id){
+      if(state.favorites.has(id)) state.favorites.delete(id);
       else state.favorites.add(id);
-      localStorage.setItem('wt:favorites', JSON.stringify(Array.from(state.favorites)));
+      localStorage.setItem('wt:favorites', JSON.stringify([...state.favorites]));
     }
 
-    function initials(name) {
-      const parts = name.split(/\s+/).filter(Boolean);
-      if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+    function initials(name){
+      const parts=name.split(' ');
+      return (parts[0][0] + (parts[1]?.[0]||'')).toUpperCase();
     }
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s]));
+    function escapeHtml(str){
+      return str.replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
     }
 
-    // Boot
     init();
   </script>
 </body>
