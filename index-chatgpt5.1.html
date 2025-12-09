@@ -3,369 +3,349 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web Tools — Productive suite for online utilities</title>
-  <meta name="description" content="A curated directory of web tools for developers, designers and marketers. Search, favorite, and launch tools instantly." />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <title>Web Tools — Developer Index</title>
+  <meta name="description" content="Developer-style index of web tools — quick search, categories, and direct launch." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Fira+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#f7fbff;
-      --surface:#ffffff;
-      --muted:#6b7280;
-      --text:#0f1724;
-      --accent:#2563eb;
-      --accent-2:#7c3aed;
-      --shadow:0 10px 30px rgba(12,20,40,0.08);
-      --max-width:1000px;
+      --bg: #0f1724;
+      --panel: #0b1220;
+      --muted: #94a3b8;
+      --text: #e6eef8;
+      --accent: #7c3aed;
+      --accent-2: #2563eb;
+      --glass: rgba(255,255,255,0.03);
+      --radius: 10px;
+      --max-width: 1200px;
     }
 
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-      background:linear-gradient(180deg, var(--bg), #eef6ff 60%);
-      color:var(--text);
-      -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+    * { box-sizing: border-box; }
+    html,body { height: 100%; margin: 0; font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; background: linear-gradient(180deg, var(--bg), #071020 60%); color: var(--text); -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
+
+    /* Layout */
+    .wrap { max-width: var(--max-width); margin: 28px auto; display: grid; grid-template-columns: 300px 1fr; gap: 28px; padding: 0 20px; align-items: start; }
+    @media (max-width:900px) { .wrap { grid-template-columns: 1fr; } }
+
+    /* Sidebar (nav) */
+    .sidebar {
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      padding: 18px; border-radius: var(--radius); position: sticky; top: 20px; height: fit-content;
+      box-shadow: 0 10px 30px rgba(2,6,23,0.6);
     }
+    .brand { display: flex; gap:12px; align-items:center; margin-bottom:12px; }
+    .logo { width:46px; height:46px; border-radius:8px; display:grid; place-items:center; font-weight:700; font-family: "Fira Mono", monospace; background: linear-gradient(135deg,var(--accent-2),var(--accent)); color: white; box-shadow: 0 8px 20px rgba(37,99,235,0.12); }
+    .brand h1 { font-size:16px; margin:0; letter-spacing:-0.2px; }
+    .brand p { margin:0; color:var(--muted); font-size:12px; }
 
-    .container{max-width:var(--max-width); margin:0 auto; padding:36px 20px;}
+    .search { margin-top:14px; display:flex; gap:8px; align-items:center; background:var(--panel); padding:8px; border-radius:8px; border:1px solid rgba(255,255,255,0.02); }
+    .search input { background:transparent; border:0; color:var(--text); outline:0; width:100%; font-size:14px; padding:6px 4px; }
+    .hint { font-size:12px; color:var(--muted); margin-top:10px; }
 
-    /* NAV */
-    nav{display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:20px;}
-    .brand{display:flex; gap:12px; align-items:center;}
-    .logo{
-      width:50px; height:50px; border-radius:10px; display:grid; place-items:center;
-      background:linear-gradient(135deg,var(--accent),var(--accent-2)); color:white; font-weight:800; font-size:18px;
-      box-shadow:var(--shadow);
+    .nav-group { margin-top:18px; }
+    .nav-group h3 { margin:0 0 8px 0; font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:0.06em; }
+    .categories { display:flex; flex-direction:column; gap:8px; }
+    .cat-btn { display:flex; justify-content:space-between; align-items:center; padding:8px 10px; border-radius:8px; background: transparent; border:1px solid rgba(255,255,255,0.02); color:var(--text); cursor:pointer; font-size:14px; text-align:left; }
+    .cat-btn[aria-pressed="true"]{ background: linear-gradient(90deg, rgba(124,58,237,0.14), rgba(37,99,235,0.06)); border-color: rgba(124,58,237,0.22); box-shadow: 0 8px 20px rgba(37,99,235,0.06); }
+    .clear-btn{ margin-top:12px; display:block; width:100%; padding:8px; border-radius:8px; border:0; background:transparent; color:var(--muted); font-size:13px; cursor:pointer; text-align:left; }
+
+    /* Content area */
+    .content {
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.00));
+      padding:18px; border-radius:var(--radius); border:1px solid rgba(255,255,255,0.03);
+      box-shadow: 0 12px 40px rgba(2,6,23,0.6);
     }
-    .btn{
-      padding:9px 14px; border-radius:10px; border:0; cursor:pointer; font-weight:600; background:var(--surface); box-shadow:var(--shadow);
+    .header-row { display:flex; align-items:baseline; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:wrap; }
+    .content h2 { margin:0; font-family: "Fira Mono", monospace; font-weight:700; font-size:20px; }
+    .subtitle { color:var(--muted); font-size:13px; margin-top:6px; }
+
+    /* Index list */
+    .index { margin-top:12px; display:flex; flex-direction:column; gap:12px; }
+    .category-section { border-left: 2px solid rgba(255,255,255,0.02); padding-left:12px; }
+    .category-title { font-size:13px; color:var(--muted); margin:0 0 8px 0; text-transform:uppercase; letter-spacing:0.06em; }
+
+    .tool-row {
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      padding:10px 12px; border-radius:8px; transition: background .12s ease, transform .12s ease; cursor:pointer;
+      background: transparent; border:1px solid rgba(255,255,255,0.01);
     }
-    .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2)); color:white;}
+    .tool-row:focus, .tool-row:hover { background: linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005)); transform: translateY(-2px); outline: none; }
+    .tool-meta { display:flex; gap:12px; align-items:center; min-width:0; }
+    .tool-flag { width:44px; height:44px; border-radius:8px; display:grid; place-items:center; font-weight:700; font-family:"Fira Mono", monospace; color:white; background: linear-gradient(135deg,var(--accent-2),var(--accent)); flex-shrink:0; }
+    .tool-info { min-width:0; }
+    .tool-name { font-family: "Fira Mono", monospace; font-weight:700; margin:0; font-size:15px; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .tool-desc { margin:4px 0 0 0; color:var(--muted); font-size:13px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 
-    /* HERO (simple) */
-    .hero{margin:28px 0;}
-    .eyebrow{
-      display:inline-block; padding:6px 12px; border-radius:999px;
-      background:rgba(37,99,235,0.09); color:var(--accent); font-weight:600; font-size:13px;
-      margin-bottom:14px;
+    .tool-actions { display:flex; gap:10px; align-items:center; flex-shrink:0; }
+    .open-link {
+      display:inline-flex; align-items:center; gap:8px; padding:8px 10px; border-radius:8px; font-weight:600; color:var(--text);
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border:1px solid rgba(255,255,255,0.02); text-decoration:none;
+      font-size:13px;
     }
-    .hero h2{margin:0; font-size:34px; line-height:1.1; max-width:600px;}
-    .lead{color:var(--muted); margin:14px 0 20px; max-width:580px;}
-    .hero-ctas{display:flex; gap:12px; flex-wrap:wrap;}
+    .open-link svg { height:14px; width:14px; opacity:0.9; }
 
-    /* Features (compact) */
-    .features{display:flex; gap:12px; flex-wrap:wrap; margin-top:20px;}
-    .feature{
-      background:var(--surface); padding:12px 14px; border-radius:12px; box-shadow:var(--shadow);
-      flex:1; min-width:200px;
-    }
-    .feature h4{margin:6px 0 4px;font-size:15px}
-    .feature p{margin:0;color:var(--muted); font-size:13px;}
+    /* small utilities */
+    .muted { color:var(--muted); }
+    footer { margin-top:18px; color:var(--muted); font-size:13px; text-align:center; }
 
-    /* Tools Section */
-    .tools-header{
-      display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap;
-      margin:30px 0 10px; gap:12px;
-    }
-    .search{
-      display:flex; align-items:center; gap:8px; background:var(--surface); padding:8px 12px;
-      border-radius:10px; box-shadow:var(--shadow);
-    }
-    .search input{border:0; outline:0; background:transparent; width:200px; color:var(--text);}
-
-    .select{
-      padding:8px 12px; border-radius:10px; background:var(--surface); border:0; box-shadow:var(--shadow);
-    }
-
-    .grid{
-      display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:14px; margin-top:12px;
-    }
-
-    .tool-card{
-      background:var(--surface); border-radius:12px; padding:14px; box-shadow:var(--shadow);
-      display:flex; flex-direction:column; gap:10px;
-      transition:0.15s ease; cursor:pointer;
-    }
-    .tool-card:hover{transform:translateY(-5px); box-shadow:0 22px 40px rgba(12,20,40,0.12)}
-    .tool-card:focus{outline:3px solid rgba(37,99,235,0.12); outline-offset:4px;}
-
-    .meta{display:flex; gap:10px; align-items:center;}
-    .tool-icon{
-      width:50px;height:50px;border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-2));
-      display:grid; place-items:center; font-weight:700; color:white;
-    }
-    .tool-title{margin:0;font-weight:700;font-size:15px}
-    .tool-desc{margin:0;color:var(--muted);font-size:13px}
-    .tag{display:inline-block;background:rgba(15,23,42,0.05); padding:6px 10px; border-radius:999px; font-size:12px;color:var(--muted)}
-
-    .action{padding:6px 8px;border-radius:8px;border:1px solid rgba(0,0,0,0.08);background:transparent;cursor:pointer;font-size:13px;font-weight:600;}
-
-    #empty{text-align:center;margin-top:20px;color:var(--muted); display:none}
-
-    footer{margin-top:40px; text-align:center; color:var(--muted); font-size:14px;}
-
-    @media (max-width:900px){
-      .features{flex-direction:row; gap:10px}
-      .hero{flex-direction:column-reverse; align-items:flex-start}
-    }
-    @media (max-width:560px){
-      nav{flex-direction:column; align-items:flex-start; gap:12px;}
-      .search input{width:140px;}
-      .features{flex-direction:column; gap:10px}
-    }
-
-    .muted{color:var(--muted)}
-    .center{display:flex; align-items:center; justify-content:center}
+    /* keyboard focus outline improved */
+    [tabindex]:focus { box-shadow: 0 0 0 3px rgba(124,58,237,0.12); border-radius:6px; }
   </style>
 </head>
-
 <body>
-  <div class="container">
+  <div class="wrap" role="application" aria-label="Web Tools developer index">
 
-    <!-- NAV -->
-    <nav>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" aria-labelledby="sidebar-title">
       <div class="brand">
-        <div class="logo">WT</div>
+        <div class="logo" aria-hidden="true">WT</div>
         <div>
-          <h1 style="margin:0;font-size:18px;">Web Tools</h1>
-          <div style="font-size:13px;color:var(--muted)">A curated suite of online utilities</div>
+          <h1 style="margin:0; font-size:15px;">Web Tools</h1>
+          <p style="margin:0; font-size:12px;" class="muted">Developer index · quick launch</p>
         </div>
       </div>
 
-      <div style="display:flex; gap:10px;">
-        <button class="btn">Docs</button>
-        <button class="btn">Sign in</button>
-        <button class="btn primary">Get started</button>
+      <div class="search" role="search" aria-label="Search tools">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" style="opacity:0.9"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <input id="search" type="search" placeholder="Search ( / )" aria-label="Search tools" />
       </div>
-    </nav>
+      <div class="hint">Press <code>/</code> to focus search</div>
 
-    <!-- HERO -->
-    <section class="hero">
-      <span class="eyebrow">Productivity suite</span>
-      <h2>Discover fast, reliable web tools for teams and individuals</h2>
-      <p class="lead">Search, launch and favorite essential utilities for development, design and marketing — all in one place.</p>
-
-      <div class="hero-ctas">
-        <button class="btn primary" id="ctaBrowse">Browse tools</button>
-        <button class="btn">How it works</button>
+      <div class="nav-group" aria-label="Categories">
+        <h3 id="sidebar-title">Categories</h3>
+        <div class="categories" id="categoriesList">
+          <!-- category buttons injected -->
+        </div>
+        <button id="clearCategory" class="clear-btn">Show all</button>
       </div>
+    </aside>
 
-      <div class="features" aria-hidden="false">
-        <div class="feature">
-          <h4>Curated</h4>
-          <p>High-quality tools selected for speed and privacy.</p>
-        </div>
-        <div class="feature">
-          <h4>Instant Access</h4>
-          <p>Launch tools instantly — no installation required.</p>
-        </div>
-        <div class="feature">
-          <h4>Favorites</h4>
-          <p>Star tools to save them in your browser for quick access.</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- TOOLS -->
-    <section>
-      <div class="tools-header">
+    <!-- CONTENT -->
+    <main class="content" id="mainContent">
+      <div class="header-row">
         <div>
-          <h3 style="margin:0;">Tools</h3>
-          <div style="font-size:13px;color:var(--muted)">Find utilities by category or search.</div>
+          <h2>Tools index</h2>
+          <div class="subtitle">A compact, developer-style index — click a row or press Enter to open the tool.</div>
         </div>
-
-        <div style="display:flex; gap:10px; flex-wrap:wrap;">
-          <div class="search" title="Search tools">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <input id="search" type="search" placeholder="Search tools ( / )" aria-label="Search tools">
-          </div>
-
-          <select id="category" class="select" aria-label="Filter by category">
-            <option value="all">All categories</option>
-          </select>
-
-          <select id="sort" class="select" aria-label="Sort tools">
-            <option value="alpha">A → Z</option>
-            <option value="relevance">Relevance</option>
-          </select>
-
-          <button id="favoritesFilter" class="btn" aria-pressed="false" title="Toggle favorites">Favorites</button>
-        </div>
+        <div class="muted" id="resultCount" aria-live="polite">—</div>
       </div>
 
-      <div id="toolsGrid" class="grid" aria-live="polite"></div>
-      <div id="empty">No tools found.</div>
-    </section>
+      <nav class="index" id="indexList" aria-label="Tools list">
+        <!-- categories + tools injected here -->
+      </nav>
 
-    <footer>
-      © <span id="year"></span> Web Tools — Built for speed and simplicity.
-    </footer>
+      <footer>
+        © <span id="year"></span> Web Tools — Developer index
+      </footer>
+    </main>
   </div>
 
   <script>
-    // Tool dataset (no dates)
+    // ---------- Data (no dates) ----------
     const TOOLS = [
-      { id:'url-shortener', name:'URL Shortener', description:'Create short links with analytics.', category:'Utilities', url:'https://example.com/url-shortener' },
-      { id:'color-picker', name:'Color Picker', description:'Pick colors and convert formats.', category:'Design', url:'https://example.com/color-picker' },
-      { id:'json-beautify', name:'JSON Beautify', description:'Format and validate JSON.', category:'Developer', url:'https://example.com/json-beautify' },
-      { id:'image-compressor', name:'Image Compressor', description:'Compress images for web use.', category:'Media', url:'https://example.com/image-compressor' },
-      { id:'regex-tester', name:'Regex Tester', description:'Build and test regex patterns.', category:'Developer', url:'https://example.com/regex-tester' },
-      { id:'markdown-preview', name:'Markdown Preview', description:'Live markdown editor.', category:'Writing', url:'https://example.com/markdown-preview' },
-      { id:'seo-checker', name:'SEO Checker', description:'Quick SEO audit tool.', category:'Marketing', url:'https://example.com/seo-checker' },
-      { id:'json-to-csv', name:'JSON → CSV', description:'Convert JSON to CSV instantly.', category:'Developer', url:'https://example.com/json-to-csv' }
+      { id:'url-shortener', name:'url-shortener', title:'URL Shortener', description:'Create short links with analytics', category:'Utilities', url:'https://example.com/url-shortener' },
+      { id:'color-picker', name:'color-picker', title:'Color Picker', description:'Pick and convert colors (HEX, RGB, HSL)', category:'Design', url:'https://example.com/color-picker' },
+      { id:'json-beautify', name:'json-beautify', title:'JSON Beautify', description:'Format and validate JSON', category:'Developer', url:'https://example.com/json-beautify' },
+      { id:'image-compressor', name:'image-compressor', title:'Image Compressor', description:'Compress images for web', category:'Media', url:'https://example.com/image-compressor' },
+      { id:'regex-tester', name:'regex-tester', title:'Regex Tester', description:'Build and test regular expressions', category:'Developer', url:'https://example.com/regex-tester' },
+      { id:'json-to-csv', name:'json-to-csv', title:'JSON → CSV', description:'Convert JSON to CSV', category:'Developer', url:'https://example.com/json-to-csv' },
+      { id:'markdown-preview', name:'markdown-preview', title:'Markdown Preview', description:'Live markdown editor with export', category:'Writing', url:'https://example.com/markdown-preview' },
+      { id:'seo-checker', name:'seo-checker', title:'SEO Checker', description:'Quick SEO audit tool', category:'Marketing', url:'https://example.com/seo-checker' }
     ];
 
-    // App state
-    const state = {
-      query: '',
-      category: 'all',
-      sort: 'alpha',
-      favoritesOnly: false,
-      favorites: new Set(JSON.parse(localStorage.getItem('wt:favorites') || '[]'))
-    };
+    // ---------- State ----------
+    const state = { query: '', category: 'all', focusIndex: -1, items: [] };
 
-    // DOM refs
-    const grid = document.getElementById('toolsGrid');
-    const emptyEl = document.getElementById('empty');
+    // ---------- DOM refs ----------
     const searchInput = document.getElementById('search');
-    const categorySelect = document.getElementById('category');
-    const sortSelect = document.getElementById('sort');
-    const favFilterBtn = document.getElementById('favoritesFilter');
+    const categoriesList = document.getElementById('categoriesList');
+    const indexList = document.getElementById('indexList');
+    const resultCount = document.getElementById('resultCount');
+    const clearCategoryBtn = document.getElementById('clearCategory');
+    const yearEl = document.getElementById('year');
+    yearEl.textContent = new Date().getFullYear();
 
-    // Init
+    // ---------- Init ----------
     function init() {
-      document.getElementById('year').textContent = new Date().getFullYear();
-
-      // categories
       const cats = Array.from(new Set(TOOLS.map(t => t.category))).sort();
-      for (const c of cats) {
-        const opt = document.createElement('option');
-        opt.value = c;
-        opt.textContent = c;
-        categorySelect.appendChild(opt);
-      }
+      // render categories
+      cats.forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = 'cat-btn';
+        btn.type = 'button';
+        btn.textContent = cat;
+        btn.setAttribute('aria-pressed', 'false');
+        btn.addEventListener('click', () => {
+          const pressed = btn.getAttribute('aria-pressed') === 'true';
+          // toggle: if already pressed, clear; otherwise set this
+          if (pressed) {
+            state.category = 'all';
+            Array.from(categoriesList.children).forEach(c => c.setAttribute('aria-pressed','false'));
+          } else {
+            state.category = cat;
+            Array.from(categoriesList.children).forEach(c => c.setAttribute('aria-pressed', c === btn ? 'true' : 'false'));
+          }
+          state.focusIndex = -1;
+          renderIndex();
+          searchInput.focus();
+        });
+        categoriesList.appendChild(btn);
+      });
 
-      // handlers
-      searchInput.addEventListener('input', () => { state.query = searchInput.value.trim().toLowerCase(); render(); });
-      categorySelect.addEventListener('change', () => { state.category = categorySelect.value; render(); });
-      sortSelect.addEventListener('change', () => { state.sort = sortSelect.value; render(); });
-      favFilterBtn.addEventListener('click', () => { state.favoritesOnly = !state.favoritesOnly; favFilterBtn.setAttribute('aria-pressed', state.favoritesOnly); render(); });
+      clearCategoryBtn.addEventListener('click', () => {
+        state.category = 'all';
+        Array.from(categoriesList.children).forEach(c => c.setAttribute('aria-pressed','false'));
+        state.focusIndex = -1;
+        renderIndex();
+      });
 
-      // keyboard shortcuts: / to search, f to toggle favorites, Enter on focused card opens
+      // search
+      searchInput.addEventListener('input', (e) => {
+        state.query = e.target.value.trim().toLowerCase();
+        state.focusIndex = -1;
+        renderIndex();
+      });
+
+      // keyboard shortcuts
       window.addEventListener('keydown', (e) => {
         if (e.key === '/') { e.preventDefault(); searchInput.focus(); }
-        if (e.key === 'f' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); favFilterBtn.click(); }
+        // navigate list when focus not in an input
+        const active = document.activeElement;
+        if (['ArrowDown','ArrowUp','Enter'].includes(e.key) && active !== searchInput) {
+          e.preventDefault();
+          handleListKey(e.key);
+        }
       });
 
-      // CTA behavior
-      document.getElementById('ctaBrowse').addEventListener('click', () => {
-        document.getElementById('toolsGrid').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-
-      render();
+      // initial render
+      renderIndex();
     }
 
-    // Render
-    function render() {
+    // ---------- Render index grouped by category ----------
+    function renderIndex() {
+      // filter
       let results = TOOLS.filter(t => {
         if (state.category !== 'all' && t.category !== state.category) return false;
-        if (state.favoritesOnly && !state.favorites.has(t.id)) return false;
-        if (state.query && !(t.name + ' ' + t.description + ' ' + t.category).toLowerCase().includes(state.query)) return false;
+        if (state.query) {
+          const hay = (t.name + ' ' + t.title + ' ' + t.description + ' ' + t.category).toLowerCase();
+          if (!hay.includes(state.query)) return false;
+        }
         return true;
       });
 
-      if (state.sort === 'alpha') results.sort((a,b) => a.name.localeCompare(b.name));
-      if (state.sort === 'relevance' && state.query) {
-        results.sort((a,b) => {
-          const ai = (a.name + ' ' + a.description).toLowerCase().indexOf(state.query);
-          const bi = (b.name + ' ' + b.description).toLowerCase().indexOf(state.query);
-          return ai - bi;
-        });
-      }
+      // sort: category then name
+      results.sort((a,b) => {
+        if (a.category !== b.category) return a.category.localeCompare(b.category);
+        return a.title.localeCompare(b.title);
+      });
 
-      grid.innerHTML = '';
-      if (results.length === 0) {
-        emptyEl.style.display = 'block';
-        return;
-      } else {
-        emptyEl.style.display = 'none';
-      }
+      // group by category
+      const groups = results.reduce((acc, it) => {
+        (acc[it.category] = acc[it.category] || []).push(it);
+        return acc;
+      }, {});
 
-      for (const t of results) {
-        const card = document.createElement('article');
-        card.className = 'tool-card';
-        card.tabIndex = 0;
-        card.setAttribute('role', 'button');
-        card.setAttribute('aria-label', `Open ${t.name}`);
-        card.innerHTML = `
-          <div class="meta">
-            <div class="tool-icon" aria-hidden="true">${initials(t.name)}</div>
-            <div style="flex:1">
-              <h4 class="tool-title">${escapeHtml(t.name)}</h4>
-              <p class="tool-desc">${escapeHtml(t.description)}</p>
+      // build DOM
+      indexList.innerHTML = '';
+      state.items = []; // flattened list of rendered items for keyboard navigation
+
+      Object.keys(groups).forEach(cat => {
+        const section = document.createElement('section');
+        section.className = 'category-section';
+        const heading = document.createElement('h4');
+        heading.className = 'category-title';
+        heading.textContent = cat;
+        section.appendChild(heading);
+
+        groups[cat].forEach(tool => {
+          const row = document.createElement('div');
+          row.className = 'tool-row';
+          row.tabIndex = 0;
+          row.setAttribute('role', 'link');
+          row.setAttribute('data-url', tool.url);
+          row.setAttribute('aria-label', `Open ${tool.title}`);
+
+          row.innerHTML = `
+            <div class="tool-meta">
+              <div class="tool-flag" aria-hidden="true">${shortFlag(tool.title)}</div>
+              <div class="tool-info">
+                <div class="tool-name">${escapeHTML(tool.title)}</div>
+                <div class="tool-desc">${escapeHTML(tool.description)}</div>
+              </div>
             </div>
-          </div>
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px;">
-            <div class="tag">${escapeHtml(t.category)}</div>
-            <div style="display:flex; gap:8px;">
-              <button class="action open">Open</button>
-              <button class="action favorite" aria-pressed="${state.favorites.has(t.id) ? 'true' : 'false'}">${state.favorites.has(t.id) ? '★' : '☆'}</button>
+            <div class="tool-actions">
+              <a class="open-link" href="${escapeAttr(tool.url)}" target="_blank" rel="noopener noreferrer">Open
+                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M14 3h7v7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 14L21 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 21H3V3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </a>
             </div>
-          </div>
-        `;
+          `;
 
-        // clicking card opens tool
-        card.addEventListener('click', (e) => {
-          // if user clicked favorite button, don't navigate
-          if (e.target.closest('.favorite')) return;
-          if (e.target.closest('.open')) {
-            window.open(t.url, '_blank', 'noopener');
-            return;
-          }
-          window.open(t.url, '_blank', 'noopener');
+          // click opens tool
+          row.addEventListener('click', (ev) => {
+            // if user clicked the open link itself, allow default anchor behavior
+            const a = ev.target.closest('a.open-link');
+            if (a) return;
+            const url = row.getAttribute('data-url');
+            window.open(url, '_blank', 'noopener');
+          });
+
+          // keyboard Enter opens
+          row.addEventListener('keydown', (ev) => {
+            if (ev.key === 'Enter') {
+              ev.preventDefault();
+              const url = row.getAttribute('data-url');
+              window.open(url, '_blank', 'noopener');
+            }
+          });
+
+          section.appendChild(row);
+          state.items.push(row);
         });
 
-        // keyboard: Enter opens
-        card.addEventListener('keydown', (e) => {
-          if (e.key === 'Enter') window.open(t.url, '_blank', 'noopener');
-        });
+        indexList.appendChild(section);
+      });
 
-        // open button
-        card.querySelector('.open').addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          window.open(t.url, '_blank', 'noopener');
-        });
+      // update result count
+      resultCount.textContent = `${results.length} result${results.length === 1 ? '' : 's'}`;
 
-        // favorite button
-        card.querySelector('.favorite').addEventListener('click', (ev) => {
-          ev.stopPropagation();
-          toggleFavorite(t.id);
-          render(); // re-render to update UI and favorites filter
-        });
+      // reset focus index if out of bounds
+      if (state.focusIndex >= state.items.length) state.focusIndex = -1;
+    }
 
-        grid.appendChild(card);
+    // ---------- Keyboard navigation within list ----------
+    function handleListKey(key) {
+      if (state.items.length === 0) return;
+      if (key === 'ArrowDown') {
+        // move focus down
+        state.focusIndex = (state.focusIndex + 1) % state.items.length;
+        state.items[state.focusIndex].focus();
+      } else if (key === 'ArrowUp') {
+        state.focusIndex = (state.focusIndex - 1 + state.items.length) % state.items.length;
+        state.items[state.focusIndex].focus();
+      } else if (key === 'Enter') {
+        if (state.focusIndex >= 0 && state.focusIndex < state.items.length) {
+          const url = state.items[state.focusIndex].getAttribute('data-url');
+          window.open(url, '_blank', 'noopener');
+        }
       }
     }
 
-    // Favorites
-    function toggleFavorite(id) {
-      if (state.favorites.has(id)) state.favorites.delete(id);
-      else state.favorites.add(id);
-      localStorage.setItem('wt:favorites', JSON.stringify(Array.from(state.favorites)));
-    }
-
-    // Helpers
-    function initials(name) {
-      const parts = name.split(/\s+/).filter(Boolean);
+    // ---------- Helpers ----------
+    function shortFlag(title) {
+      // return up to 2 uppercase alphanumeric chars for the flag
+      const parts = title.split(/[\s-_.]+/).filter(Boolean);
+      if (parts.length === 0) return title.slice(0,2).toUpperCase();
       if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
-      return (parts[0][0] + parts[1][0]).toUpperCase();
+      return (parts[0][0] + (parts[1][0] || '')).toUpperCase();
     }
-    function escapeHtml(str) {
-      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[s]));
+    function escapeHTML(s) {
+      return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":"&#39;"}[c]));
+    }
+    function escapeAttr(s) {
+      return String(s).replace(/"/g, '&quot;');
     }
 
-    // Boot
+    // ---------- Boot ----------
     init();
   </script>
 </body>
