@@ -29,7 +29,6 @@
       padding:32px;
     }
 
-    /* Header */
     header{
       display:flex; gap:20px; align-items:center; margin-bottom:20px;
       justify-content:space-between;
@@ -45,7 +44,6 @@
     h1{font-size:18px; margin:0}
     p.lead{margin:0; color:var(--muted); font-size:13px}
 
-    /* Controls */
     .controls{
       display:flex; gap:12px; align-items:center; flex-wrap:wrap;
     }
@@ -64,7 +62,6 @@
     .btn.secondary{background:transparent; border:1px solid rgba(0,0,0,0.06)}
     .icon{width:18px;height:18px;display:inline-block;vertical-align:middle}
 
-    /* Grid */
     main{margin-top:18px}
     .grid{
       display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:16px;
@@ -88,10 +85,8 @@
     .action{background:transparent; border:1px solid rgba(0,0,0,0.06); padding:8px 10px; border-radius:8px; cursor:pointer; font-size:13px; color:var(--text)}
     .favorite.active{color:var(--success); border-color:rgba(22,163,74,0.12); box-shadow:0 4px 10px rgba(22,163,74,0.06)}
 
-    /* Empty state */
     .empty{padding:48px; text-align:center; color:var(--muted); border-radius:12px; background:var(--card); box-shadow:var(--shadow)}
 
-    /* Modal */
     .modal-backdrop{position:fixed; inset:0; background:rgba(2,6,23,0.45); display:none; align-items:center; justify-content:center; z-index:60}
     .modal{background:var(--card); border-radius:12px; padding:20px; width:min(720px,92%); box-shadow:var(--shadow)}
     .modal h2{margin:0 0 8px 0}
@@ -100,17 +95,14 @@
     .modal .meta-list{display:flex; flex-direction:column; gap:6px}
     .modal .meta-list a{color:var(--accent)}
 
-    /* footer */
     footer{margin-top:20px;color:var(--muted); font-size:13px; text-align:center}
 
-    /* Responsive tweaks */
     @media (max-width:640px){
       header{flex-direction:column; align-items:stretch; gap:12px}
       .search input{width:130px}
       .controls{justify-content:space-between}
     }
 
-    /* focus outlines */
     [tabindex="0"]:focus, button:focus, input:focus{
       outline:3px solid rgba(59,130,246,0.12);
       outline-offset:2px;
@@ -119,7 +111,7 @@
 </head>
 <body>
   <header>
-    <div class="brand" aria-hidden="false">
+    <div class="brand">
       <div class="logo" aria-hidden="true">WT</div>
       <div>
         <h1>Web Tools Directory</h1>
@@ -129,7 +121,10 @@
 
     <div class="controls" role="region" aria-label="controls">
       <div class="search" title="Search tools">
-        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="11" cy="11" r="6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
         <input id="search" type="search" placeholder="Search tools (press /)" aria-label="Search tools" />
       </div>
 
@@ -150,7 +145,7 @@
 
   <main>
     <section id="toolsGrid" class="grid" aria-live="polite" aria-label="Available web tools">
-      <!-- Cards will be injected here -->
+      <!-- Cards injected by JS -->
     </section>
 
     <div id="empty" class="empty" style="display:none;">
@@ -192,7 +187,7 @@
   </div>
 
   <script>
-    // ---------- Sample data (replace or fetch dynamically) ----------
+    // -------- Sample data --------
     const TOOLS = [
       { id: 'url-shortener', name: 'URL Shortener', description: 'Create short links with analytics.', category: 'Utilities', url: 'https://example.com/url-shortener', updated: '2025-08-20' },
       { id: 'color-picker', name: 'Color Picker', description: 'Pick colors, convert formats (HEX, RGB, HSL).', category: 'Design', url: 'https://example.com/color-picker', updated: '2025-01-17' },
@@ -204,7 +199,7 @@
       { id: 'seo-checker', name: 'SEO Checker', description: 'Quick SEO audit for pages and metadata.', category: 'Marketing', url: 'https://example.com/seo-checker', updated: '2025-09-12' }
     ];
 
-    // ---------- App state ----------
+    // -------- State --------
     const state = {
       query: '',
       category: 'all',
@@ -214,7 +209,7 @@
       theme: localStorage.getItem('wt:theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light')
     };
 
-    // ---------- DOM refs ----------
+    // -------- DOM refs --------
     const grid = document.getElementById('toolsGrid');
     const searchInput = document.getElementById('search');
     const categorySelect = document.getElementById('category');
@@ -223,7 +218,6 @@
     const themeToggle = document.getElementById('themeToggle');
     const emptyEl = document.getElementById('empty');
 
-    // Modal refs
     const modalBackdrop = document.getElementById('modalBackdrop');
     const modalTitle = document.getElementById('modalTitle');
     const modalIcon = document.getElementById('modalIcon');
@@ -236,13 +230,10 @@
     const copyLinkBtn = document.getElementById('copyLink');
     const modalFavBtn = document.getElementById('modalFav');
 
-    // Initialize UI
     function init() {
-      // set theme
       document.documentElement.setAttribute('data-theme', state.theme === 'dark' ? 'dark' : 'light');
       themeToggle.setAttribute('aria-pressed', state.theme === 'dark' ? 'true' : 'false');
 
-      // populate categories
       const cats = Array.from(new Set(TOOLS.map(t => t.category))).sort();
       for (const c of cats) {
         const opt = document.createElement('option');
@@ -251,14 +242,12 @@
         categorySelect.appendChild(opt);
       }
 
-      // wire inputs
       searchInput.addEventListener('input', e => { state.query = e.target.value.trim().toLowerCase(); render(); });
       categorySelect.addEventListener('change', e => { state.category = e.target.value; render(); });
       sortSelect.addEventListener('change', e => { state.sort = e.target.value; render(); });
       favFilterBtn.addEventListener('click', toggleFavoritesFilter);
       themeToggle.addEventListener('click', toggleTheme);
 
-      // keyboard shortcuts
       window.addEventListener('keydown', (e) => {
         if (e.key === '/') { e.preventDefault(); searchInput.focus(); }
         if (e.key === 'f' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') { e.preventDefault(); toggleFavoritesFilter(); }
@@ -268,16 +257,16 @@
       modalClose.addEventListener('click', closeModal);
       modalBackdrop.addEventListener('click', (e) => { if (e.target === modalBackdrop) closeModal(); });
 
-      openToolBtn.addEventListener('click', () => { if (modalBackdrop.dataset.toolUrl) window.open(modalBackdrop.dataset.toolUrl, '_blank', 'noopener'); });
+      openToolBtn.addEventListener('click', () => {
+        if (modalBackdrop.dataset.toolUrl) window.open(modalBackdrop.dataset.toolUrl, '_blank', 'noopener');
+      });
       copyLinkBtn.addEventListener('click', copyModalLink);
       modalFavBtn.addEventListener('click', toggleModalFavorite);
 
       render();
     }
 
-    // ---------- Rendering ----------
     function render() {
-      // filter
       let results = TOOLS.filter(t => {
         if (state.category !== 'all' && t.category !== state.category) return false;
         if (state.favoritesOnly && !state.favorites.has(t.id)) return false;
@@ -286,12 +275,11 @@
         return (t.name + ' ' + t.description + ' ' + t.category).toLowerCase().includes(q);
       });
 
-      // sort
       if (state.sort === 'alpha') {
         results.sort((a,b) => a.name.localeCompare(b.name));
       } else if (state.sort === 'new') {
         results.sort((a,b) => new Date(b.updated) - new Date(a.updated));
-      } else { // relevance: naive: match name first then updated
+      } else {
         results.sort((a,b) => {
           const aq = (a.name + ' ' + a.description).toLowerCase().indexOf(state.query);
           const bq = (b.name + ' ' + b.description).toLowerCase().indexOf(state.query);
@@ -300,7 +288,6 @@
         });
       }
 
-      // render cards
       grid.innerHTML = '';
       if (results.length === 0) {
         emptyEl.style.display = 'block';
@@ -323,7 +310,6 @@
           </div>
           <div class="tags">
             <div class="tag">${escapeHtml(t.category)}</div>
-            <div class="tag">Updated ${escapeHtml(t.updated)}</div>
           </div>
           <div class="card-actions">
             <button class="action open" data-id="${t.id}" aria-label="Open ${escapeHtml(t.name)}">Open</button>
@@ -332,7 +318,6 @@
           </div>
         `;
 
-        // click handlers
         const openBtn = card.querySelector('.open');
         openBtn.addEventListener('click', () => window.open(t.url, '_blank', 'noopener'));
 
@@ -342,7 +327,6 @@
         const favBtn = card.querySelector('.favorite');
         favBtn.addEventListener('click', () => toggleFavorite(t.id, favBtn));
 
-        // keyboard: Enter -> open details
         card.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') openModal(t);
         });
@@ -351,7 +335,6 @@
       }
     }
 
-    // ---------- Utilities ----------
     function initials(name) {
       const parts = name.split(/\s+/).filter(Boolean);
       return (parts.length === 1 ? parts[0].slice(0,2) : (parts[0][0] + parts[1][0])).toUpperCase();
@@ -371,6 +354,7 @@
       }
       render();
     }
+
     function persistFavorites() {
       localStorage.setItem('wt:favorites', JSON.stringify(Array.from(state.favorites)));
     }
@@ -389,7 +373,6 @@
       themeToggle.setAttribute('aria-pressed', state.theme === 'dark' ? 'true' : 'false');
     }
 
-    // ---------- Modal ----------
     function openModal(tool) {
       modalBackdrop.style.display = 'flex';
       modalBackdrop.setAttribute('aria-hidden', 'false');
@@ -403,7 +386,6 @@
       modalUpdated.textContent = tool.updated;
       modalFavBtn.textContent = state.favorites.has(tool.id) ? 'Remove favorite' : 'Add favorite';
       modalFavBtn.dataset.id = tool.id;
-      // focus
       modalClose.focus();
     }
 
@@ -416,13 +398,16 @@
     function copyModalLink() {
       const url = modalBackdrop.dataset.toolUrl;
       if (!url) return;
-      navigator.clipboard?.writeText(url).then(() => {
-        copyLinkBtn.textContent = 'Copied!';
-        setTimeout(() => copyLinkBtn.textContent = 'Copy Link', 1500);
-      }).catch(() => {
-        // fallback
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          copyLinkBtn.textContent = 'Copied!';
+          setTimeout(() => copyLinkBtn.textContent = 'Copy Link', 1500);
+        }).catch(() => {
+          prompt('Copy this link:', url);
+        });
+      } else {
         prompt('Copy this link:', url);
-      });
+      }
     }
 
     function toggleModalFavorite() {
@@ -432,10 +417,8 @@
       modalFavBtn.textContent = state.favorites.has(id) ? 'Remove favorite' : 'Add favorite';
     }
 
-    // ---------- Boot ----------
     init();
 
-    // Expose for debugging (optional)
     window.__WT = { state, TOOLS, render, openModal };
   </script>
 </body>
