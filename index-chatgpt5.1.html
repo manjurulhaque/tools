@@ -5,220 +5,353 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Web Tools — Tools Directory</title>
 
-  <!-- Bootstrap -->
+  <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
   <!-- Bootstrap Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
   <style>
-    body { background:#f3f7fc; }
-    .tool-card { cursor:pointer; transition:.15s ease; }
-    .tool-card:hover { transform:translateY(-4px); box-shadow:0 0.75rem 1.5rem rgba(0,0,0,.08); }
-    .tool-icon {
-      width:55px;height:55px;border-radius:12px;
-      background:linear-gradient(135deg,#2563eb,#7c3aed);
-      color:white;display:flex;align-items:center;justify-content:center;
-      font-weight:700;font-size:18px;
+    /* Page background */
+    body { background: #f3f7fc; }
+
+    /* Tool card micro-interactions */
+    .tool-card {
+      cursor: pointer;
+      transition: transform .15s ease, box-shadow .15s ease;
     }
-    .category-pill i { font-size:1rem; }
+    .tool-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 .75rem 1.5rem rgba(0,0,0,.08);
+    }
+    .tool-card:focus {
+      outline: 3px solid rgba(37,99,235,0.12);
+      outline-offset: 4px;
+    }
+
+    /* Icon inside card */
+    .tool-icon {
+      width: 55px;
+      height: 55px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    /* Pills styling tweaks */
+    .category-pill {
+      border-radius: 999px !important;
+      padding: 6px 12px !important;
+      font-weight: 600 !important;
+      display: inline-flex !important;
+      align-items: center !important;
+      gap: 8px;
+      transition: box-shadow .12s ease, transform .12s ease;
+      border: 0 !important;
+    }
+    .category-pill:hover { transform: translateY(-2px); }
+    .category-pill.active { box-shadow: inset 0 0 0 2px rgba(0,0,0,0.06); }
+
+    /* ensure pill icons align nicely */
+    .category-pill i { font-size: 1rem; }
+
+    /* small responsive adjustments */
+    @media (max-width: 560px) {
+      .tool-icon { width:48px; height:48px; font-size:16px; }
+      .tool-card .col-body { font-size: 14px; }
+    }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="navbar navbar-expand-lg bg-white shadow-sm">
-  <div class="container">
-    <a class="navbar-brand fw-bold" href="#">
-      <span class="me-2 px-2 py-1 bg-primary text-white rounded">WT</span>
-      Web Tools
-    </a>
-  </div>
-</nav>
+  <!-- NAV -->
+  <nav class="navbar navbar-expand-lg bg-white shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#">
+        <span class="me-2 px-2 py-1 bg-primary text-white rounded">WT</span>
+        Web Tools
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
 
-<!-- HERO -->
-<section class="py-5 container">
-  <span class="badge text-bg-primary-subtle text-primary mb-3">Productivity Suite</span>
-  <h1 class="fw-bold mb-3">Discover fast, reliable web tools</h1>
-  <p class="text-secondary mb-4" style="max-width:600px;">
-    Essential online utilities for development, design and marketing — all in one place.
-  </p>
-  <button id="ctaBrowse" class="btn btn-primary">Browse Tools</button>
-</section>
-
-<!-- TOOLS SECTION -->
-<section class="py-3">
-  <div class="container">
-
-    <div class="d-flex flex-wrap justify-content-between align-items-center mb-4">
-      <div>
-        <h4 class="fw-bold mb-0">Tools</h4>
-        <small class="text-secondary">Tap a category pill to filter.</small>
-      </div>
-
-      <div class="d-flex gap-2">
-        <input id="search" class="form-control" style="width:220px" placeholder="Search tools ( / )">
-        <select id="sort" class="form-select" style="width:140px;">
-          <option value="alpha">A → Z</option>
-          <option value="relevance">Relevance</option>
-        </select>
+      <div id="navMenu" class="collapse navbar-collapse justify-content-end">
+        <ul class="navbar-nav gap-2">
+          <li class="nav-item"><a class="nav-link" href="#">Docs</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Sign in</a></li>
+          <li class="nav-item"><a class="btn btn-primary" href="#">Get started</a></li>
+        </ul>
       </div>
     </div>
+  </nav>
 
-    <!-- CATEGORY PILLS -->
-    <ul id="categoryPills" class="nav nav-pills gap-2 mb-4"></ul>
+  <!-- HERO -->
+  <section class="py-5 container">
+    <span class="badge text-bg-primary-subtle text-primary mb-3">Productivity Suite</span>
+    <h1 class="fw-bold mb-3">Discover fast, reliable web tools</h1>
+    <p class="text-secondary mb-4" style="max-width:640px;">
+      A curated directory of essential online utilities for development, design and marketing — quick to open, easy to use.
+    </p>
 
-    <!-- Tools grid -->
-    <div id="toolsGrid" class="row g-3"></div>
-    <p id="empty" class="text-center text-secondary mt-3" style="display:none;">No tools found.</p>
+    <button id="ctaBrowse" class="btn btn-primary me-2">Browse Tools</button>
+    <button class="btn btn-outline-secondary">How it works</button>
+  </section>
 
-  </div>
-</section>
+  <!-- TOOLS -->
+  <section class="py-3">
+    <div class="container">
 
-<footer class="py-4 text-center text-secondary">
-  © <span id="year"></span> Web Tools
-</footer>
+      <!-- Header: search + sort -->
+      <div class="d-flex flex-wrap justify-content-between align-items-center mb-3 gap-3">
+        <div>
+          <h4 class="fw-bold mb-0">Tools</h4>
+          <small class="text-secondary">Tap a category pill to filter.</small>
+        </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        <div class="d-flex gap-2 align-items-center">
+          <input id="search" class="form-control" style="width:220px" placeholder="Search tools ( / )" aria-label="Search tools">
+          <select id="sort" class="form-select" style="width:160px;">
+            <option value="alpha">A → Z</option>
+            <option value="relevance">Relevance</option>
+          </select>
+        </div>
+      </div>
 
-<script>
-  // Tool dataset
-  const TOOLS = [
-    { id:'url-shortener', name:'URL Shortener', description:'Create short links.', category:'Utilities', url:'https://example.com/url-shortener' },
-    { id:'color-picker', name:'Color Picker', description:'Pick and convert colors.', category:'Design', url:'https://example.com/color-picker' },
-    { id:'json-beautify', name:'JSON Beautify', description:'Format JSON.', category:'Developer', url:'https://example.com/json-beautify' },
-    { id:'image-compressor', name:'Image Compressor', description:'Compress images.', category:'Media', url:'https://example.com/image-compressor' },
-    { id:'regex-tester', name:'Regex Tester', description:'Test regex patterns.', category:'Developer', url:'https://example.com/regex-tester' },
-    { id:'markdown-preview', name:'Markdown Preview', description:'Live markdown editor.', category:'Writing', url:'https://example.com/markdown-preview' },
-    { id:'seo-checker', name:'SEO Checker', description:'SEO analysis tool.', category:'Marketing', url:'https://example.com/seo-checker' },
-    { id:'json-to-csv', name:'JSON → CSV', description:'Convert JSON to CSV.', category:'Developer', url:'https://example.com/json-to-csv' }
-  ];
+      <!-- Category pills -->
+      <ul id="categoryPills" class="nav nav-pills gap-2 mb-4"></ul>
 
-  const state = { query:'', category:'all', sort:'alpha' };
+      <!-- Grid -->
+      <div id="toolsGrid" class="row g-3"></div>
+      <p id="empty" class="text-center text-secondary mt-3" style="display:none;">No tools found.</p>
+    </div>
+  </section>
 
-  const pills = document.getElementById('categoryPills');
-  const grid = document.getElementById('toolsGrid');
-  const emptyEl = document.getElementById('empty');
-  const searchInput = document.getElementById('search');
-  const sortSelect = document.getElementById('sort');
+  <footer class="py-4 text-center text-secondary">
+    © <span id="year"></span> Web Tools
+  </footer>
 
-  // Icon mapping
-  const ICONS = {
-    "Developer": "bi-code-slash",
-    "Utilities": "bi-gear",
-    "Design": "bi-brush",
-    "Writing": "bi-pencil",
-    "Marketing": "bi-bar-chart",
-    "Media": "bi-image",
-    "default": "bi-app"
-  };
+  <!-- Bootstrap bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  function categoryIcon(cat) {
-    return ICONS[cat] || ICONS.default;
-  }
+  <script>
+    /****************************************************************
+     * Data — tool list
+     ****************************************************************/
+    const TOOLS = [
+      { id:'url-shortener', name:'URL Shortener', description:'Create short links with analytics.', category:'Utilities', url:'https://example.com/url-shortener' },
+      { id:'color-picker', name:'Color Picker', description:'Pick colors and convert formats.', category:'Design', url:'https://example.com/color-picker' },
+      { id:'json-beautify', name:'JSON Beautify', description:'Format and validate JSON.', category:'Developer', url:'https://example.com/json-beautify' },
+      { id:'image-compressor', name:'Image Compressor', description:'Compress images for web use.', category:'Media', url:'https://example.com/image-compressor' },
+      { id:'regex-tester', name:'Regex Tester', description:'Build and test regular expressions.', category:'Developer', url:'https://example.com/regex-tester' },
+      { id:'markdown-preview', name:'Markdown Preview', description:'Live markdown editor and export.', category:'Writing', url:'https://example.com/markdown-preview' },
+      { id:'seo-checker', name:'SEO Checker', description:'Quick SEO audit tool.', category:'Marketing', url:'https://example.com/seo-checker' },
+      { id:'json-to-csv', name:'JSON → CSV', description:'Convert JSON to CSV quickly.', category:'Developer', url:'https://example.com/json-to-csv' }
+    ];
 
-  function init() {
-    document.getElementById('year').textContent = new Date().getFullYear();
+    /****************************************************************
+     * Category icon map (Bootstrap Icons) and color mapping
+     ****************************************************************/
+    const ICONS = {
+      "Developer": "bi-code-slash",
+      "Utilities": "bi-gear",
+      "Design": "bi-brush",
+      "Writing": "bi-pencil",
+      "Marketing": "bi-bar-chart",
+      "Media": "bi-image",
+      "default": "bi-app"
+    };
 
-    // Build pills
-    pills.innerHTML = `
-      <li class="nav-item">
-        <button class="nav-link active category-pill d-flex align-items-center gap-2" data-cat="all">
-          <i class="bi bi-ui-checks-grid"></i>
-          All
-        </button>
-      </li>
-    `;
+    const CATEGORY_COLORS = {
+      "Developer": { bg: "#e0f2fe", text: "#0369a1" },   // light blue / deep blue
+      "Utilities": { bg: "#fef9c3", text: "#854d0e" },   // light yellow / brown
+      "Design": { bg: "#fae8ff", text: "#6b21a8" },      // light purple / deep purple
+      "Writing": { bg: "#e2e8f0", text: "#334155" },     // light gray / slate
+      "Marketing": { bg: "#dcfce7", text: "#166534" },   // light green / green
+      "Media": { bg: "#ffe4e6", text: "#9f1239" },       // light rose / maroon
+      "default": { bg: "#f1f5f9", text: "#475569" }      // neutral
+    };
 
-    const categories = [...new Set(TOOLS.map(t=>t.category))].sort();
-    categories.forEach(cat => {
-      const li = document.createElement("li");
-      li.className = "nav-item";
-      li.innerHTML = `
-        <button class="nav-link category-pill d-flex align-items-center gap-2" data-cat="${cat}">
-          <i class="bi ${categoryIcon(cat)}"></i>
-          ${cat}
-        </button>
+    function categoryIcon(cat) {
+      return ICONS[cat] || ICONS.default;
+    }
+    function categoryColor(cat) {
+      return CATEGORY_COLORS[cat] || CATEGORY_COLORS.default;
+    }
+
+    /****************************************************************
+     * App state and DOM refs
+     ****************************************************************/
+    const state = { query: '', category: 'all', sort: 'alpha' };
+
+    const pills = document.getElementById('categoryPills');
+    const grid = document.getElementById('toolsGrid');
+    const emptyEl = document.getElementById('empty');
+    const searchInput = document.getElementById('search');
+    const sortSelect = document.getElementById('sort');
+
+    /****************************************************************
+     * Init
+     ****************************************************************/
+    function init() {
+      // footer year
+      document.getElementById('year').textContent = new Date().getFullYear();
+
+      buildCategoryPills();
+      attachHandlers();
+      render();
+    }
+
+    function buildCategoryPills() {
+      // "All" pill
+      pills.innerHTML = `
+        <li class="nav-item">
+          <button class="nav-link category-pill active d-inline-flex align-items-center gap-2" data-cat="all" style="background:#e2e8f0;color:#334155;">
+            <i class="bi bi-ui-checks-grid"></i>
+            All
+          </button>
+        </li>
       `;
-      pills.appendChild(li);
-    });
 
-    // Pill click handler
-    pills.querySelectorAll('.category-pill').forEach(btn => {
-      btn.addEventListener('click', () => {
-        state.category = btn.dataset.cat;
-        pills.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        render();
+      // distinct categories
+      const categories = [...new Set(TOOLS.map(t => t.category))].sort();
+      categories.forEach(cat => {
+        const { bg, text } = categoryColor(cat);
+        const li = document.createElement('li');
+        li.className = 'nav-item';
+        li.innerHTML = `
+          <button class="nav-link category-pill d-inline-flex align-items-center gap-2" data-cat="${cat}" style="background:${bg}; color:${text};">
+            <i class="bi ${categoryIcon(cat)}"></i>
+            ${cat}
+          </button>
+        `;
+        pills.appendChild(li);
       });
-    });
 
-    searchInput.addEventListener('input', ()=>{ state.query = searchInput.value.toLowerCase(); render(); });
-    sortSelect.addEventListener('change', ()=>{ state.sort = sortSelect.value; render(); });
+      // pill click behavior
+      pills.querySelectorAll('.category-pill').forEach(btn => {
+        btn.addEventListener('click', () => {
+          // set state
+          state.category = btn.dataset.cat;
 
-    window.addEventListener('keydown', e=>{ if(e.key==='/'){ e.preventDefault(); searchInput.focus(); }});
+          // update active visual
+          pills.querySelectorAll('.category-pill').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
 
-    document.getElementById('ctaBrowse').addEventListener('click',()=>{
-      grid.scrollIntoView({behavior:'smooth'});
-    });
-
-    render();
-  }
-
-  function render() {
-    let results = TOOLS.filter(t=>{
-      if(state.category!=='all' && t.category!==state.category) return false;
-      if(state.query && !(t.name+' '+t.description).toLowerCase().includes(state.query)) return false;
-      return true;
-    });
-
-    if(state.sort==='alpha') results.sort((a,b)=>a.name.localeCompare(b.name));
-    if(state.sort==='relevance' && state.query){
-      results.sort((a,b)=>{
-        const ai=(a.name+' '+a.description).toLowerCase().indexOf(state.query);
-        const bi=(b.name+' '+b.description).toLowerCase().indexOf(state.query);
-        return ai-bi;
+          render();
+        });
       });
     }
 
-    grid.innerHTML = '';
-    emptyEl.style.display = results.length ? 'none' : 'block';
+    function attachHandlers() {
+      // Search input
+      searchInput.addEventListener('input', (e) => {
+        state.query = e.target.value.trim().toLowerCase();
+        render();
+      });
 
-    results.forEach(t=>{
-      const col=document.createElement('div');
-      col.className="col-md-4 col-lg-3";
+      // Sort select
+      sortSelect.addEventListener('change', (e) => {
+        state.sort = e.target.value;
+        render();
+      });
 
-      col.innerHTML=`
-        <div class="tool-card bg-white p-3 rounded shadow-sm h-100" tabindex="0">
-          <div class="d-flex gap-3 align-items-center mb-2">
-            <div class="tool-icon">${initials(t.name)}</div>
-            <div>
-              <h6 class="fw-bold mb-1">${escapeHtml(t.name)}</h6>
-              <small class="text-secondary">${escapeHtml(t.description)}</small>
+      // Keyboard shortcut: / focuses search
+      window.addEventListener('keydown', (e) => {
+        if (e.key === '/') {
+          e.preventDefault();
+          searchInput.focus();
+        }
+        // Escape clears search (convenience)
+        if (e.key === 'Escape') {
+          if (document.activeElement === searchInput) {
+            searchInput.blur();
+          } else {
+            searchInput.value = '';
+            state.query = '';
+            render();
+          }
+        }
+      });
+
+      // CTA scroll
+      document.getElementById('ctaBrowse').addEventListener('click', () => {
+        grid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    /****************************************************************
+     * Render
+     ****************************************************************/
+    function render() {
+      // filtering
+      let results = TOOLS.filter(t => {
+        if (state.category !== 'all' && t.category !== state.category) return false;
+        if (state.query && !(t.name + ' ' + t.description + ' ' + t.category).toLowerCase().includes(state.query)) return false;
+        return true;
+      });
+
+      // sorting
+      if (state.sort === 'alpha') {
+        results.sort((a,b) => a.name.localeCompare(b.name));
+      } else if (state.sort === 'relevance' && state.query) {
+        results.sort((a,b) => {
+          const ai = (a.name + ' ' + a.description).toLowerCase().indexOf(state.query);
+          const bi = (b.name + ' ' + b.description).toLowerCase().indexOf(state.query);
+          return ai - bi;
+        });
+      }
+
+      // render grid
+      grid.innerHTML = '';
+      emptyEl.style.display = results.length ? 'none' : 'block';
+
+      results.forEach(t => {
+        const col = document.createElement('div');
+        col.className = 'col-md-4 col-lg-3';
+
+        col.innerHTML = `
+          <div class="tool-card bg-white p-3 rounded shadow-sm h-100" tabindex="0" role="button" aria-label="Open ${escapeHtml(t.name)}">
+            <div class="d-flex gap-3 align-items-center mb-2">
+              <div class="tool-icon">${initials(t.name)}</div>
+              <div class="col-body">
+                <h6 class="fw-bold mb-1">${escapeHtml(t.name)}</h6>
+                <small class="text-secondary">${escapeHtml(t.description)}</small>
+              </div>
             </div>
+            <span class="badge bg-light text-secondary">${escapeHtml(t.category)}</span>
           </div>
-          <span class="badge bg-light text-secondary">${escapeHtml(t.category)}</span>
-        </div>
-      `;
+        `;
 
-      const card=col.querySelector('.tool-card');
-      card.addEventListener('click',()=>window.open(t.url,'_blank'));
-      card.addEventListener('keydown',e=>{if(e.key==='Enter') window.open(t.url,'_blank');});
+        const card = col.querySelector('.tool-card');
 
-      grid.appendChild(col);
-    });
-  }
+        // click / keyboard behavior: open link in a new tab
+        card.addEventListener('click', () => window.open(t.url, '_blank', 'noopener'));
+        card.addEventListener('keydown', (e) => { if (e.key === 'Enter') window.open(t.url, '_blank', 'noopener'); });
 
-  function initials(name){
-    const p=name.split(" ");
-    return (p[0][0] + (p[1]?.[0] || "")).toUpperCase();
-  }
-  function escapeHtml(str){
-    return str.replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-  }
+        grid.appendChild(col);
+      });
+    }
 
-  init();
-</script>
+    /****************************************************************
+     * Helpers
+     ****************************************************************/
+    function initials(name) {
+      const parts = name.split(/\s+/).filter(Boolean);
+      if (parts.length === 1) return parts[0].slice(0,2).toUpperCase();
+      return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+    }
 
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[s]));
+    }
+
+    // boot
+    init();
+  </script>
 </body>
 </html>
