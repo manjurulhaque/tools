@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quotations — Click Filters</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f9fafb;
+}
+
+header {
+  padding: 14px 18px;
+  background: #111827;
+  color: #fff;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+header input,
+header select {
+  padding: 6px 8px;
+  border-radius: 6px;
+  border: none;
+  font-size: 14px;
+}
+
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* quotation card */
+.card {
+  background: #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+}
+
+.quote {
+  font-size: 16px;
+  line-height: 1.6;
+  color: #111827;
+}
+
+.meta {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #374151;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.filter-chip {
+  font-weight: 600;
+  color: #4f46e5;
+  cursor: pointer;
+  user-select: none;
+}
+
+.filter-chip:hover {
+  text-decoration: underline;
+}
+
+/* push author to the right */
+.author-chip {
+  margin-left: auto;
+}
+
+#count {
+  margin-left: auto;
+  font-size: 14px;
+  opacity: .85;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <strong>Quotations</strong>
+
+  <input id="search" placeholder="Search text…">
+
+  <select id="category">
+    <option value="">All categories</option>
+  </select>
+
+  <select id="author">
+    <option value="">All authors</option>
+  </select>
+
+  <span id="count"></span>
+</header>
+
+<main id="list"></main>
+
+<script>
+/* =====================================================
+   DATA
+===================================================== */
+const AUTHORS = [
+  "Marcus Aurelius",
+  "Albert Einstein",
+  "Ada Lovelace",
+  "Alan Turing",
+  "Confucius"
+];
+
+const CATEGORIES = [
+  "Wisdom",
+  "Science",
+  "Technology",
+  "Philosophy"
+];
+
+const QUOTES = [
+  "The happiness of your life depends upon the quality of your thoughts.",
+  "Life is like riding a bicycle. To keep your balance you must keep moving.",
+  "That brain of mine is something more than merely mortal; as time will show.",
+  "We can only see a short distance ahead, but we can see plenty there that needs to be done.",
+  "It does not matter how slowly you go as long as you do not stop."
+];
+
+const TOTAL_ITEMS = 25;
+
+const items = Array.from({ length: TOTAL_ITEMS }, (_, i) => ({
+  text: `“${QUOTES[i % QUOTES.length]}”`,
+  author: AUTHORS[i % AUTHORS.length],
+  category: CATEGORIES[i % CATEGORIES.length]
+}));
+
+/* =====================================================
+   DOM
+===================================================== */
+const list = document.getElementById("list");
+const searchInput = document.getElementById("search");
+const categorySelect = document.getElementById("category");
+const authorSelect = document.getElementById("author");
+const countSpan = document.getElementById("count");
+
+/* populate filters */
+CATEGORIES.forEach(c => {
+  const o = document.createElement("option");
+  o.value = c;
+  o.textContent = c;
+  categorySelect.appendChild(o);
+});
+
+AUTHORS.forEach(a => {
+  const o = document.createElement("option");
+  o.value = a;
+  o.textContent = a;
+  authorSelect.appendChild(o);
+});
+
+/* =====================================================
+   RENDER
+===================================================== */
+function render(filtered) {
+  list.innerHTML = "";
+
+  filtered.forEach(item => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <div class="quote">${item.text}</div>
+      <div class="meta">
+        <span class="filter-chip category-chip">${item.category}</span>
+        <span class="filter-chip author-chip">${item.author}</span>
+      </div>
+    `;
+
+    /* click-to-filter */
+    card.querySelector(".category-chip").onclick = () => {
+      categorySelect.value =
+        categorySelect.value === item.category ? "" : item.category;
+      applyFilters();
+    };
+
+    card.querySelector(".author-chip").onclick = () => {
+      authorSelect.value =
+        authorSelect.value === item.author ? "" : item.author;
+      applyFilters();
+    };
+
+    list.appendChild(card);
+  });
+
+  countSpan.textContent = filtered.length + " results";
+}
+
+/* =====================================================
+   FILTER LOGIC
+===================================================== */
+function applyFilters() {
+  const term = searchInput.value.toLowerCase();
+  const category = categorySelect.value;
+  const author = authorSelect.value;
+
+  const filtered = items.filter(item => {
+    if (category && item.category !== category) return false;
+    if (author && item.author !== author) return false;
+    if (term && !item.text.toLowerCase().includes(term)) return false;
+    return true;
+  });
+
+  render(filtered);
+}
+
+/* =====================================================
+   EVENTS
+===================================================== */
+searchInput.addEventListener("input", applyFilters);
+categorySelect.addEventListener("change", applyFilters);
+authorSelect.addEventListener("change", applyFilters);
+
+/* =====================================================
+   INIT
+===================================================== */
+render(items);
+</script>
+
+</body>
+</html>
