@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Quotations — Filter Header</title>
+<title>Quotations — Breadcrumb Filters</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
@@ -12,6 +12,7 @@ body {
   background: #f9fafb;
 }
 
+/* ================= HEADER ================= */
 header {
   padding: 14px 18px;
   background: #111827;
@@ -28,6 +29,11 @@ header {
   align-items: center;
 }
 
+#title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
 header input,
 header select {
   padding: 6px 8px;
@@ -36,16 +42,40 @@ header select {
   font-size: 14px;
 }
 
-#title {
-  font-size: 20px;
-  font-weight: 700;
-}
-
 #subtitle {
   font-size: 14px;
   opacity: .85;
 }
 
+/* ================= BREADCRUMBS ================= */
+#breadcrumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.breadcrumb {
+  background: #374151;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.breadcrumb button {
+  background: none;
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-size: 12px;
+  line-height: 1;
+  padding: 0;
+}
+
+/* ================= CONTENT ================= */
 main {
   max-width: 900px;
   margin: 0 auto;
@@ -82,26 +112,13 @@ main {
   font-size: 12px;
   cursor: pointer;
   user-select: none;
-  white-space: nowrap;
 }
 
 /* deterministic category colors */
-.category-Wisdom {
-  background: #ede9fe;
-  color: #5b21b6;
-}
-.category-Science {
-  background: #e0f2fe;
-  color: #075985;
-}
-.category-Technology {
-  background: #dcfce7;
-  color: #166534;
-}
-.category-Philosophy {
-  background: #fff7ed;
-  color: #9a3412;
-}
+.category-Wisdom { background:#ede9fe; color:#5b21b6; }
+.category-Science { background:#e0f2fe; color:#075985; }
+.category-Technology { background:#dcfce7; color:#166534; }
+.category-Philosophy { background:#fff7ed; color:#9a3412; }
 
 /* AUTHOR */
 .author-chip {
@@ -144,30 +161,18 @@ main {
     <span id="count"></span>
   </div>
 
-  <div id="subtitle">All quotations</div>
+  <div id="subtitle"></div>
+  <div id="breadcrumbs"></div>
 </header>
 
 <main id="list"></main>
 
 <script>
-/* =====================================================
-   DATA
-===================================================== */
+/* ================= DATA ================= */
 const AUTHORS = [
-  "Marcus Aurelius",
-  "Albert Einstein",
-  "Ada Lovelace",
-  "Alan Turing",
-  "Confucius"
+  "Marcus Aurelius","Albert Einstein","Ada Lovelace","Alan Turing","Confucius"
 ];
-
-const CATEGORIES = [
-  "Wisdom",
-  "Science",
-  "Technology",
-  "Philosophy"
-];
-
+const CATEGORIES = ["Wisdom","Science","Technology","Philosophy"];
 const QUOTES = [
   "The happiness of your life depends upon the quality of your thoughts.",
   "Life is like riding a bicycle. To keep your balance you must keep moving.",
@@ -176,70 +181,76 @@ const QUOTES = [
   "It does not matter how slowly you go as long as you do not stop."
 ];
 
-const TOTAL_ITEMS = 25;
-
-const items = Array.from({ length: TOTAL_ITEMS }, (_, i) => ({
+const items = Array.from({ length: 25 }, (_, i) => ({
   text: `“${QUOTES[i % QUOTES.length]}”`,
   author: AUTHORS[i % AUTHORS.length],
   category: CATEGORIES[i % CATEGORIES.length]
 }));
 
-/* =====================================================
-   DOM
-===================================================== */
+/* ================= DOM ================= */
 const list = document.getElementById("list");
 const searchInput = document.getElementById("search");
 const categorySelect = document.getElementById("category");
 const authorSelect = document.getElementById("author");
 const countSpan = document.getElementById("count");
 const subtitle = document.getElementById("subtitle");
+const breadcrumbs = document.getElementById("breadcrumbs");
 
-/* populate filters */
-CATEGORIES.forEach(c => {
-  const o = document.createElement("option");
-  o.value = c;
-  o.textContent = c;
-  categorySelect.appendChild(o);
-});
+/* populate selects */
+CATEGORIES.forEach(c => categorySelect.add(new Option(c, c)));
+AUTHORS.forEach(a => authorSelect.add(new Option(a, a)));
 
-AUTHORS.forEach(a => {
-  const o = document.createElement("option");
-  o.value = a;
-  o.textContent = a;
-  authorSelect.appendChild(o);
-});
-
-/* =====================================================
-   HEADER TEXT LOGIC
-===================================================== */
+/* ================= HEADER + BREADCRUMBS ================= */
 function updateHeader() {
-  const category = categorySelect.value;
-  const author = authorSelect.value;
+  const c = categorySelect.value;
+  const a = authorSelect.value;
 
-  if (category && author) {
-    subtitle.textContent =
-      `${category} Quotations by ${author}`;
-  } else if (category) {
-    subtitle.textContent =
-      `${category} Quotations`;
-  } else if (author) {
-    subtitle.textContent =
-      `Quotations by ${author}`;
-  } else {
-    subtitle.textContent = "All quotations";
+  if (c && a) subtitle.textContent = `${c} Quotations by ${a}`;
+  else if (c) subtitle.textContent = `${c} Quotations`;
+  else if (a) subtitle.textContent = `Quotations by ${a}`;
+  else subtitle.textContent = "All quotations";
+}
+
+function updateBreadcrumbs() {
+  breadcrumbs.innerHTML = "";
+
+  if (categorySelect.value) {
+    breadcrumbs.appendChild(makeCrumb(
+      `Category: ${categorySelect.value}`,
+      () => { categorySelect.value=""; applyFilters(); }
+    ));
+  }
+
+  if (authorSelect.value) {
+    breadcrumbs.appendChild(makeCrumb(
+      `Author: ${authorSelect.value}`,
+      () => { authorSelect.value=""; applyFilters(); }
+    ));
+  }
+
+  if (searchInput.value) {
+    breadcrumbs.appendChild(makeCrumb(
+      `Search: "${searchInput.value}"`,
+      () => { searchInput.value=""; applyFilters(); }
+    ));
   }
 }
 
-/* =====================================================
-   RENDER
-===================================================== */
+function makeCrumb(label, onRemove) {
+  const d = document.createElement("div");
+  d.className = "breadcrumb";
+  d.innerHTML = `<span>${label}</span><button>✕</button>`;
+  d.querySelector("button").onclick = onRemove;
+  return d;
+}
+
+/* ================= RENDER ================= */
 function render(filtered) {
   list.innerHTML = "";
 
   filtered.forEach(item => {
     const card = document.createElement("div");
     card.className = "card";
-
     card.innerHTML = `
       <div class="quote">${item.text}</div>
       <div class="meta">
@@ -248,7 +259,6 @@ function render(filtered) {
       </div>
     `;
 
-    /* click-to-filter */
     card.querySelector(".category-pill").onclick = () => {
       categorySelect.value =
         categorySelect.value === item.category ? "" : item.category;
@@ -267,35 +277,30 @@ function render(filtered) {
   countSpan.textContent = filtered.length + " results";
 }
 
-/* =====================================================
-   FILTER LOGIC
-===================================================== */
+/* ================= FILTER LOGIC ================= */
 function applyFilters() {
   const term = searchInput.value.toLowerCase();
-  const category = categorySelect.value;
-  const author = authorSelect.value;
+  const c = categorySelect.value;
+  const a = authorSelect.value;
 
   const filtered = items.filter(item => {
-    if (category && item.category !== category) return false;
-    if (author && item.author !== author) return false;
+    if (c && item.category !== c) return false;
+    if (a && item.author !== a) return false;
     if (term && !item.text.toLowerCase().includes(term)) return false;
     return true;
   });
 
   updateHeader();
+  updateBreadcrumbs();
   render(filtered);
 }
 
-/* =====================================================
-   EVENTS
-===================================================== */
+/* ================= EVENTS ================= */
 searchInput.addEventListener("input", applyFilters);
 categorySelect.addEventListener("change", applyFilters);
 authorSelect.addEventListener("change", applyFilters);
 
-/* =====================================================
-   INIT
-===================================================== */
+/* ================= INIT ================= */
 applyFilters();
 </script>
 
