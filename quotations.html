@@ -12,48 +12,57 @@ body {
   background: #f9fafb;
 }
 
-/* ================= HEADER ================= */
-header {
+/* ================= NAV ================= */
+nav {
   padding: 14px 18px;
   background: #111827;
   color: #fff;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.header-top {
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
 }
 
-#title {
+#nav-title {
   font-size: 20px;
   font-weight: 700;
 }
 
-header input,
-header select {
+nav input,
+nav select {
   padding: 6px 8px;
   border-radius: 6px;
   border: none;
   font-size: 14px;
 }
 
-#subtitle {
+#count {
+  margin-left: auto;
   font-size: 14px;
   opacity: .85;
 }
 
-/* ================= BREADCRUMBS ================= */
+/* ================= CONTENT HEADER ================= */
+#content-header {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 16px 20px 8px;
+}
+
+#subtitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #111827;
+}
+
 #breadcrumbs {
+  margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
+/* ================= BREADCRUMBS ================= */
 .breadcrumb {
   background: #374151;
   color: #fff;
@@ -79,7 +88,7 @@ header select {
 main {
   max-width: 900px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 12px 20px 20px;
 }
 
 /* quotation card */
@@ -114,7 +123,6 @@ main {
   user-select: none;
 }
 
-/* deterministic category colors */
 .category-Wisdom { background:#ede9fe; color:#5b21b6; }
 .category-Science { background:#e0f2fe; color:#075985; }
 .category-Technology { background:#dcfce7; color:#166534; }
@@ -133,37 +141,33 @@ main {
 .category-pill:hover {
   text-decoration: underline;
 }
-
-#count {
-  margin-left: auto;
-  font-size: 14px;
-  opacity: .85;
-}
 </style>
 </head>
 
 <body>
 
-<header>
-  <div class="header-top">
-    <div id="title">Quotations</div>
+<!-- NAVIGATION -->
+<nav>
+  <div id="nav-title">Quotations</div>
 
-    <input id="search" placeholder="Search text…">
+  <input id="search" placeholder="Search text…">
 
-    <select id="category">
-      <option value="">All categories</option>
-    </select>
+  <select id="category">
+    <option value="">All categories</option>
+  </select>
 
-    <select id="author">
-      <option value="">All authors</option>
-    </select>
+  <select id="author">
+    <option value="">All authors</option>
+  </select>
 
-    <span id="count"></span>
-  </div>
+  <span id="count"></span>
+</nav>
 
+<!-- CONTENT HEADER -->
+<section id="content-header">
   <div id="subtitle"></div>
   <div id="breadcrumbs"></div>
-</header>
+</section>
 
 <main id="list"></main>
 
