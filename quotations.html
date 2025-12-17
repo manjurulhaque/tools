@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Quotations — Category Pills</title>
+<title>Quotations — Filter Header</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
@@ -17,6 +17,12 @@ header {
   background: #111827;
   color: #fff;
   display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.header-top {
+  display: flex;
   flex-wrap: wrap;
   gap: 10px;
   align-items: center;
@@ -28,6 +34,16 @@ header select {
   border-radius: 6px;
   border: none;
   font-size: 14px;
+}
+
+#title {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+#subtitle {
+  font-size: 14px;
+  opacity: .85;
 }
 
 main {
@@ -112,19 +128,23 @@ main {
 <body>
 
 <header>
-  <strong>Quotations</strong>
+  <div class="header-top">
+    <div id="title">Quotations</div>
 
-  <input id="search" placeholder="Search text…">
+    <input id="search" placeholder="Search text…">
 
-  <select id="category">
-    <option value="">All categories</option>
-  </select>
+    <select id="category">
+      <option value="">All categories</option>
+    </select>
 
-  <select id="author">
-    <option value="">All authors</option>
-  </select>
+    <select id="author">
+      <option value="">All authors</option>
+    </select>
 
-  <span id="count"></span>
+    <span id="count"></span>
+  </div>
+
+  <div id="subtitle">All quotations</div>
 </header>
 
 <main id="list"></main>
@@ -172,6 +192,7 @@ const searchInput = document.getElementById("search");
 const categorySelect = document.getElementById("category");
 const authorSelect = document.getElementById("author");
 const countSpan = document.getElementById("count");
+const subtitle = document.getElementById("subtitle");
 
 /* populate filters */
 CATEGORIES.forEach(c => {
@@ -187,6 +208,27 @@ AUTHORS.forEach(a => {
   o.textContent = a;
   authorSelect.appendChild(o);
 });
+
+/* =====================================================
+   HEADER TEXT LOGIC
+===================================================== */
+function updateHeader() {
+  const category = categorySelect.value;
+  const author = authorSelect.value;
+
+  if (category && author) {
+    subtitle.textContent =
+      `${category} Quotations by ${author}`;
+  } else if (category) {
+    subtitle.textContent =
+      `${category} Quotations`;
+  } else if (author) {
+    subtitle.textContent =
+      `Quotations by ${author}`;
+  } else {
+    subtitle.textContent = "All quotations";
+  }
+}
 
 /* =====================================================
    RENDER
@@ -240,6 +282,7 @@ function applyFilters() {
     return true;
   });
 
+  updateHeader();
   render(filtered);
 }
 
@@ -253,7 +296,7 @@ authorSelect.addEventListener("change", applyFilters);
 /* =====================================================
    INIT
 ===================================================== */
-render(items);
+applyFilters();
 </script>
 
 </body>
