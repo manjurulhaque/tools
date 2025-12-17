@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<title>Quotations — Improved Cards</title>
+<title>Quotations</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
@@ -80,7 +80,6 @@ nav select {
   color: #fff;
   cursor: pointer;
   font-size: 12px;
-  line-height: 1;
   padding: 0;
 }
 
@@ -91,7 +90,7 @@ main {
   padding: 12px 20px 28px;
 }
 
-/* ================= IMPROVED CARD ================= */
+/* ================= CARD ================= */
 .card {
   position: relative;
   background: #ffffff;
@@ -112,27 +111,22 @@ main {
     0 12px 32px rgba(0,0,0,.08);
 }
 
-/* decorative quote mark */
 .card::before {
   content: "“";
   position: absolute;
   top: 10px;
   left: 14px;
   font-size: 48px;
-  line-height: 1;
   color: #e5e7eb;
-  pointer-events: none;
 }
 
-/* QUOTE TEXT */
 .quote {
   font-size: 17px;
   line-height: 1.65;
   color: #111827;
-  padding-left: 18px; /* offset for quote mark */
+  padding-left: 18px;
 }
 
-/* META ROW */
 .meta {
   margin-top: 16px;
   display: flex;
@@ -147,7 +141,6 @@ main {
   font-weight: 600;
   font-size: 12px;
   cursor: pointer;
-  user-select: none;
 }
 
 .category-Wisdom { background:#ede9fe; color:#5b21b6; }
@@ -161,7 +154,6 @@ main {
   font-weight: 600;
   color: #374151;
   cursor: pointer;
-  white-space: nowrap;
 }
 
 .author-chip:hover,
@@ -173,7 +165,7 @@ main {
 
 <body>
 
-<!-- NAVIGATION -->
+<!-- NAV -->
 <nav>
   <div id="nav-title">Quotations</div>
 
@@ -199,23 +191,40 @@ main {
 <main id="list"></main>
 
 <script>
-/* ================= DATA ================= */
-const AUTHORS = [
-  "Marcus Aurelius","Albert Einstein","Ada Lovelace","Alan Turing","Confucius"
-];
-const CATEGORIES = ["Wisdom","Science","Technology","Philosophy"];
-const QUOTES = [
-  "The happiness of your life depends upon the quality of your thoughts.",
-  "Life is like riding a bicycle. To keep your balance you must keep moving.",
-  "That brain of mine is something more than merely mortal; as time will show.",
-  "We can only see a short distance ahead, but we can see plenty there that needs to be done.",
-  "It does not matter how slowly you go as long as you do not stop."
+/* ================= OPTION 1: STATIC QUOTATIONS ================= */
+const QUOTATIONS = [
+  {
+    text: "The happiness of your life depends upon the quality of your thoughts.",
+    author: "Marcus Aurelius",
+    category: "Wisdom"
+  },
+  {
+    text: "Life is like riding a bicycle. To keep your balance you must keep moving.",
+    author: "Albert Einstein",
+    category: "Science"
+  },
+  {
+    text: "That brain of mine is something more than merely mortal; as time will show.",
+    author: "Ada Lovelace",
+    category: "Technology"
+  },
+  {
+    text: "We can only see a short distance ahead, but we can see plenty there that needs to be done.",
+    author: "Alan Turing",
+    category: "Technology"
+  },
+  {
+    text: "It does not matter how slowly you go as long as you do not stop.",
+    author: "Confucius",
+    category: "Philosophy"
+  }
 ];
 
-const items = Array.from({ length: 25 }, (_, i) => ({
-  text: `“${QUOTES[i % QUOTES.length]}”`,
-  author: AUTHORS[i % AUTHORS.length],
-  category: CATEGORIES[i % CATEGORIES.length]
+/* build items */
+const items = QUOTATIONS.map(q => ({
+  text: `“${q.text}”`,
+  author: q.author,
+  category: q.category
 }));
 
 /* ================= DOM ================= */
@@ -227,9 +236,12 @@ const countSpan = document.getElementById("count");
 const subtitle = document.getElementById("subtitle");
 const breadcrumbs = document.getElementById("breadcrumbs");
 
-/* populate selects */
-CATEGORIES.forEach(c => categorySelect.add(new Option(c, c)));
-AUTHORS.forEach(a => authorSelect.add(new Option(a, a)));
+/* populate filters from data */
+[...new Set(items.map(i => i.category))]
+  .forEach(c => categorySelect.add(new Option(c, c)));
+
+[...new Set(items.map(i => i.author))]
+  .forEach(a => authorSelect.add(new Option(a, a)));
 
 /* ================= HEADER + BREADCRUMBS ================= */
 function updateHeader() {
