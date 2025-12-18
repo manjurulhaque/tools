@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Advanced Barcode Generator (Validated)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #eef2f6;
+    padding: 20px;
+}
+.container {
+    max-width: 650px;
+    margin: auto;
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+}
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+input, select, button {
+    width: 100%;
+    padding: 8px;
+    margin-top: 6px;
+}
+button {
+    background: #0069d9;
+    color: white;
+    border: none;
+    margin-top: 16px;
+    cursor: pointer;
+}
+.preview {
+    text-align: center;
+    margin-top: 20px;
+}
+canvas {
+    max-width: 100%;
+}
+.error {
+    color: #b91c1c;
+    font-size: 14px;
+    margin-top: 10px;
+}
+.note {
+    font-size: 13px;
+    color: #555;
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h2>Advanced Barcode Generator</h2>
+
+    <label>Barcode Type</label>
+    <select id="format">
+        <optgroup label="Code 128">
+            <option value="CODE128">Code128 (Auto)</option>
+            <option value="CODE128A">Code128 A</option>
+            <option value="CODE128B">Code128 B</option>
+            <option value="CODE128C">Code128 C</option>
+        </optgroup>
+        <optgroup label="Retail">
+            <option value="EAN13">EAN-13</option>
+            <option value="EAN8">EAN-8</option>
+            <option value="UPC">UPC-A</option>
+            <option value="UPCE">UPC-E</option>
+        </optgroup>
+        <optgroup label="Industrial">
+            <option value="CODE39">Code39</option>
+            <option value="CODE39EXT">Code39 Extended</option>
+            <option value="ITF">ITF</option>
+            <option value="ITF14">ITF-14</option>
+            <option value="CODABAR">Codabar</option>
+        </optgroup>
+        <optgroup label="Specialty">
+            <option value="MSI">MSI</option>
+            <option value="MSI10">MSI10</option>
+            <option value="MSI11">MSI11</option>
+            <option value="MSI1010">MSI1010</option>
+            <option value="MSI1110">MSI1110</option>
+            <option value="pharmacode">Pharmacode</option>
+        </optgroup>
+    </select>
+
+    <label>Barcode Value</label>
+    <input id="value" type="text" value="123456789012">
+
+    <label>Bar Width</label>
+    <input id="barWidth" type="number" value="2" min="1">
+
+    <label>Bar Height</label>
+    <input id="barHeight" type="number" value="100" min="20">
+
+    <label>Foreground Color</label>
+    <input id="fgColor" type="color" value="#000000">
+
+    <label>Background Color</label>
+    <input id="bgColor" type="color" value="#ffffff">
+
+    <label>Rotation</label>
+    <select id="rotation">
+        <option value="0">0°</option>
+        <option value="90">90°</option>
+        <option value="180">180°</option>
+        <option value="270">270°</option>
+    </select>
+
+    <button onclick="generateBarcode()">Generate Barcode</button>
+    <button onclick="downloadPNG()">Download PNG</button>
+
+    <div id="error" class="error"></div>
+
+    <div class="preview">
+        <canvas id="barcodeCanvas"></canvas>
+    </div>
+
+    <div class="note">
+        Validation is enforced before rendering to ensure scannable barcodes.
+    </div>
+</div>
+
+<script>
+function isNumeric(v) {
+    return /^\d+$/.test(v);
+}
+
+function validate(format, value) {
+    if (!value) return "Value is required.";
+
+    switch (format) {
+        case "EAN13":
+            if (!isNumeric(value) || ![12,13].includes(value.length))
+                return "EAN-13 requires 12 or 13 digits.";
+            break;
+
+        case "EAN8":
+            if (!isNumeric(value) || ![7,8].includes(value.length))
+                return "EAN-8 requires 7 or 8 digits.";
+            break;
+
+        case "UPC":
+            if (!isNumeric(value) || ![11,12].includes(value.length))
+                return "UPC-A requires 11 or 12 digits.";
+            break;
+
+        case "UPCE":
+            if (!isNumeric(value) || value.length < 6 || value.length > 8)
+                return "UPC-E requires 6–8 digits.";
+            break;
+
+        case "CODE128C":
+            if (!isNumeric(value) || value.length % 2 !== 0)
+                return "Code128C requires numeric input with even length.";
+            break;
+
+        case "ITF":
+        case "ITF14":
+            if (!isNumeric(value) || value.length % 2 !== 0)
+                return "ITF requires an even number of digits.";
+            break;
+
+        case "MSI":
+        case "MSI10":
+        case "MSI11":
+        case "MSI1010":
+        case "MSI1110":
+            if (!isNumeric(value))
+                return "MSI barcodes require numeric input.";
+            break;
+
+        case "pharmacode":
+            const n = Number(value);
+            if (!isNumeric(value) || n < 3 || n > 131070)
+                return "Pharmacode must be a number between 3 and 131070.";
+            break;
+    }
+    return null;
+}
+
+function generateBarcode() {
+    const format = formatEl.value;
+    const value = valueEl.value.trim();
+    const barWidth = +barWidthEl.value;
+    const barHeight = +barHeightEl.value;
+    const fg = fgColorEl.value;
+    const bg = bgColorEl.value;
+    const rotation = +rotationEl.value;
+    const errorEl = document.getElementById("error");
+
+    errorEl.textContent = "";
+
+    const validationError = validate(format, value);
+    if (validationError) {
+        errorEl.textContent = validationError;
+        return;
+    }
+
+    const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+    try {
+        JsBarcode(svg, value, {
+            format,
+            width: barWidth,
+            height: barHeight,
+            lineColor: fg,
+            background: bg,
+            displayValue: true
+        });
+    } catch (e) {
+        errorEl.textContent = e.message;
+        return;
+    }
+
+    const img = new Image();
+    img.onload = () => {
+        const canvas = barcodeCanvas;
+        const ctx = canvas.getContext("2d");
+        const rotated = rotation === 90 || rotation === 270;
+
+        canvas.width = rotated ? img.height : img.width;
+        canvas.height = rotated ? img.width : img.height;
+
+        ctx.fillStyle = bg;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        ctx.save();
+        ctx.translate(canvas.width / 2, canvas.height / 2);
+        ctx.rotate(rotation * Math.PI / 180);
+        ctx.drawImage(img, -img.width / 2, -img.height / 2);
+        ctx.restore();
+    };
+
+    img.src = "data:image/svg+xml;base64," + btoa(new XMLSerializer().serializeToString(svg));
+}
+
+function downloadPNG() {
+    if (!barcodeCanvas.width) return alert("Generate a barcode first.");
+    const a = document.createElement("a");
+    a.href = barcodeCanvas.toDataURL("image/png");
+    a.download = "barcode.png";
+    a.click();
+}
+
+/* Element shortcuts */
+const formatEl = document.getElementById("format");
+const valueEl = document.getElementById("value");
+const barWidthEl = document.getElementById("barWidth");
+const barHeightEl = document.getElementById("barHeight");
+const fgColorEl = document.getElementById("fgColor");
+const bgColorEl = document.getElementById("bgColor");
+const rotationEl = document.getElementById("rotation");
+const barcodeCanvas = document.getElementById("barcodeCanvas");
+</script>
+</body>
+</html>
