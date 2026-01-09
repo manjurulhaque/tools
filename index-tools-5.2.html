@@ -66,7 +66,7 @@ header nav a {
     padding: 60px 20px;
 }
 
-/* FILTER BAR */
+/* FILTERS */
 .filters {
     display: flex;
     flex-wrap: wrap;
@@ -82,7 +82,6 @@ header nav a {
     color: var(--primary);
     cursor: pointer;
     font-size: 14px;
-    transition: background 0.2s ease, color 0.2s ease;
 }
 
 .filters button.active,
@@ -103,27 +102,26 @@ header nav a {
     background: var(--card);
     border-radius: 12px;
     padding: 26px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    box-shadow: 0 6px 18px rgba(0,0,0,.06);
     border: 1px solid transparent;
 
     opacity: 0;
     transform: translateY(24px);
 
     transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease,
-        border-color 0.25s ease;
+        transform .25s ease,
+        box-shadow .25s ease,
+        border-color .25s ease;
 }
 
 .tool:hover {
     transform: translateY(-6px);
-    box-shadow: 0 18px 36px rgba(0,0,0,0.12);
+    box-shadow: 0 18px 36px rgba(0,0,0,.12);
     border-color: var(--primary);
 }
 
-/* Scroll reveal */
 .tool.reveal {
-    animation: revealUp 0.6s ease forwards;
+    animation: revealUp .6s ease forwards;
 }
 
 @keyframes revealUp {
@@ -131,6 +129,10 @@ header nav a {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+.tool.hidden {
+    display: none;
 }
 
 .tool h3 {
@@ -143,12 +145,7 @@ header nav a {
     line-height: 1.6;
 }
 
-/* Hidden (filter) */
-.tool.hidden {
-    display: none;
-}
-
-/* Accessibility */
+/* ACCESSIBILITY */
 @media (prefers-reduced-motion: reduce) {
     .tool {
         opacity: 1;
@@ -185,7 +182,6 @@ footer {
 
 <div class="container" id="tools">
 
-<!-- FILTERS -->
 <div class="filters">
     <button class="active" data-filter="all">All</button>
     <button data-filter="developer">Developer</button>
@@ -197,26 +193,44 @@ footer {
 
 <div class="grid">
 
+<!-- CORE -->
 <div class="tool" data-category="developer data"><h3>JSON Formatter</h3><p>Formats and validates JSON data.</p></div>
-<div class="tool" data-category="developer security"><h3>Base64 Encoder / Decoder</h3><p>Encodes and decodes Base64 strings.</p></div>
-<div class="tool" data-category="text"><h3>Text Utilities</h3><p>Text transformations and word counting.</p></div>
-<div class="tool" data-category="security"><h3>Password Generator</h3><p>Generates secure random passwords.</p></div>
-<div class="tool" data-category="utility"><h3>Color Picker</h3><p>Selects colors and shows HEX values.</p></div>
-<div class="tool" data-category="developer"><h3>URL Encoder / Decoder</h3><p>Safely encodes and decodes URLs.</p></div>
-<div class="tool" data-category="developer data"><h3>Timestamp Converter</h3><p>Unix timestamp to readable date.</p></div>
-<div class="tool" data-category="text"><h3>Lorem Ipsum Generator</h3><p>Generates placeholder text.</p></div>
-<div class="tool" data-category="developer"><h3>Number Base Converter</h3><p>Decimal, binary, and hex conversion.</p></div>
-<div class="tool" data-category="security"><h3>SHA-256 Hash Generator</h3><p>Creates cryptographic hashes.</p></div>
-<div class="tool" data-category="developer"><h3>UUID Generator</h3><p>Generates RFC-compliant unique identifiers.</p></div>
 <div class="tool" data-category="developer"><h3>Regex Tester</h3><p>Tests and validates regular expressions.</p></div>
-<div class="tool" data-category="security"><h3>JWT Decoder</h3><p>Decodes JSON Web Tokens client-side.</p></div>
-<div class="tool" data-category="text"><h3>Case Converter</h3><p>Switch between common casing formats.</p></div>
-<div class="tool" data-category="developer"><h3>HTML Minifier</h3><p>Minifies HTML for performance.</p></div>
-<div class="tool" data-category="developer"><h3>CSS Minifier</h3><p>Compresses CSS efficiently.</p></div>
-<div class="tool" data-category="developer text"><h3>Markdown Previewer</h3><p>Live preview of Markdown content.</p></div>
-<div class="tool" data-category="utility"><h3>Time Zone Converter</h3><p>Converts time across global time zones.</p></div>
-<div class="tool" data-category="text"><h3>Email Validator</h3><p>Checks email addresses for correct syntax.</p></div>
-<div class="tool" data-category="developer utility"><h3>IP Address Lookup</h3><p>Displays information about IP addresses.</p></div>
+<div class="tool" data-category="developer"><h3>UUID Generator</h3><p>Generates RFC-compliant unique identifiers.</p></div>
+<div class="tool" data-category="developer"><h3>URL Encoder / Decoder</h3><p>Safely encodes and decodes URLs.</p></div>
+
+<!-- DATA -->
+<div class="tool" data-category="data"><h3>CSV to JSON Converter</h3><p>Transforms CSV into structured JSON.</p></div>
+<div class="tool" data-category="data"><h3>JSON to CSV Converter</h3><p>Converts JSON into CSV format.</p></div>
+<div class="tool" data-category="data"><h3>YAML ↔ JSON Converter</h3><p>Converts between YAML and JSON.</p></div>
+<div class="tool" data-category="data"><h3>XML Formatter</h3><p>Formats and validates XML files.</p></div>
+<div class="tool" data-category="data"><h3>SQL Formatter</h3><p>Formats SQL queries for readability.</p></div>
+<div class="tool" data-category="data"><h3>JSON Schema Validator</h3><p>Validates JSON against schemas.</p></div>
+
+<!-- TEXT -->
+<div class="tool" data-category="text"><h3>Text Utilities</h3><p>Uppercase, lowercase, and word counting.</p></div>
+<div class="tool" data-category="text"><h3>Case Converter</h3><p>Switch between common casing styles.</p></div>
+<div class="tool" data-category="text"><h3>Lorem Ipsum Generator</h3><p>Generates placeholder text.</p></div>
+<div class="tool" data-category="text"><h3>Readability Analyzer</h3><p>Measures text clarity and difficulty.</p></div>
+<div class="tool" data-category="text"><h3>Unicode Inspector</h3><p>Explains Unicode characters.</p></div>
+<div class="tool" data-category="text"><h3>Text Diff Checker</h3><p>Highlights differences between text blocks.</p></div>
+
+<!-- SECURITY -->
+<div class="tool" data-category="security"><h3>Password Generator</h3><p>Generates secure random passwords.</p></div>
+<div class="tool" data-category="security"><h3>Password Strength Checker</h3><p>Evaluates password entropy.</p></div>
+<div class="tool" data-category="security"><h3>SHA-256 Hash Generator</h3><p>Creates cryptographic hashes.</p></div>
+<div class="tool" data-category="security"><h3>Bcrypt Hash Generator</h3><p>Generates bcrypt hashes.</p></div>
+<div class="tool" data-category="security"><h3>HMAC Generator</h3><p>Creates HMAC signatures.</p></div>
+<div class="tool" data-category="security"><h3>JWT Decoder</h3><p>Decodes JSON Web Tokens.</p></div>
+
+<!-- UTILITY -->
+<div class="tool" data-category="utility"><h3>Timestamp Converter</h3><p>Unix timestamp to readable date.</p></div>
+<div class="tool" data-category="utility"><h3>Time Zone Converter</h3><p>Converts time across time zones.</p></div>
+<div class="tool" data-category="utility"><h3>Email Validator</h3><p>Validates email syntax.</p></div>
+<div class="tool" data-category="utility"><h3>IP Address Lookup</h3><p>Displays IP address information.</p></div>
+<div class="tool" data-category="utility"><h3>Local Storage Viewer</h3><p>Views browser local storage.</p></div>
+<div class="tool" data-category="utility"><h3>Session Storage Viewer</h3><p>Inspects session storage.</p></div>
+<div class="tool" data-category="utility"><h3>File Size Converter</h3><p>Converts between KB, MB, GB, TB.</p></div>
 
 </div>
 </div>
@@ -235,7 +249,6 @@ buttons.forEach(btn => {
         btn.classList.add('active');
 
         const filter = btn.dataset.filter;
-
         tools.forEach(tool => {
             if (filter === 'all' || tool.dataset.category.includes(filter)) {
                 tool.classList.remove('hidden');
@@ -246,11 +259,10 @@ buttons.forEach(btn => {
     });
 });
 
-/* Scroll reveal */
 const observer = new IntersectionObserver(entries => {
     entries.forEach((entry, index) => {
         if (entry.isIntersecting) {
-            entry.target.style.animationDelay = `${index * 0.05}s`;
+            entry.target.style.animationDelay = `${index * 0.04}s`;
             entry.target.classList.add('reveal');
             observer.unobserve(entry.target);
         }
