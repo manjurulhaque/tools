@@ -40,29 +40,12 @@ header {
     align-items: center;
 }
 
-header nav a {
-    color: white;
-    margin-left: 18px;
-    text-decoration: none;
-    font-weight: 500;
-}
-
 /* HERO */
 .hero {
     padding: 64px 20px;
     text-align: center;
     background: linear-gradient(135deg, #2563eb, #1e40af);
     color: white;
-}
-
-.hero h1 {
-    font-size: 38px;
-    margin-bottom: 8px;
-}
-
-.hero p {
-    font-size: 16px;
-    opacity: 0.95;
 }
 
 /* LAYOUT */
@@ -96,11 +79,12 @@ header nav a {
     color: white;
 }
 
-/* GRID */
+/* GRID — 🔒 SIZE LOCKED */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
     gap: 18px;
+    justify-content: start;
 }
 
 /* TOOL CARD */
@@ -111,8 +95,7 @@ header nav a {
     box-shadow: 0 4px 14px rgba(0,0,0,.06);
     border: 1px solid transparent;
 
-    opacity: 0;
-    transform: translateY(18px);
+    min-height: 132px;
 
     transition:
         transform .22s ease,
@@ -136,13 +119,11 @@ header nav a {
     margin: 0;
     font-size: 14px;
     color: #4b5563;
-    line-height: 1.5;
 }
 
 /* BADGES */
 .badges {
     display: flex;
-    flex-wrap: wrap;
     gap: 6px;
     margin-top: 10px;
 }
@@ -151,15 +132,13 @@ header nav a {
     font-size: 11px;
     padding: 3px 8px;
     border-radius: 999px;
-    font-weight: 500;
     color: white;
-    opacity: 0.7;
+    cursor: pointer;
 }
 
 .badge.primary {
     font-size: 12px;
     font-weight: 600;
-    opacity: 1;
 }
 
 .badge.developer { background: var(--dev); }
@@ -168,30 +147,9 @@ header nav a {
 .badge.data { background: var(--data); }
 .badge.utility { background: var(--utility); }
 
-/* SCROLL REVEAL */
-.tool.reveal {
-    animation: revealUp .5s ease forwards;
-}
-
-@keyframes revealUp {
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
+/* FILTER */
 .tool.hidden {
     display: none;
-}
-
-/* ACCESSIBILITY */
-@media (prefers-reduced-motion: reduce) {
-    .tool {
-        opacity: 1;
-        transform: none;
-        animation: none;
-        transition: none;
-    }
 }
 
 /* FOOTER */
@@ -200,7 +158,6 @@ footer {
     padding: 18px;
     background: var(--dark);
     color: white;
-    font-size: 14px;
 }
 </style>
 </head>
@@ -209,10 +166,6 @@ footer {
 
 <header>
     <strong>WebTools</strong>
-    <nav>
-        <a href="#tools">Tools</a>
-        <a href="#about">About</a>
-    </nav>
 </header>
 
 <section class="hero">
@@ -235,84 +188,66 @@ footer {
 
 <div class="tool" data-category="developer data">
     <h3>JSON Formatter</h3>
-    <p>Formats and validates JSON data.</p>
+    <p>Formats and validates JSON.</p>
 </div>
 
 <div class="tool" data-category="security utility">
     <h3>Password Generator</h3>
-    <p>Generates secure random passwords.</p>
+    <p>Generates secure passwords.</p>
 </div>
 
 <div class="tool" data-category="text">
     <h3>Text Utilities</h3>
-    <p>Uppercase, lowercase, and word counting.</p>
+    <p>Case tools and word count.</p>
 </div>
 
 <div class="tool" data-category="utility">
     <h3>Timestamp Converter</h3>
-    <p>Unix timestamp to readable date.</p>
-</div>
-
-<div class="tool" data-category="developer">
-    <h3>Regex Tester</h3>
-    <p>Tests and validates regular expressions.</p>
+    <p>Unix timestamp to date.</p>
 </div>
 
 </div>
 </div>
 
-<footer id="about">
-    © 2026 WebTools — Pure HTML, CSS & JavaScript
+<footer>
+    © 2026 WebTools
 </footer>
 
 <script>
-/* FILTERS */
 const buttons = document.querySelectorAll('.filters button');
 const tools = document.querySelectorAll('.tool');
 
-buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        buttons.forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
+function applyFilter(filter) {
+    buttons.forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-filter="${filter}"]`)?.classList.add('active');
 
-        const filter = btn.dataset.filter;
-        tools.forEach(tool => {
-            if (filter === 'all' || tool.dataset.category.includes(filter)) {
-                tool.classList.remove('hidden');
-            } else {
-                tool.classList.add('hidden');
-            }
-        });
+    tools.forEach(tool => {
+        tool.classList.toggle(
+            'hidden',
+            filter !== 'all' && !tool.dataset.category.includes(filter)
+        );
     });
-});
+}
 
-/* SCROLL REVEAL */
-const observer = new IntersectionObserver(entries => {
-    entries.forEach((entry, index) => {
-        if (entry.isIntersecting) {
-            entry.target.style.animationDelay = `${index * 0.02}s`;
-            entry.target.classList.add('reveal');
-            observer.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.15 });
+/* FILTER BUTTONS */
+buttons.forEach(btn =>
+    btn.addEventListener('click', () => applyFilter(btn.dataset.filter))
+);
 
-tools.forEach(tool => observer.observe(tool));
-
-/* BADGE GENERATION WITH PRIMARY CATEGORY */
+/* BADGES */
 tools.forEach(tool => {
-    const categories = tool.dataset.category.split(' ');
-    const badgeWrap = document.createElement('div');
-    badgeWrap.className = 'badges';
+    const wrap = document.createElement('div');
+    wrap.className = 'badges';
 
-    categories.forEach((cat, index) => {
+    tool.dataset.category.split(' ').forEach((cat, i) => {
         const badge = document.createElement('span');
-        badge.className = `badge ${cat}` + (index === 0 ? ' primary' : '');
-        badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-        badgeWrap.appendChild(badge);
+        badge.className = `badge ${cat}` + (i === 0 ? ' primary' : '');
+        badge.textContent = cat;
+        badge.onclick = () => applyFilter(cat);
+        wrap.appendChild(badge);
     });
 
-    tool.appendChild(badgeWrap);
+    tool.appendChild(wrap);
 });
 </script>
 
