@@ -30,14 +30,11 @@ body {
     color: #111827;
 }
 
-/* NAVBAR */
+/* HEADER */
 header {
     background: var(--dark);
     color: white;
     padding: 14px 36px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
 }
 
 /* HERO */
@@ -48,7 +45,6 @@ header {
     color: white;
 }
 
-/* LAYOUT */
 .container {
     max-width: 1200px;
     margin: auto;
@@ -79,37 +75,29 @@ header {
     color: white;
 }
 
-/* GRID — 🔒 SIZE LOCKED */
+/* GRID — FIXED CARD SIZE */
 .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 260px));
+    grid-template-columns: repeat(auto-fill, 260px);
     gap: 18px;
     justify-content: start;
 }
 
-/* TOOL CARD */
+/* CARD */
 .tool {
     background: var(--card);
     border-radius: 10px;
     padding: 18px 20px;
     box-shadow: 0 4px 14px rgba(0,0,0,.06);
-    border: 1px solid transparent;
-
     min-height: 132px;
 
-    transition:
-        transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease;
+    transition: transform 0.35s cubic-bezier(.22,.61,.36,1);
 }
 
-.tool:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 14px 28px rgba(0,0,0,.12);
-    border-color: var(--primary);
+.tool.hidden {
+    display: none;
 }
 
-/* TEXT */
 .tool h3 {
     margin: 0 0 6px;
     font-size: 16px;
@@ -134,11 +122,13 @@ header {
     border-radius: 999px;
     color: white;
     cursor: pointer;
+    opacity: .8;
 }
 
 .badge.primary {
     font-size: 12px;
     font-weight: 600;
+    opacity: 1;
 }
 
 .badge.developer { background: var(--dev); }
@@ -146,11 +136,6 @@ header {
 .badge.security { background: var(--security); }
 .badge.data { background: var(--data); }
 .badge.utility { background: var(--utility); }
-
-/* FILTER */
-.tool.hidden {
-    display: none;
-}
 
 /* FOOTER */
 footer {
@@ -173,7 +158,7 @@ footer {
     <p>Fast, private, and powerful browser-based utilities</p>
 </section>
 
-<div class="container" id="tools">
+<div class="container">
 
 <div class="filters">
     <button class="active" data-filter="all">All</button>
@@ -184,7 +169,7 @@ footer {
     <button data-filter="utility">Utility</button>
 </div>
 
-<div class="grid">
+<div class="grid" id="grid">
 
 <div class="tool" data-category="developer data">
     <h3>JSON Formatter</h3>
@@ -206,6 +191,11 @@ footer {
     <p>Unix timestamp to date.</p>
 </div>
 
+<div class="tool" data-category="developer">
+    <h3>Regex Tester</h3>
+    <p>Validates regular expressions.</p>
+</div>
+
 </div>
 </div>
 
@@ -215,24 +205,8 @@ footer {
 
 <script>
 const buttons = document.querySelectorAll('.filters button');
-const tools = document.querySelectorAll('.tool');
-
-function applyFilter(filter) {
-    buttons.forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-filter="${filter}"]`)?.classList.add('active');
-
-    tools.forEach(tool => {
-        tool.classList.toggle(
-            'hidden',
-            filter !== 'all' && !tool.dataset.category.includes(filter)
-        );
-    });
-}
-
-/* FILTER BUTTONS */
-buttons.forEach(btn =>
-    btn.addEventListener('click', () => applyFilter(btn.dataset.filter))
-);
+const tools = Array.from(document.querySelectorAll('.tool'));
+const grid = document.getElementById('grid');
 
 /* BADGES */
 tools.forEach(tool => {
@@ -249,6 +223,49 @@ tools.forEach(tool => {
 
     tool.appendChild(wrap);
 });
+
+/* FLIP FILTER */
+function applyFilter(filter) {
+    buttons.forEach(b => b.classList.remove('active'));
+    document.querySelector(`[data-filter="${filter}"]`)?.classList.add('active');
+
+    const firstRects = new Map();
+    tools.forEach(t => {
+        if (!t.classList.contains('hidden')) {
+            firstRects.set(t, t.getBoundingClientRect());
+        }
+    });
+
+    tools.forEach(tool => {
+        tool.classList.toggle(
+            'hidden',
+            filter !== 'all' && !tool.dataset.category.includes(filter)
+        );
+    });
+
+    requestAnimationFrame(() => {
+        tools.forEach(tool => {
+            if (tool.classList.contains('hidden')) return;
+
+            const last = tool.getBoundingClientRect();
+            const first = firstRects.get(tool);
+            if (!first) return;
+
+            const dx = first.left - last.left;
+            const dy = first.top - last.top;
+
+            tool.style.transform = `translate(${dx}px, ${dy}px)`;
+            tool.getBoundingClientRect();
+
+            tool.style.transform = '';
+        });
+    });
+}
+
+/* FILTER BUTTONS */
+buttons.forEach(btn =>
+    btn.addEventListener('click', () => applyFilter(btn.dataset.filter))
+);
 </script>
 
 </body>
