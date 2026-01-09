@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Web Tools Hub</title>
+
+<!-- BOOTSTRAP CSS -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
 
 <style>
 :root {
@@ -19,13 +26,7 @@
     --utility: #ea580c;
 }
 
-* {
-    box-sizing: border-box;
-    font-family: Inter, Arial, sans-serif;
-}
-
 body {
-    margin: 0;
     background: var(--light);
     color: #111827;
 }
@@ -45,34 +46,11 @@ header {
     color: white;
 }
 
-.container {
-    max-width: 1200px;
-    margin: auto;
-    padding: 48px 20px;
-}
-
-/* FILTERS */
-.filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 24px;
-}
-
+/* FILTER BAR */
 .filters button {
-    padding: 6px 12px;
-    border-radius: 16px;
-    border: 1px solid var(--primary);
-    background: transparent;
-    color: var(--primary);
-    cursor: pointer;
+    border-radius: 999px;
     font-size: 13px;
-}
-
-.filters button.active,
-.filters button:hover {
-    background: var(--primary);
-    color: white;
+    padding: 6px 14px;
 }
 
 /* GRID — FIXED CARD SIZE */
@@ -99,14 +77,14 @@ header {
 }
 
 .tool h3 {
-    margin: 0 0 6px;
     font-size: 16px;
+    margin-bottom: 6px;
 }
 
 .tool p {
-    margin: 0;
     font-size: 14px;
     color: #4b5563;
+    margin-bottom: 0;
 }
 
 /* BADGES */
@@ -116,31 +94,29 @@ header {
     margin-top: 10px;
 }
 
-.badge {
+.badge-custom {
     font-size: 11px;
-    padding: 3px 8px;
+    padding: 4px 9px;
     border-radius: 999px;
     color: white;
     cursor: pointer;
     opacity: .8;
 }
 
-.badge.primary {
+.badge-custom.primary {
     font-size: 12px;
     font-weight: 600;
     opacity: 1;
 }
 
-.badge.developer { background: var(--dev); }
-.badge.text { background: var(--text); }
-.badge.security { background: var(--security); }
-.badge.data { background: var(--data); }
-.badge.utility { background: var(--utility); }
+.badge-custom.developer { background: var(--dev); }
+.badge-custom.text { background: var(--text); }
+.badge-custom.security { background: var(--security); }
+.badge-custom.data { background: var(--data); }
+.badge-custom.utility { background: var(--utility); }
 
 /* FOOTER */
 footer {
-    text-align: center;
-    padding: 18px;
     background: var(--dark);
     color: white;
 }
@@ -149,26 +125,30 @@ footer {
 
 <body>
 
-<header>
-    <strong>WebTools</strong>
+<header class="text-center text-md-start">
+    <div class="container-xl">
+        <strong>WebTools</strong>
+    </div>
 </header>
 
 <section class="hero">
-    <h1>Professional Web Tools Hub</h1>
-    <p>Fast, private, and powerful browser-based utilities</p>
+    <h1 class="fw-bold">Professional Web Tools Hub</h1>
+    <p class="opacity-75">Fast, private, and powerful browser-based utilities</p>
 </section>
 
-<div class="container">
+<div class="container-xl py-5">
 
-<div class="filters">
-    <button class="active" data-filter="all">All</button>
-    <button data-filter="developer">Developer</button>
-    <button data-filter="text">Text</button>
-    <button data-filter="security">Security</button>
-    <button data-filter="data">Data</button>
-    <button data-filter="utility">Utility</button>
+<!-- FILTERS -->
+<div class="filters d-flex flex-wrap gap-2 mb-4">
+    <button class="btn btn-outline-primary active" data-filter="all">All</button>
+    <button class="btn btn-outline-primary" data-filter="developer">Developer</button>
+    <button class="btn btn-outline-primary" data-filter="text">Text</button>
+    <button class="btn btn-outline-primary" data-filter="security">Security</button>
+    <button class="btn btn-outline-primary" data-filter="data">Data</button>
+    <button class="btn btn-outline-primary" data-filter="utility">Utility</button>
 </div>
 
+<!-- GRID -->
 <div class="grid" id="grid">
 
 <div class="tool" data-category="developer data">
@@ -199,14 +179,13 @@ footer {
 </div>
 </div>
 
-<footer>
+<footer class="py-3 text-center">
     © 2026 WebTools
 </footer>
 
 <script>
 const buttons = document.querySelectorAll('.filters button');
 const tools = Array.from(document.querySelectorAll('.tool'));
-const grid = document.getElementById('grid');
 
 /* BADGES */
 tools.forEach(tool => {
@@ -215,8 +194,8 @@ tools.forEach(tool => {
 
     tool.dataset.category.split(' ').forEach((cat, i) => {
         const badge = document.createElement('span');
-        badge.className = `badge ${cat}` + (i === 0 ? ' primary' : '');
-        badge.textContent = cat;
+        badge.className = `badge-custom ${cat}` + (i === 0 ? ' primary' : '');
+        badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
         badge.onclick = () => applyFilter(cat);
         wrap.appendChild(badge);
     });
@@ -256,7 +235,6 @@ function applyFilter(filter) {
 
             tool.style.transform = `translate(${dx}px, ${dy}px)`;
             tool.getBoundingClientRect();
-
             tool.style.transform = '';
         });
     });
