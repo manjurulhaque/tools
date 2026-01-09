@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>JSON Formatter – WebTools</title>
+
+<!-- Bootstrap -->
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+  rel="stylesheet"
+/>
+
+<style>
+:root {
+    --primary: #2563eb;
+    --dark: #1f2933;
+    --light: #f8fafc;
+}
+
+body {
+    background: var(--light);
+    color: #111827;
+}
+
+/* HEADER */
+header {
+    background: var(--dark);
+    color: white;
+    padding: 14px 0;
+}
+
+/* TOOL HEADER */
+.tool-hero {
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.08);
+}
+
+/* OUTPUT BOX */
+.output {
+    background: #0f172a;
+    color: #e5e7eb;
+    border-radius: 10px;
+    padding: 16px;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 14px;
+    white-space: pre-wrap;
+}
+
+/* BUTTON */
+.btn-primary {
+    background: var(--primary);
+    border: none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <div class="container-xl d-flex justify-content-between">
+        <strong>WebTools</strong>
+        <a href="../index.html" class="text-white text-decoration-none">
+            ← Back to Tools
+        </a>
+    </div>
+</header>
+
+<div class="container-xl py-5">
+
+<!-- TOOL INTRO -->
+<div class="tool-hero p-4 p-md-5 mb-5">
+    <h1 class="fw-bold mb-2">JSON Formatter</h1>
+    <p class="text-muted mb-0">
+        Format, validate, and beautify JSON instantly in your browser.
+        No uploads. No tracking.
+    </p>
+</div>
+
+<!-- TOOL UI -->
+<div class="row g-4">
+    <div class="col-lg-6">
+        <label class="form-label fw-semibold">Input JSON</label>
+        <textarea
+            id="input"
+            class="form-control"
+            rows="10"
+            placeholder='{ "name": "WebTools" }'
+        ></textarea>
+    </div>
+
+    <div class="col-lg-6">
+        <label class="form-label fw-semibold">Formatted Output</label>
+        <div id="output" class="output"></div>
+    </div>
+</div>
+
+<div class="mt-4 d-flex gap-2">
+    <button class="btn btn-primary" onclick="formatJSON()">
+        Format JSON
+    </button>
+    <button class="btn btn-outline-secondary" onclick="clearAll()">
+        Clear
+    </button>
+</div>
+
+</div>
+
+<footer class="text-center py-4 text-muted">
+    © 2026 WebTools
+</footer>
+
+<script>
+function formatJSON() {
+    const input = document.getElementById('input').value;
+    const output = document.getElementById('output');
+
+    try {
+        const parsed = JSON.parse(input);
+        output.textContent = JSON.stringify(parsed, null, 4);
+    } catch (e) {
+        output.textContent = 'Invalid JSON';
+    }
+}
+
+function clearAll() {
+    document.getElementById('input').value = '';
+    document.getElementById('output').textContent = '';
+}
+</script>
+
+</body>
+</html>
