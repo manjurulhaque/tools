@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Tools Hub</title>
+
+<style>
+:root {
+    --primary: #2563eb;
+    --dark: #1f2933;
+    --light: #f8fafc;
+    --card: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+    font-family: Inter, Arial, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: var(--light);
+    color: #111827;
+}
+
+/* NAVBAR */
+header {
+    background: var(--dark);
+    color: white;
+    padding: 16px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header nav a {
+    color: white;
+    margin-left: 20px;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+/* HERO */
+.hero {
+    padding: 80px 20px;
+    text-align: center;
+    background: linear-gradient(135deg, #2563eb, #1e40af);
+    color: white;
+}
+
+.hero h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    font-size: 18px;
+    opacity: 0.95;
+}
+
+/* LAYOUT */
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 60px 20px;
+}
+
+/* FILTER BAR */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+
+.filters button {
+    padding: 8px 14px;
+    border-radius: 20px;
+    border: 1px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.filters button.active,
+.filters button:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+}
+
+/* TOOL CARD */
+.tool {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 26px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    border: 1px solid transparent;
+
+    opacity: 0;
+    transform: translateY(24px);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        border-color 0.25s ease;
+}
+
+.tool:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 18px 36px rgba(0,0,0,0.12);
+    border-color: var(--primary);
+}
+
+/* Scroll reveal */
+.tool.reveal {
+    animation: revealUp 0.6s ease forwards;
+}
+
+@keyframes revealUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tool h3 {
+    margin: 0 0 8px;
+}
+
+.tool p {
+    margin: 0;
+    color: #374151;
+    line-height: 1.6;
+}
+
+/* Hidden (filter) */
+.tool.hidden {
+    display: none;
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    .tool {
+        opacity: 1;
+        transform: none;
+        animation: none;
+        transition: none;
+    }
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    background: var(--dark);
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <strong>WebTools</strong>
+    <nav>
+        <a href="#tools">Tools</a>
+        <a href="#about">About</a>
+    </nav>
+</header>
+
+<section class="hero">
+    <h1>Professional Web Tools Hub</h1>
+    <p>Fast, private, and powerful browser-based utilities</p>
+</section>
+
+<div class="container" id="tools">
+
+<!-- FILTERS -->
+<div class="filters">
+    <button class="active" data-filter="all">All</button>
+    <button data-filter="developer">Developer</button>
+    <button data-filter="text">Text</button>
+    <button data-filter="security">Security</button>
+    <button data-filter="data">Data</button>
+    <button data-filter="utility">Utility</button>
+</div>
+
+<div class="grid">
+
+<div class="tool" data-category="developer data"><h3>JSON Formatter</h3><p>Formats and validates JSON data.</p></div>
+<div class="tool" data-category="developer security"><h3>Base64 Encoder / Decoder</h3><p>Encodes and decodes Base64 strings.</p></div>
+<div class="tool" data-category="text"><h3>Text Utilities</h3><p>Text transformations and word counting.</p></div>
+<div class="tool" data-category="security"><h3>Password Generator</h3><p>Generates secure random passwords.</p></div>
+<div class="tool" data-category="utility"><h3>Color Picker</h3><p>Selects colors and shows HEX values.</p></div>
+<div class="tool" data-category="developer"><h3>URL Encoder / Decoder</h3><p>Safely encodes and decodes URLs.</p></div>
+<div class="tool" data-category="developer data"><h3>Timestamp Converter</h3><p>Unix timestamp to readable date.</p></div>
+<div class="tool" data-category="text"><h3>Lorem Ipsum Generator</h3><p>Generates placeholder text.</p></div>
+<div class="tool" data-category="developer"><h3>Number Base Converter</h3><p>Decimal, binary, and hex conversion.</p></div>
+<div class="tool" data-category="security"><h3>SHA-256 Hash Generator</h3><p>Creates cryptographic hashes.</p></div>
+<div class="tool" data-category="developer"><h3>UUID Generator</h3><p>Generates RFC-compliant unique identifiers.</p></div>
+<div class="tool" data-category="developer"><h3>Regex Tester</h3><p>Tests and validates regular expressions.</p></div>
+<div class="tool" data-category="security"><h3>JWT Decoder</h3><p>Decodes JSON Web Tokens client-side.</p></div>
+<div class="tool" data-category="text"><h3>Case Converter</h3><p>Switch between common casing formats.</p></div>
+<div class="tool" data-category="developer"><h3>HTML Minifier</h3><p>Minifies HTML for performance.</p></div>
+<div class="tool" data-category="developer"><h3>CSS Minifier</h3><p>Compresses CSS efficiently.</p></div>
+<div class="tool" data-category="developer text"><h3>Markdown Previewer</h3><p>Live preview of Markdown content.</p></div>
+<div class="tool" data-category="utility"><h3>Time Zone Converter</h3><p>Converts time across global time zones.</p></div>
+<div class="tool" data-category="text"><h3>Email Validator</h3><p>Checks email addresses for correct syntax.</p></div>
+<div class="tool" data-category="developer utility"><h3>IP Address Lookup</h3><p>Displays information about IP addresses.</p></div>
+
+</div>
+</div>
+
+<footer id="about">
+    © 2026 WebTools — Pure HTML, CSS & JavaScript
+</footer>
+
+<script>
+const buttons = document.querySelectorAll('.filters button');
+const tools = document.querySelectorAll('.tool');
+
+buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const filter = btn.dataset.filter;
+
+        tools.forEach(tool => {
+            if (filter === 'all' || tool.dataset.category.includes(filter)) {
+                tool.classList.remove('hidden');
+            } else {
+                tool.classList.add('hidden');
+            }
+        });
+    });
+});
+
+/* Scroll reveal */
+const observer = new IntersectionObserver(entries => {
+    entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+            entry.target.style.animationDelay = `${index * 0.05}s`;
+            entry.target.classList.add('reveal');
+            observer.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15 });
+
+tools.forEach(tool => observer.observe(tool));
+</script>
+
+</body>
+</html>
