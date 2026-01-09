@@ -139,7 +139,7 @@ header nav a {
     line-height: 1.5;
 }
 
-/* BADGES (BOTTOM) */
+/* BADGES */
 .badges {
     display: flex;
     flex-wrap: wrap;
@@ -153,6 +153,13 @@ header nav a {
     border-radius: 999px;
     font-weight: 500;
     color: white;
+    opacity: 0.7;
+}
+
+.badge.primary {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 1;
 }
 
 .badge.developer { background: var(--dev); }
@@ -231,7 +238,7 @@ footer {
     <p>Formats and validates JSON data.</p>
 </div>
 
-<div class="tool" data-category="security">
+<div class="tool" data-category="security utility">
     <h3>Password Generator</h3>
     <p>Generates secure random passwords.</p>
 </div>
@@ -250,8 +257,6 @@ footer {
     <h3>Regex Tester</h3>
     <p>Tests and validates regular expressions.</p>
 </div>
-
-<!-- Remaining tools follow the same structure -->
 
 </div>
 </div>
@@ -294,15 +299,15 @@ const observer = new IntersectionObserver(entries => {
 
 tools.forEach(tool => observer.observe(tool));
 
-/* BADGE GENERATION (APPEND TO BOTTOM) */
+/* BADGE GENERATION WITH PRIMARY CATEGORY */
 tools.forEach(tool => {
     const categories = tool.dataset.category.split(' ');
     const badgeWrap = document.createElement('div');
     badgeWrap.className = 'badges';
 
-    categories.forEach(cat => {
+    categories.forEach((cat, index) => {
         const badge = document.createElement('span');
-        badge.className = `badge ${cat}`;
+        badge.className = `badge ${cat}` + (index === 0 ? ' primary' : '');
         badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
         badgeWrap.appendChild(badge);
     });
