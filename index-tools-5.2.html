@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Web Tools Hub</title>
 
 <!-- BOOTSTRAP CSS -->
@@ -14,99 +13,125 @@
 
 <style>
 :root {
-    --primary: #2563eb;
-    --dark: #1f2933;
-    --light: #f8fafc;
-    --card: #ffffff;
+  --primary: #2563eb;
+  --dark: #1f2933;
+  --light: #f8fafc;
+  --card: #ffffff;
 
-    --dev: #2563eb;
-    --text: #16a34a;
-    --security: #dc2626;
-    --data: #7c3aed;
-    --utility: #ea580c;
+  --dev: #2563eb;
+  --text: #16a34a;
+  --security: #dc2626;
+  --data: #7c3aed;
+  --utility: #ea580c;
 }
 
 body {
-    background: var(--light);
-    color: #111827;
+  background: var(--light);
+  color: #111827;
 }
 
 /* HEADER */
 header {
-    background: var(--dark);
-    color: white;
-    padding: 14px 36px;
+  background: var(--dark);
+  color: white;
+  padding: 14px 36px;
 }
 
 /* HERO */
 .hero {
-    padding: 64px 20px;
-    text-align: center;
-    background: linear-gradient(135deg, #2563eb, #1e40af);
-    color: white;
+  padding: 64px 20px;
+  text-align: center;
+  background: linear-gradient(135deg, #2563eb, #1e40af);
+  color: white;
 }
 
 /* FILTER BAR */
 .filters button {
-    border-radius: 999px;
-    font-size: 13px;
-    padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  padding: 6px 14px;
 }
 
 /* GRID — FIXED CARD SIZE */
 .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, 260px);
-    gap: 18px;
-    justify-content: start;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 260px);
+  gap: 18px;
+  justify-content: start;
+}
+
+@media (max-width: 540px) {
+  .grid {
+    justify-content: center;
+  }
 }
 
 /* CARD */
 .tool {
-    background: var(--card);
-    border-radius: 10px;
-    padding: 18px 20px;
-    box-shadow: 0 4px 14px rgba(0,0,0,.06);
-    min-height: 132px;
+  background: var(--card);
+  border-radius: 10px;
+  padding: 18px 20px;
+  min-height: 132px;
 
-    transition: transform 0.35s cubic-bezier(.22,.61,.36,1);
+  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  border: 1px solid transparent;
+
+  transition:
+    transform 0.25s cubic-bezier(.22,.61,.36,1),
+    box-shadow 0.25s cubic-bezier(.22,.61,.36,1),
+    border-color 0.25s ease;
+}
+
+.tool:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 36px rgba(0,0,0,.14);
+  border-color: rgba(37, 99, 235, 0.45);
 }
 
 .tool.hidden {
-    display: none;
+  display: none;
 }
 
 .tool h3 {
-    font-size: 16px;
-    margin-bottom: 6px;
+  font-size: 16px;
+  margin-bottom: 6px;
 }
 
 .tool p {
-    font-size: 14px;
-    color: #4b5563;
-    margin-bottom: 0;
+  font-size: 14px;
+  color: #4b5563;
+  margin-bottom: 0;
 }
 
 /* BADGES */
 .badges {
-    display: flex;
-    gap: 6px;
-    margin-top: 10px;
+  display: flex;
+  gap: 6px;
+  margin-top: 10px;
+  flex-wrap: wrap;
 }
 
 .badge-custom {
-    font-size: 11px;
-    padding: 4px 9px;
-    border-radius: 999px;
-    color: white;
-    cursor: pointer;
-    opacity: .8;
+  font-size: 11px;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: white;
+  cursor: pointer;
+  opacity: .85;
+  transition: opacity .15s ease, transform .15s ease;
+}
+
+.badge-custom:hover,
+.badge-custom:focus-visible {
+  opacity: 1;
+  transform: translateY(-1px);
+  outline: none;
 }
 
 .badge-custom.primary {
-    font-size: 12px;
-    font-weight: 600;
-    opacity: 1;
+  font-size: 12px;
+  font-weight: 600;
+  opacity: 1;
 }
 
 .badge-custom.developer { background: var(--dev); }
@@ -117,132 +142,167 @@ header {
 
 /* FOOTER */
 footer {
-    background: var(--dark);
-    color: white;
+  background: var(--dark);
+  color: white;
 }
 </style>
 </head>
 
 <body>
 
-<header class="text-center text-md-start">
-    <div class="container-xl">
-        <strong>WebTools</strong>
-    </div>
+<header>
+  <div class="container-xl">
+    <strong>WebTools</strong>
+  </div>
 </header>
 
 <section class="hero">
-    <h1 class="fw-bold">Professional Web Tools Hub</h1>
-    <p class="opacity-75">Fast, private, and powerful browser-based utilities</p>
+  <h1 class="fw-bold">Professional Web Tools Hub</h1>
+  <p class="opacity-75">Fast, private, and powerful browser-based utilities</p>
 </section>
 
 <div class="container-xl py-5">
 
 <!-- FILTERS -->
-<div class="filters d-flex flex-wrap gap-2 mb-4">
-    <button class="btn btn-outline-primary active" data-filter="all">All</button>
-    <button class="btn btn-outline-primary" data-filter="developer">Developer</button>
-    <button class="btn btn-outline-primary" data-filter="text">Text</button>
-    <button class="btn btn-outline-primary" data-filter="security">Security</button>
-    <button class="btn btn-outline-primary" data-filter="data">Data</button>
-    <button class="btn btn-outline-primary" data-filter="utility">Utility</button>
+<div
+  class="filters d-flex flex-wrap gap-2 mb-4"
+  role="toolbar"
+  aria-label="Tool filters"
+>
+  <button class="btn btn-outline-primary active" data-filter="all" aria-pressed="true">All</button>
+  <button class="btn btn-outline-primary" data-filter="developer" aria-pressed="false">Developer</button>
+  <button class="btn btn-outline-primary" data-filter="text" aria-pressed="false">Text</button>
+  <button class="btn btn-outline-primary" data-filter="security" aria-pressed="false">Security</button>
+  <button class="btn btn-outline-primary" data-filter="data" aria-pressed="false">Data</button>
+  <button class="btn btn-outline-primary" data-filter="utility" aria-pressed="false">Utility</button>
 </div>
 
 <!-- GRID -->
 <div class="grid" id="grid">
 
-<div class="tool" data-category="developer data">
+  <div class="tool" data-category="developer data">
     <h3>JSON Formatter</h3>
     <p>Formats and validates JSON.</p>
-</div>
+  </div>
 
-<div class="tool" data-category="security utility">
+  <div class="tool" data-category="security utility">
     <h3>Password Generator</h3>
     <p>Generates secure passwords.</p>
-</div>
+  </div>
 
-<div class="tool" data-category="text">
+  <div class="tool" data-category="text">
     <h3>Text Utilities</h3>
     <p>Case tools and word count.</p>
-</div>
+  </div>
 
-<div class="tool" data-category="utility">
+  <div class="tool" data-category="utility">
     <h3>Timestamp Converter</h3>
     <p>Unix timestamp to date.</p>
-</div>
+  </div>
 
-<div class="tool" data-category="developer">
+  <div class="tool" data-category="developer">
     <h3>Regex Tester</h3>
     <p>Validates regular expressions.</p>
-</div>
+  </div>
 
 </div>
 </div>
 
 <footer class="py-3 text-center">
-    © 2026 WebTools
+  © 2026 WebTools
 </footer>
 
+<noscript>
+  <p class="text-center text-muted py-3">
+    Enable JavaScript to use filtering features.
+  </p>
+</noscript>
+
 <script>
+const CATEGORIES = ['all', 'developer', 'text', 'security', 'data', 'utility'];
+
 const buttons = document.querySelectorAll('.filters button');
 const tools = Array.from(document.querySelectorAll('.tool'));
 
-/* BADGES */
-tools.forEach(tool => {
-    const wrap = document.createElement('div');
-    wrap.className = 'badges';
-
-    tool.dataset.category.split(' ').forEach((cat, i) => {
-        const badge = document.createElement('span');
-        badge.className = `badge-custom ${cat}` + (i === 0 ? ' primary' : '');
-        badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-        badge.onclick = () => applyFilter(cat);
-        wrap.appendChild(badge);
-    });
-
-    tool.appendChild(wrap);
-});
-
-/* FLIP FILTER */
-function applyFilter(filter) {
-    buttons.forEach(b => b.classList.remove('active'));
-    document.querySelector(`[data-filter="${filter}"]`)?.classList.add('active');
-
-    const firstRects = new Map();
-    tools.forEach(t => {
-        if (!t.classList.contains('hidden')) {
-            firstRects.set(t, t.getBoundingClientRect());
-        }
-    });
-
-    tools.forEach(tool => {
-        tool.classList.toggle(
-            'hidden',
-            filter !== 'all' && !tool.dataset.category.includes(filter)
-        );
-    });
-
-    requestAnimationFrame(() => {
-        tools.forEach(tool => {
-            if (tool.classList.contains('hidden')) return;
-
-            const last = tool.getBoundingClientRect();
-            const first = firstRects.get(tool);
-            if (!first) return;
-
-            const dx = first.left - last.left;
-            const dy = first.top - last.top;
-
-            tool.style.transform = `translate(${dx}px, ${dy}px)`;
-            tool.getBoundingClientRect();
-            tool.style.transform = '';
-        });
-    });
+/* ACCESSIBILITY STATE */
+function updateAria(filter) {
+  buttons.forEach(btn => {
+    const active = btn.dataset.filter === filter;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-pressed', active.toString());
+  });
 }
 
-/* FILTER BUTTONS */
+/* BADGES */
+tools.forEach(tool => {
+  const wrap = document.createElement('div');
+  wrap.className = 'badges';
+
+  tool.dataset.category.split(' ').forEach((cat, i) => {
+    if (!CATEGORIES.includes(cat)) {
+      console.warn(`Unknown category "${cat}"`, tool);
+      return;
+    }
+
+    const badge = document.createElement('span');
+    badge.className = `badge-custom ${cat}` + (i === 0 ? ' primary' : '');
+    badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+
+    badge.setAttribute('role', 'button');
+    badge.setAttribute('tabindex', '0');
+    badge.setAttribute('aria-label', `Filter by ${cat}`);
+
+    badge.addEventListener('click', () => applyFilter(cat));
+    badge.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        applyFilter(cat);
+      }
+    });
+
+    wrap.appendChild(badge);
+  });
+
+  tool.appendChild(wrap);
+});
+
+/* FILTER WITH FLIP ANIMATION */
+function applyFilter(filter) {
+  updateAria(filter);
+
+  const firstRects = new Map();
+  tools.forEach(t => {
+    if (!t.classList.contains('hidden')) {
+      firstRects.set(t, t.getBoundingClientRect());
+    }
+  });
+
+  tools.forEach(tool => {
+    tool.classList.toggle(
+      'hidden',
+      filter !== 'all' && !tool.dataset.category.split(' ').includes(filter)
+    );
+  });
+
+  requestAnimationFrame(() => {
+    tools.forEach(tool => {
+      if (tool.classList.contains('hidden')) return;
+
+      const last = tool.getBoundingClientRect();
+      const first = firstRects.get(tool);
+      if (!first) return;
+
+      tool.style.transform =
+        `translate(${first.left - last.left}px, ${first.top - last.top}px)`;
+      tool.getBoundingClientRect();
+      tool.style.transform = '';
+    });
+  });
+}
+
+/* FILTER BUTTON EVENTS */
 buttons.forEach(btn =>
-    btn.addEventListener('click', () => applyFilter(btn.dataset.filter))
+  btn.addEventListener('click', () => applyFilter(btn.dataset.filter))
 );
 </script>
 
