@@ -82,6 +82,9 @@ header {
   border: 1px solid transparent;
   will-change: transform;
 
+  /* ✅ Improvement 1: Prevent layout shift */
+  contain: layout paint;
+
   transition:
     transform 0.25s cubic-bezier(.22,.61,.36,1),
     box-shadow 0.25s cubic-bezier(.22,.61,.36,1),
@@ -149,6 +152,19 @@ header {
 footer {
   background: var(--dark);
   color: white;
+}
+
+/* ✅ Improvement 2: Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .tool {
+    transition: none;
+    transform: none;
+  }
+
+  .tool:hover {
+    transform: none;
+    box-shadow: 0 4px 14px rgba(0,0,0,.06);
+  }
 }
 </style>
 </head>
