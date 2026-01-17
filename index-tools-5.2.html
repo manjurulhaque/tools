@@ -19,10 +19,10 @@
   --card: #ffffff;
 
   --dev: #2563eb;
-  --text: #16a34a;
-  --security: #dc2626;
-  --data: #7c3aed;
-  --utility: #ea580c;
+  --text: #15803d;
+  --security: #b91c1c;
+  --data: #6d28d9;
+  --utility: #c2410c;
 }
 
 body {
@@ -46,13 +46,18 @@ header {
 }
 
 /* FILTER BAR */
+.filters {
+  overflow-x: auto;
+}
+
 .filters button {
   border-radius: 999px;
   font-size: 13px;
   padding: 6px 14px;
+  white-space: nowrap;
 }
 
-/* GRID — FIXED CARD SIZE */
+/* GRID */
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, 260px);
@@ -75,6 +80,7 @@ header {
 
   box-shadow: 0 4px 14px rgba(0,0,0,.06);
   border: 1px solid transparent;
+  will-change: transform;
 
   transition:
     transform 0.25s cubic-bezier(.22,.61,.36,1),
@@ -112,12 +118,12 @@ header {
 }
 
 .badge-custom {
-  font-size: 11px;
-  padding: 4px 9px;
+  font-size: 12px;
+  padding: 4px 10px;
   border-radius: 999px;
   color: white;
   cursor: pointer;
-  opacity: .85;
+  opacity: .9;
   transition: opacity .15s ease, transform .15s ease;
 }
 
@@ -129,7 +135,6 @@ header {
 }
 
 .badge-custom.primary {
-  font-size: 12px;
   font-weight: 600;
   opacity: 1;
 }
@@ -163,47 +168,50 @@ footer {
 
 <div class="container-xl py-5">
 
+<!-- FILTER STATUS (SCREEN READERS) -->
+<div aria-live="polite" class="visually-hidden" id="filter-status"></div>
+
 <!-- FILTERS -->
 <div
-  class="filters d-flex flex-wrap gap-2 mb-4"
+  class="filters d-flex gap-2 mb-4"
   role="toolbar"
   aria-label="Tool filters"
 >
   <button class="btn btn-outline-primary active" data-filter="all" aria-pressed="true">All</button>
-  <button class="btn btn-outline-primary" data-filter="developer" aria-pressed="false">Developer</button>
-  <button class="btn btn-outline-primary" data-filter="text" aria-pressed="false">Text</button>
-  <button class="btn btn-outline-primary" data-filter="security" aria-pressed="false">Security</button>
-  <button class="btn btn-outline-primary" data-filter="data" aria-pressed="false">Data</button>
-  <button class="btn btn-outline-primary" data-filter="utility" aria-pressed="false">Utility</button>
+  <button class="btn btn-outline-primary" data-filter="developer">Developer</button>
+  <button class="btn btn-outline-primary" data-filter="text">Text</button>
+  <button class="btn btn-outline-primary" data-filter="security">Security</button>
+  <button class="btn btn-outline-primary" data-filter="data">Data</button>
+  <button class="btn btn-outline-primary" data-filter="utility">Utility</button>
 </div>
 
 <!-- GRID -->
 <div class="grid" id="grid">
 
-  <div class="tool" data-category="developer data">
+  <article class="tool" data-category="developer data">
     <h3>JSON Formatter</h3>
     <p>Formats and validates JSON.</p>
-  </div>
+  </article>
 
-  <div class="tool" data-category="security utility">
+  <article class="tool" data-category="security utility">
     <h3>Password Generator</h3>
     <p>Generates secure passwords.</p>
-  </div>
+  </article>
 
-  <div class="tool" data-category="text">
+  <article class="tool" data-category="text">
     <h3>Text Utilities</h3>
     <p>Case tools and word count.</p>
-  </div>
+  </article>
 
-  <div class="tool" data-category="utility">
+  <article class="tool" data-category="utility">
     <h3>Timestamp Converter</h3>
     <p>Unix timestamp to date.</p>
-  </div>
+  </article>
 
-  <div class="tool" data-category="developer">
+  <article class="tool" data-category="developer">
     <h3>Regex Tester</h3>
     <p>Validates regular expressions.</p>
-  </div>
+  </article>
 
 </div>
 </div>
@@ -224,49 +232,22 @@ const CATEGORIES = ['all', 'developer', 'text', 'security', 'data', 'utility'];
 const buttons = document.querySelectorAll('.filters button');
 const tools = Array.from(document.querySelectorAll('.tool'));
 
-/* ACCESSIBILITY STATE */
+const toolCategories = new Map();
+tools.forEach(t => toolCategories.set(t, t.dataset.category.split(' ')));
+
 function updateAria(filter) {
   buttons.forEach(btn => {
     const active = btn.dataset.filter === filter;
     btn.classList.toggle('active', active);
-    btn.setAttribute('aria-pressed', active.toString());
+    btn.setAttribute('aria-pressed', active);
   });
+
+  document.getElementById('filter-status').textContent =
+    filter === 'all'
+      ? 'Showing all tools'
+      : `Filtered by ${filter}`;
 }
 
-/* BADGES */
-tools.forEach(tool => {
-  const wrap = document.createElement('div');
-  wrap.className = 'badges';
-
-  tool.dataset.category.split(' ').forEach((cat, i) => {
-    if (!CATEGORIES.includes(cat)) {
-      console.warn(`Unknown category "${cat}"`, tool);
-      return;
-    }
-
-    const badge = document.createElement('span');
-    badge.className = `badge-custom ${cat}` + (i === 0 ? ' primary' : '');
-    badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
-
-    badge.setAttribute('role', 'button');
-    badge.setAttribute('tabindex', '0');
-    badge.setAttribute('aria-label', `Filter by ${cat}`);
-
-    badge.addEventListener('click', () => applyFilter(cat));
-    badge.addEventListener('keydown', e => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        applyFilter(cat);
-      }
-    });
-
-    wrap.appendChild(badge);
-  });
-
-  tool.appendChild(wrap);
-});
-
-/* FILTER WITH FLIP ANIMATION */
 function applyFilter(filter) {
   updateAria(filter);
 
@@ -278,32 +259,65 @@ function applyFilter(filter) {
   });
 
   tools.forEach(tool => {
-    tool.classList.toggle(
-      'hidden',
-      filter !== 'all' && !tool.dataset.category.split(' ').includes(filter)
-    );
+    const cats = toolCategories.get(tool);
+    tool.classList.toggle('hidden', filter !== 'all' && !cats.includes(filter));
   });
+
+  document.body.offsetHeight; // force reflow
 
   requestAnimationFrame(() => {
     tools.forEach(tool => {
       if (tool.classList.contains('hidden')) return;
-
-      const last = tool.getBoundingClientRect();
       const first = firstRects.get(tool);
       if (!first) return;
 
+      const last = tool.getBoundingClientRect();
       tool.style.transform =
         `translate(${first.left - last.left}px, ${first.top - last.top}px)`;
       tool.getBoundingClientRect();
       tool.style.transform = '';
     });
   });
+
+  history.replaceState(null, '', filter === 'all' ? location.pathname : `?filter=${filter}`);
 }
 
-/* FILTER BUTTON EVENTS */
+/* BADGES */
+tools.forEach(tool => {
+  const wrap = document.createElement('div');
+  wrap.className = 'badges';
+
+  toolCategories.get(tool).forEach((cat, i) => {
+    const badge = document.createElement('span');
+    badge.className = `badge-custom ${cat}` + (i === 0 ? ' primary' : '');
+    badge.textContent = cat.charAt(0).toUpperCase() + cat.slice(1);
+    badge.setAttribute('role', 'button');
+    badge.setAttribute('tabindex', '0');
+
+    badge.onclick = () => applyFilter(cat);
+    badge.onkeydown = e => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        applyFilter(cat);
+      }
+    };
+
+    wrap.appendChild(badge);
+  });
+
+  tool.appendChild(wrap);
+});
+
+/* FILTER BUTTONS */
 buttons.forEach(btn =>
   btn.addEventListener('click', () => applyFilter(btn.dataset.filter))
 );
+
+/* URL FILTER SUPPORT */
+const urlFilter = new URLSearchParams(location.search).get('filter');
+if (CATEGORIES.includes(urlFilter)) {
+  applyFilter(urlFilter);
+}
 </script>
 
 </body>
