@@ -21,6 +21,7 @@ nav {
   display: flex;
   align-items: center;
   gap: 14px;
+  flex-wrap: wrap;
 }
 
 #nav-title {
@@ -37,11 +38,16 @@ nav {
 }
 
 nav input,
-nav select {
+nav select,
+nav button {
   padding: 6px 8px;
   border-radius: 6px;
   border: none;
   font-size: 14px;
+}
+
+nav button {
+  cursor: pointer;
 }
 
 #count {
@@ -147,6 +153,27 @@ main {
   font-style: italic;
 }
 
+/* ================= PAGINATION ================= */
+#pagination {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+#pagination button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+}
+
+#pagination button[disabled] {
+  opacity: .5;
+  cursor: default;
+}
+
 /* ================= MOBILE ================= */
 @media (max-width: 640px) {
   #nav-controls {
@@ -179,6 +206,8 @@ main {
       <option value="category">Sort: Category (A–Z)</option>
     </select>
 
+    <button id="random" aria-label="Random quote">🎲 Random</button>
+
     <span id="count"></span>
   </div>
 </nav>
@@ -189,6 +218,7 @@ main {
 </section>
 
 <main id="list"></main>
+<nav id="pagination" aria-label="Pagination"></nav>
 
 <script>
 /* ================= DATA ================= */
@@ -204,6 +234,7 @@ const items = [...QUOTATIONS];
 
 /* ================= ELEMENTS ================= */
 const list = document.getElementById("list");
+const pagination = document.getElementById("pagination");
 const searchInput = document.getElementById("search");
 const categorySelect = document.getElementById("category");
 const authorSelect = document.getElementById("author");
@@ -211,6 +242,12 @@ const sortSelect = document.getElementById("sort");
 const countSpan = document.getElementById("count");
 const subtitle = document.getElementById("subtitle");
 const breadcrumbs = document.getElementById("breadcrumbs");
+const randomBtn = document.getElementById("random");
+
+/* ================= STATE ================= */
+const PAGE_SIZE = 3;
+let currentPage = 1;
+const STORAGE_KEY = "quotation-filters";
 
 /* ================= INIT FILTERS ================= */
 [...new Set(items.map(i => i.category))]
@@ -246,44 +283,55 @@ function updateBreadcrumbs() {
   if (categorySelect.value)
     breadcrumbs.appendChild(makeCrumb(
       `Category: ${categorySelect.value}`,
-      () => { categorySelect.value=""; applyFilters(); }
+      () => { categorySelect.value=""; currentPage=1; applyFilters(); }
     ));
 
   if (authorSelect.value)
     breadcrumbs.appendChild(makeCrumb(
       `Author: ${authorSelect.value}`,
-      () => { authorSelect.value=""; applyFilters(); }
+      () => { authorSelect.value=""; currentPage=1; applyFilters(); }
     ));
 
   if (searchInput.value)
     breadcrumbs.appendChild(makeCrumb(
       `Search: "${searchInput.value}"`,
-      () => { searchInput.value=""; applyFilters(); }
+      () => { searchInput.value=""; currentPage=1; applyFilters(); }
     ));
 }
 
 /* ================= URL + STORAGE ================= */
 function readURL() {
   const p = new URLSearchParams(location.search);
-  searchInput.value = p.get("search") || "";
-  categorySelect.value = p.get("category") || "";
-  authorSelect.value = p.get("author") || "";
-  sortSelect.value = p.get("sort") || localStorage.getItem("sort") || "text";
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+
+  searchInput.value = p.get("search") ?? stored.search ?? "";
+  categorySelect.value = p.get("category") ?? stored.category ?? "";
+  authorSelect.value = p.get("author") ?? stored.author ?? "";
+  sortSelect.value = p.get("sort") ?? stored.sort ?? "text";
 }
 
 function writeURL() {
   const p = new URLSearchParams();
+
   if (searchInput.value) p.set("search", searchInput.value);
   if (categorySelect.value) p.set("category", categorySelect.value);
   if (authorSelect.value) p.set("author", authorSelect.value);
   if (sortSelect.value !== "text") p.set("sort", sortSelect.value);
+
   history.replaceState(null, "", "?" + p.toString());
-  localStorage.setItem("sort", sortSelect.value);
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    search: searchInput.value,
+    category: categorySelect.value,
+    author: authorSelect.value,
+    sort: sortSelect.value
+  }));
 }
 
 /* ================= RENDER ================= */
 function render(filtered) {
   list.innerHTML = "";
+  pagination.innerHTML = "";
 
   if (!filtered.length) {
     list.innerHTML = `<p class="no-results">No quotations found.</p>`;
@@ -291,7 +339,13 @@ function render(filtered) {
     return;
   }
 
-  filtered.forEach(i => {
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  currentPage = Math.min(currentPage, totalPages);
+
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const pageItems = filtered.slice(start, start + PAGE_SIZE);
+
+  pageItems.forEach(i => {
     const safeCategory = i.category.replace(/\s+/g, "-");
 
     const card = document.createElement("div");
@@ -305,21 +359,40 @@ function render(filtered) {
     `;
 
     card.querySelector(".category-pill").onclick = () => {
-      categorySelect.value =
-        categorySelect.value === i.category ? "" : i.category;
+      categorySelect.value = i.category;
+      currentPage = 1;
       applyFilters();
     };
 
     card.querySelector(".author-chip").onclick = () => {
-      authorSelect.value =
-        authorSelect.value === i.author ? "" : i.author;
+      authorSelect.value = i.author;
+      currentPage = 1;
       applyFilters();
     };
 
     list.appendChild(card);
   });
 
-  countSpan.textContent = filtered.length + " results";
+  const prev = document.createElement("button");
+  prev.textContent = "← Prev";
+  prev.disabled = currentPage === 1;
+  prev.onclick = () => { currentPage--; applyFilters(); };
+
+  const next = document.createElement("button");
+  next.textContent = "Next →";
+  next.disabled = currentPage === totalPages;
+  next.onclick = () => { currentPage++; applyFilters(); };
+
+  pagination.append(
+    prev,
+    Object.assign(document.createElement("span"), {
+      textContent: `Page ${currentPage} of ${totalPages}`,
+      style: "padding:6px 10px"
+    }),
+    next
+  );
+
+  countSpan.textContent = `${filtered.length} results`;
 }
 
 /* ================= FILTER + SORT ================= */
@@ -349,12 +422,28 @@ function applyFilters() {
 let debounce;
 searchInput.addEventListener("input", () => {
   clearTimeout(debounce);
-  debounce = setTimeout(applyFilters, 200);
+  debounce = setTimeout(() => {
+    currentPage = 1;
+    applyFilters();
+  }, 200);
 });
 
 [categorySelect, authorSelect, sortSelect]
-  .forEach(el => el.addEventListener("change", applyFilters));
+  .forEach(el => el.addEventListener("change", () => {
+    currentPage = 1;
+    applyFilters();
+  }));
 
+randomBtn.addEventListener("click", () => {
+  const q = items[Math.floor(Math.random() * items.length)];
+  subtitle.textContent = "Featured Quote";
+  breadcrumbs.innerHTML = "";
+  pagination.innerHTML = "";
+  countSpan.textContent = "1 result";
+  render([q]);
+});
+
+/* ================= INIT ================= */
 readURL();
 applyFilters();
 </script>
