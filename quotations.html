@@ -78,17 +78,41 @@ nav select {
 
 #hero-meta {
   display: flex;
+  align-items: center;
   gap: 12px;
-  flex-wrap: wrap;
 }
 
-#hero-meta button {
+#hero-meta .spacer {
+  flex: 1;
+}
+
+#hero-category {
   background: none;
   border: none;
   color: #93c5fd;
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+}
+
+/* Author styling */
+#hero-author {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 14px;
+  font-style: italic;
+  font-weight: 500;
+  text-align: right;
+  position: relative;
+}
+
+/* Em dash before author */
+#hero-author::before {
+  content: "— ";
+  font-style: normal;
+  opacity: 0.85;
 }
 
 /* ================= HEADER ================= */
@@ -213,8 +237,9 @@ main {
     <div id="hero-label">Quote of the Day</div>
     <div id="hero-quote"></div>
     <div id="hero-meta">
-      <button id="hero-author"></button>
       <button id="hero-category"></button>
+      <span class="spacer"></span>
+      <button id="hero-author"></button>
     </div>
   </div>
 </section>
@@ -244,7 +269,6 @@ const categorySelect = document.getElementById("category");
 const authorSelect = document.getElementById("author");
 const sortSelect = document.getElementById("sort");
 const countSpan = document.getElementById("count");
-const subtitle = document.getElementById("subtitle");
 
 /* HERO */
 const heroQuote = document.getElementById("hero-quote");
