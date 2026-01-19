@@ -6,10 +6,24 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
+/* ================= DESIGN TOKENS ================= */
+:root {
+  --text-xs: 12px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-md: 17px;
+  --text-lg: 20px;
+  --text-xl: 26px;
+
+  --font-normal: 500;
+  --font-bold: 700;
+}
+
 /* ================= BASE ================= */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  font-size: var(--text-base);
   background: #f9fafb;
 }
 
@@ -25,8 +39,8 @@ nav {
 }
 
 #nav-title {
-  font-size: 20px;
-  font-weight: 700;
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
 }
 
 #nav-controls {
@@ -42,11 +56,11 @@ nav select {
   padding: 6px 8px;
   border-radius: 6px;
   border: none;
-  font-size: 14px;
+  font-size: var(--text-sm);
 }
 
 #count {
-  font-size: 14px;
+  font-size: var(--text-sm);
   opacity: .85;
 }
 
@@ -63,17 +77,17 @@ nav select {
 }
 
 #hero-label {
-  font-size: 13px;
+  font-size: var(--text-xs);
   letter-spacing: .08em;
   text-transform: uppercase;
   opacity: .7;
 }
 
 #hero-quote {
-  font-size: 26px;
+  font-size: var(--text-xl);
   line-height: 1.5;
   margin: 14px 0 18px;
-  font-weight: 600;
+  font-weight: var(--font-bold);
 }
 
 #hero-meta {
@@ -86,15 +100,14 @@ nav select {
   flex: 1;
 }
 
-/* Category — normal font */
+/* Category — normal */
 #hero-category {
   background: none;
   border: none;
   color: #93c5fd;
   cursor: pointer;
-  font-size: 14px;
-  font-weight: 500;   /* normal */
-  font-style: normal;
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
 }
 
 /* Author — bold + italic */
@@ -103,31 +116,18 @@ nav select {
   border: none;
   color: #93c5fd;
   cursor: pointer;
-  font-size: 14px;
+  font-size: var(--text-sm);
   font-style: italic;
-  font-weight: 700;   /* bold */
+  font-weight: var(--font-bold);
   text-align: right;
   position: relative;
 }
 
-/* Em dash before author */
 #hero-author::before {
   content: "— ";
   font-style: normal;
-  font-weight: 400;
+  font-weight: var(--font-normal);
   opacity: 0.85;
-}
-
-/* ================= HEADER ================= */
-#content-header {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 20px 20px 8px;
-}
-
-#subtitle {
-  font-size: 18px;
-  font-weight: 600;
 }
 
 /* ================= MAIN ================= */
@@ -157,7 +157,7 @@ main {
 }
 
 .quote {
-  font-size: 17px;
+  font-size: var(--text-md);
   line-height: 1.65;
   padding-left: 18px;
 }
@@ -166,25 +166,35 @@ main {
   margin-top: 16px;
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 
-.category-pill,
-.author-chip {
+/* Category — normal */
+.category-pill {
   background: none;
   border: none;
   cursor: pointer;
-  font-weight: 600;
-  font-size: 12px;
+  font-size: var(--text-xs);
+  font-weight: var(--font-normal);
 }
 
+/* Author — bold + italic */
 .author-chip {
   margin-left: auto;
-  font-size: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--text-sm);
+  font-style: italic;
+  font-weight: var(--font-bold);
+  position: relative;
 }
 
-.no-results {
-  opacity: .6;
-  font-style: italic;
+.author-chip::before {
+  content: "— ";
+  font-style: normal;
+  font-weight: var(--font-normal);
+  opacity: 0.85;
 }
 
 /* ================= PAGINATION ================= */
@@ -201,6 +211,7 @@ main {
   border: 1px solid #e5e7eb;
   background: #fff;
   cursor: pointer;
+  font-size: var(--text-sm);
 }
 
 #pagination button[disabled] {
@@ -211,7 +222,7 @@ main {
 /* ================= MOBILE ================= */
 @media (max-width: 640px) {
   #hero-quote {
-    font-size: 20px;
+    font-size: 22px;
   }
 }
 </style>
@@ -234,7 +245,6 @@ main {
   </div>
 </nav>
 
-<!-- HERO -->
 <section id="hero">
   <div id="hero-inner">
     <div id="hero-label">Quote of the Day</div>
@@ -247,15 +257,10 @@ main {
   </div>
 </section>
 
-<section id="content-header">
-  <div id="subtitle">All quotations</div>
-</section>
-
 <main id="list"></main>
 <nav id="pagination"></nav>
 
 <script>
-/* ================= DATA ================= */
 const items = [
   { text:"The happiness of your life depends upon the quality of your thoughts.", author:"Marcus Aurelius", category:"Wisdom" },
   { text:"Life is like riding a bicycle. To keep your balance you must keep moving.", author:"Albert Einstein", category:"Science" },
@@ -290,9 +295,7 @@ function getQuoteOfTheDay() {
   const key = "qotd";
   const today = todayKey();
   const cached = JSON.parse(localStorage.getItem(key) || "{}");
-
   if (cached.date === today) return cached.quote;
-
   const index = [...today].reduce((a,c)=>a+c.charCodeAt(0),0) % items.length;
   const quote = items[index];
   localStorage.setItem(key, JSON.stringify({ date: today, quote }));
@@ -304,104 +307,47 @@ function renderHero() {
   heroQuote.textContent = q.text;
   heroAuthor.textContent = q.author;
   heroCategory.textContent = q.category;
-
-  heroAuthor.onclick = () => {
-    authorSelect.value = q.author;
-    currentPage = 1;
-    applyFilters();
-  };
-
-  heroCategory.onclick = () => {
-    categorySelect.value = q.category;
-    currentPage = 1;
-    applyFilters();
-  };
 }
 
 function render(filtered) {
   list.innerHTML = "";
   pagination.innerHTML = "";
 
-  if (!filtered.length) {
-    list.innerHTML = `<p class="no-results">No quotations found.</p>`;
-    countSpan.textContent = "0 results";
-    return;
-  }
-
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
-  currentPage = Math.min(currentPage, totalPages);
+  currentPage = Math.min(currentPage, totalPages || 1);
 
-  const start = (currentPage - 1) * PAGE_SIZE;
-  filtered.slice(start, start + PAGE_SIZE).forEach(i => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="quote">${i.text}</div>
-      <div class="meta">
-        <button class="category-pill">${i.category}</button>
-        <button class="author-chip">${i.author}</button>
-      </div>
-    `;
+  filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE)
+    .forEach(i => {
+      const card = document.createElement("div");
+      card.className = "card";
+      card.innerHTML = `
+        <div class="quote">${i.text}</div>
+        <div class="meta">
+          <button class="category-pill">${i.category}</button>
+          <button class="author-chip">${i.author}</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
 
-    card.querySelector(".category-pill").onclick = () => {
-      categorySelect.value = i.category;
-      currentPage = 1;
-      applyFilters();
-    };
-
-    card.querySelector(".author-chip").onclick = () => {
-      authorSelect.value = i.author;
-      currentPage = 1;
-      applyFilters();
-    };
-
-    list.appendChild(card);
-  });
-
-  const prev = document.createElement("button");
-  prev.textContent = "← Prev";
-  prev.disabled = currentPage === 1;
-  prev.onclick = () => { currentPage--; applyFilters(); };
-
-  const next = document.createElement("button");
-  next.textContent = "Next →";
-  next.disabled = currentPage === totalPages;
-  next.onclick = () => { currentPage++; applyFilters(); };
-
-  pagination.append(prev, document.createTextNode(` Page ${currentPage} of ${totalPages} `), next);
   countSpan.textContent = `${filtered.length} results`;
 }
 
 function applyFilters() {
   const term = searchInput.value.toLowerCase();
-
   let filtered = items.filter(i =>
     (!categorySelect.value || i.category === categorySelect.value) &&
     (!authorSelect.value || i.author === authorSelect.value) &&
-    (!term ||
-      i.text.toLowerCase().includes(term) ||
-      i.author.toLowerCase().includes(term) ||
-      i.category.toLowerCase().includes(term))
+    (!term || i.text.toLowerCase().includes(term))
   );
-
-  filtered.sort((a,b) =>
-    String(a[sortSelect.value]).localeCompare(String(b[sortSelect.value]))
-  );
-
+  filtered.sort((a,b)=>String(a[sortSelect.value]).localeCompare(String(b[sortSelect.value])));
   render(filtered);
 }
 
-searchInput.addEventListener("input", () => {
-  currentPage = 1;
-  applyFilters();
-});
-
-[categorySelect, authorSelect, sortSelect].forEach(el =>
-  el.addEventListener("change", () => {
-    currentPage = 1;
-    applyFilters();
-  })
-);
+searchInput.oninput = applyFilters;
+categorySelect.onchange = applyFilters;
+authorSelect.onchange = applyFilters;
+sortSelect.onchange = applyFilters;
 
 renderHero();
 applyFilters();
