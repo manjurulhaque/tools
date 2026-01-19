@@ -86,16 +86,18 @@ nav select {
   flex: 1;
 }
 
+/* Category — normal font */
 #hero-category {
   background: none;
   border: none;
   color: #93c5fd;
   cursor: pointer;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 500;   /* normal */
+  font-style: normal;
 }
 
-/* Author styling */
+/* Author — bold + italic */
 #hero-author {
   background: none;
   border: none;
@@ -103,7 +105,7 @@ nav select {
   cursor: pointer;
   font-size: 14px;
   font-style: italic;
-  font-weight: 500;
+  font-weight: 700;   /* bold */
   text-align: right;
   position: relative;
 }
@@ -112,6 +114,7 @@ nav select {
 #hero-author::before {
   content: "— ";
   font-style: normal;
+  font-weight: 400;
   opacity: 0.85;
 }
 
@@ -261,7 +264,6 @@ const items = [
   { text:"It does not matter how slowly you go as long as you do not stop.", author:"Confucius", category:"Philosophy" }
 ];
 
-/* ================= ELEMENTS ================= */
 const list = document.getElementById("list");
 const pagination = document.getElementById("pagination");
 const searchInput = document.getElementById("search");
@@ -270,23 +272,16 @@ const authorSelect = document.getElementById("author");
 const sortSelect = document.getElementById("sort");
 const countSpan = document.getElementById("count");
 
-/* HERO */
 const heroQuote = document.getElementById("hero-quote");
 const heroAuthor = document.getElementById("hero-author");
 const heroCategory = document.getElementById("hero-category");
 
-/* ================= STATE ================= */
 const PAGE_SIZE = 3;
 let currentPage = 1;
 
-/* ================= INIT FILTER OPTIONS ================= */
-[...new Set(items.map(i => i.category))]
-  .forEach(c => categorySelect.add(new Option(c, c)));
+[...new Set(items.map(i => i.category))].forEach(c => categorySelect.add(new Option(c, c)));
+[...new Set(items.map(i => i.author))].forEach(a => authorSelect.add(new Option(a, a)));
 
-[...new Set(items.map(i => i.author))]
-  .forEach(a => authorSelect.add(new Option(a, a)));
-
-/* ================= QUOTE OF THE DAY ================= */
 function todayKey() {
   return new Date().toISOString().slice(0,10);
 }
@@ -298,9 +293,7 @@ function getQuoteOfTheDay() {
 
   if (cached.date === today) return cached.quote;
 
-  const index =
-    [...today].reduce((a,c)=>a+c.charCodeAt(0),0) % items.length;
-
+  const index = [...today].reduce((a,c)=>a+c.charCodeAt(0),0) % items.length;
   const quote = items[index];
   localStorage.setItem(key, JSON.stringify({ date: today, quote }));
   return quote;
@@ -325,7 +318,6 @@ function renderHero() {
   };
 }
 
-/* ================= RENDER ================= */
 function render(filtered) {
   list.innerHTML = "";
   pagination.innerHTML = "";
@@ -340,9 +332,7 @@ function render(filtered) {
   currentPage = Math.min(currentPage, totalPages);
 
   const start = (currentPage - 1) * PAGE_SIZE;
-  const pageItems = filtered.slice(start, start + PAGE_SIZE);
-
-  pageItems.forEach(i => {
+  filtered.slice(start, start + PAGE_SIZE).forEach(i => {
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
@@ -378,19 +368,10 @@ function render(filtered) {
   next.disabled = currentPage === totalPages;
   next.onclick = () => { currentPage++; applyFilters(); };
 
-  pagination.append(
-    prev,
-    Object.assign(document.createElement("span"), {
-      textContent: `Page ${currentPage} of ${totalPages}`,
-      style: "padding:6px 10px"
-    }),
-    next
-  );
-
+  pagination.append(prev, document.createTextNode(` Page ${currentPage} of ${totalPages} `), next);
   countSpan.textContent = `${filtered.length} results`;
 }
 
-/* ================= FILTER + SORT ================= */
 function applyFilters() {
   const term = searchInput.value.toLowerCase();
 
@@ -410,7 +391,6 @@ function applyFilters() {
   render(filtered);
 }
 
-/* ================= EVENTS ================= */
 searchInput.addEventListener("input", () => {
   currentPage = 1;
   applyFilters();
@@ -423,7 +403,6 @@ searchInput.addEventListener("input", () => {
   })
 );
 
-/* ================= INIT ================= */
 renderHero();
 applyFilters();
 </script>
