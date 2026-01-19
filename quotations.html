@@ -165,7 +165,7 @@ const QUOTATIONS = [
   { text:"It does not matter how slowly you go as long as you do not stop.", author:"Confucius", category:"Philosophy" }
 ];
 
-const items = QUOTATIONS.map(q => ({ ...q }));
+const items = [...QUOTATIONS];
 
 const list = document.getElementById("list");
 const searchInput = document.getElementById("search");
@@ -178,6 +178,48 @@ const breadcrumbs = document.getElementById("breadcrumbs");
 
 [...new Set(items.map(i => i.category))].forEach(c => categorySelect.add(new Option(c,c)));
 [...new Set(items.map(i => i.author))].forEach(a => authorSelect.add(new Option(a,a)));
+
+/* ================= HEADER ================= */
+function updateHeader() {
+  const c = categorySelect.value;
+  const a = authorSelect.value;
+
+  if (c && a) subtitle.textContent = `${c} Quotations by ${a}`;
+  else if (c) subtitle.textContent = `${c} Quotations`;
+  else if (a) subtitle.textContent = `Quotations by ${a}`;
+  else subtitle.textContent = "All quotations";
+}
+
+/* ================= BREADCRUMBS ================= */
+function makeCrumb(label, onRemove) {
+  const d = document.createElement("div");
+  d.className = "breadcrumb";
+  d.innerHTML = `<span>${label}</span><button>✕</button>`;
+  d.querySelector("button").onclick = onRemove;
+  return d;
+}
+
+function updateBreadcrumbs() {
+  breadcrumbs.innerHTML = "";
+
+  if (categorySelect.value)
+    breadcrumbs.appendChild(makeCrumb(
+      `Category: ${categorySelect.value}`,
+      () => { categorySelect.value=""; applyFilters(); }
+    ));
+
+  if (authorSelect.value)
+    breadcrumbs.appendChild(makeCrumb(
+      `Author: ${authorSelect.value}`,
+      () => { authorSelect.value=""; applyFilters(); }
+    ));
+
+  if (searchInput.value)
+    breadcrumbs.appendChild(makeCrumb(
+      `Search: "${searchInput.value}"`,
+      () => { searchInput.value=""; applyFilters(); }
+    ));
+}
 
 /* ================= URL SYNC ================= */
 function readURL() {
@@ -197,15 +239,49 @@ function writeURL() {
   history.replaceState(null,"","?"+p.toString());
 }
 
+/* ================= RENDER ================= */
+function render(filtered) {
+  list.innerHTML = "";
+  filtered.forEach(i => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.innerHTML = `
+      <div class="quote">${i.text}</div>
+      <div class="meta">
+        <button class="category-pill category-${i.category}">${i.category}</button>
+        <button class="author-chip">${i.author}</button>
+      </div>
+    `;
+
+    card.querySelector(".category-pill").onclick = () => {
+      categorySelect.value =
+        categorySelect.value === i.category ? "" : i.category;
+      applyFilters();
+    };
+
+    card.querySelector(".author-chip").onclick = () => {
+      authorSelect.value =
+        authorSelect.value === i.author ? "" : i.author;
+      applyFilters();
+    };
+
+    list.appendChild(card);
+  });
+
+  countSpan.textContent = filtered.length + " results";
+}
+
 /* ================= FILTER + SORT ================= */
 function applyFilters() {
   const term = searchInput.value.toLowerCase();
+
   let filtered = items.filter(i =>
     (!categorySelect.value || i.category === categorySelect.value) &&
     (!authorSelect.value || i.author === authorSelect.value) &&
-    (!term || i.text.toLowerCase().includes(term) ||
-              i.author.toLowerCase().includes(term) ||
-              i.category.toLowerCase().includes(term))
+    (!term ||
+      i.text.toLowerCase().includes(term) ||
+      i.author.toLowerCase().includes(term) ||
+      i.category.toLowerCase().includes(term))
   );
 
   filtered.sort((a,b) =>
@@ -213,23 +289,9 @@ function applyFilters() {
   );
 
   writeURL();
+  updateHeader();
+  updateBreadcrumbs();
   render(filtered);
-}
-
-function render(filtered) {
-  list.innerHTML = "";
-  filtered.forEach(i => {
-    list.innerHTML += `
-      <div class="card">
-        <div class="quote">${i.text}</div>
-        <div class="meta">
-          <button class="category-pill category-${i.category}">${i.category}</button>
-          <button class="author-chip">${i.author}</button>
-        </div>
-      </div>`;
-  });
-  subtitle.textContent = filtered.length ? "Filtered quotations" : "No results";
-  countSpan.textContent = filtered.length + " results";
 }
 
 /* ================= EVENTS ================= */
