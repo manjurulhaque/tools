@@ -23,7 +23,6 @@
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  font-size: var(--text-base);
   background: #f9fafb;
 }
 
@@ -100,6 +99,49 @@ nav select {
   flex: 1;
 }
 
+/* ================= PAGE HEADER (MOVED BELOW HERO) ================= */
+#page-header {
+  max-width: 900px;
+  margin: 20px auto 10px;
+  padding: 0 20px;
+}
+
+#page-title {
+  font-size: var(--text-lg);
+  font-weight: var(--font-bold);
+  margin: 6px 0 0;
+}
+
+#breadcrumbs {
+  font-size: var(--text-xs);
+  opacity: .75;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ================= BREADCRUMB ANIMATION ================= */
+#breadcrumbs button {
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: inherit;
+}
+
+.breadcrumb {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transform: translateY(-4px);
+  animation: crumb-in 220ms cubic-bezier(.4,0,.2,1) forwards;
+}
+
+@keyframes crumb-in {
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* ================= MAIN ================= */
 main {
   max-width: 900px;
@@ -149,12 +191,9 @@ main {
   cursor: pointer;
   color: inherit;
   position: relative;
-  text-decoration: none;
 }
 
-.category-pill {
-  font-size: var(--text-xs);
-}
+.category-pill { font-size: var(--text-xs); }
 
 .author-chip {
   margin-left: auto;
@@ -167,11 +206,9 @@ main {
 #hero-author::before {
   content: "— ";
   opacity: .85;
-  font-style: normal;
-  font-weight: var(--font-normal);
 }
 
-/* ================= ANIMATED UNDERLINE ================= */
+/* ================= UNDERLINE ================= */
 .category-pill::after,
 .author-chip::after,
 #hero-category::after,
@@ -185,17 +222,13 @@ main {
   background: currentColor;
   transform: scaleX(0);
   transform-origin: left;
-  transition: transform 0.22s cubic-bezier(.4,0,.2,1);
+  transition: transform .22s cubic-bezier(.4,0,.2,1);
 }
 
 .category-pill:hover::after,
 .author-chip:hover::after,
 #hero-category:hover::after,
-#hero-author:hover::after,
-.category-pill:focus-visible::after,
-.author-chip:focus-visible::after,
-#hero-category:focus-visible::after,
-#hero-author:focus-visible::after {
+#hero-author:hover::after {
   transform: scaleX(1);
 }
 
@@ -236,33 +269,35 @@ main {
     <input id="search" placeholder="Search…" aria-label="Search quotes">
     <select id="category"><option value="">All categories</option></select>
     <select id="author"><option value="">All authors</option></select>
-    <select id="sort">
-      <option value="text">Sort: Quote (A–Z)</option>
-      <option value="author">Sort: Author (A–Z)</option>
-      <option value="category">Sort: Category (A–Z)</option>
-    </select>
     <span id="count" aria-live="polite"></span>
   </div>
 </nav>
 
+<!-- HERO -->
 <section id="hero">
   <div id="hero-inner">
     <div id="hero-label">Quote of the Day</div>
     <div id="hero-quote"></div>
     <div id="hero-meta">
-      <button id="hero-category" type="button"></button>
+      <button id="hero-category"></button>
       <span class="spacer"></span>
-      <button id="hero-author" type="button"></button>
+      <button id="hero-author"></button>
     </div>
   </div>
 </section>
 
-<main id="list" role="feed"></main>
+<!-- HEADER MOVED HERE -->
+<header id="page-header">
+  <div id="breadcrumbs"></div>
+  <h1 id="page-title"></h1>
+</header>
+
+<main id="list"></main>
 <nav id="pagination"></nav>
 
 <script>
 /* ================= DATA ================= */
-const RAW_ITEMS = [
+const ITEMS = [
   { text:"The happiness of your life depends upon the quality of your thoughts.", author:"Marcus Aurelius", category:"Wisdom" },
   { text:"Life is like riding a bicycle. To keep your balance you must keep moving.", author:"Albert Einstein", category:"Science" },
   { text:"That brain of mine is something more than merely mortal; as time will show.", author:"Ada Lovelace", category:"Technology" },
@@ -270,68 +305,13 @@ const RAW_ITEMS = [
   { text:"It does not matter how slowly you go as long as you do not stop.", author:"Confucius", category:"Philosophy" }
 ];
 
-const ITEMS = Object.freeze(
-  RAW_ITEMS.map((i, idx) => Object.freeze({
-    id: crypto.randomUUID?.() ?? `q-${idx}`,
-    text: i.text.trim(),
-    author: i.author.trim(),
-    category: i.category.trim()
-  }))
-);
-
 const PAGE_SIZE = 3;
-
-/* ================= STATE ================= */
-const state = {
-  search: "",
-  category: "",
-  author: "",
-  sort: "text",
-  page: 1
-};
-
-/* ================= DOM ================= */
-const list = document.getElementById("list");
-const pagination = document.getElementById("pagination");
-const searchInput = document.getElementById("search");
-const categorySelect = document.getElementById("category");
-const authorSelect = document.getElementById("author");
-const sortSelect = document.getElementById("sort");
-const countSpan = document.getElementById("count");
-const heroQuote = document.getElementById("hero-quote");
-const heroAuthor = document.getElementById("hero-author");
-const heroCategory = document.getElementById("hero-category");
-
-/* ================= UTILS ================= */
-function escapeHTML(str) {
-  const d = document.createElement("div");
-  d.textContent = str;
-  return d.innerHTML;
-}
-
-function safeStorage() {
-  try {
-    localStorage.setItem("__t","1");
-    localStorage.removeItem("__t");
-    return localStorage;
-  } catch {
-    return null;
-  }
-}
-
-const storage = safeStorage();
 
 /* ================= QUOTE OF THE DAY ================= */
 function getQuoteOfTheDay() {
-  const today = new Date().toISOString().slice(0,10);
-  if (storage) {
-    const cached = JSON.parse(storage.getItem("qotd") || "{}");
-    if (cached.date === today) return cached.quote;
-  }
-  const idx = [...today].reduce((a,c)=>a+c.charCodeAt(0),0) % ITEMS.length;
-  const quote = ITEMS[idx];
-  storage?.setItem("qotd", JSON.stringify({ date: today, quote }));
-  return quote;
+  const d = new Date().toISOString().slice(0,10);
+  const i = [...d].reduce((a,c)=>a+c.charCodeAt(0),0) % ITEMS.length;
+  return ITEMS[i];
 }
 
 function renderHero() {
@@ -340,95 +320,167 @@ function renderHero() {
   heroAuthor.textContent = q.author;
   heroCategory.textContent = q.category;
 
-  heroAuthor.onclick = () => setState({ author: q.author, page: 1 });
-  heroCategory.onclick = () => setState({ category: q.category, page: 1 });
+  heroAuthor.onclick = () => setState({author:q.author,page:1});
+  heroCategory.onclick = () => setState({category:q.category,page:1});
 }
 
-/* ================= SELECTORS ================= */
+/* ================= URL STATE ================= */
+function readURL() {
+  const p = new URLSearchParams(location.search);
+  return {
+    search: p.get("search") || "",
+    category: p.get("category") || "",
+    author: p.get("author") || "",
+    page: Number(p.get("page")) || 1
+  };
+}
+
+function writeURL() {
+  const p = new URLSearchParams();
+  if (state.search) p.set("search", state.search);
+  if (state.category) p.set("category", state.category);
+  if (state.author) p.set("author", state.author);
+  if (state.page > 1) p.set("page", state.page);
+  history.replaceState(null,"",`?${p}`);
+}
+
+/* ================= STATE ================= */
+const state = { ...readURL() };
+
+/* ================= DOM ================= */
+const list = document.getElementById("list");
+const pagination = document.getElementById("pagination");
+const searchInput = document.getElementById("search");
+const categorySelect = document.getElementById("category");
+const authorSelect = document.getElementById("author");
+const countSpan = document.getElementById("count");
+const heroQuote = document.getElementById("hero-quote");
+const heroAuthor = document.getElementById("hero-author");
+const heroCategory = document.getElementById("hero-category");
+
+/* ================= FILTERS ================= */
 function selectFiltered() {
-  const term = state.search.toLowerCase();
+  const t = state.search.toLowerCase();
   return ITEMS.filter(i =>
     (!state.category || i.category === state.category) &&
     (!state.author || i.author === state.author) &&
-    (!term ||
-      i.text.toLowerCase().includes(term) ||
-      i.author.toLowerCase().includes(term) ||
-      i.category.toLowerCase().includes(term))
+    (!t || i.text.toLowerCase().includes(t) || i.author.toLowerCase().includes(t))
   );
 }
 
-function selectSorted(list) {
-  return [...list].sort((a,b)=>a[state.sort].localeCompare(b[state.sort]));
-}
-
 function selectPage(list) {
-  const start = (state.page - 1) * PAGE_SIZE;
-  return list.slice(start, start + PAGE_SIZE);
+  const s = (state.page - 1) * PAGE_SIZE;
+  return list.slice(s, s + PAGE_SIZE);
 }
 
-/* ================= RENDER ================= */
-function renderPagination(total) {
-  pagination.innerHTML = "";
-  const pages = Math.ceil(total / PAGE_SIZE);
-  for (let p = 1; p <= pages; p++) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.textContent = p;
-    btn.disabled = p === state.page;
-    btn.onclick = () => setState({ page: p });
-    pagination.appendChild(btn);
+/* ================= SEO TITLE ================= */
+function updateDocumentTitle() {
+  let t = "Quotations";
+  if (state.author && state.category) t = `${state.author} · ${state.category} Quotes`;
+  else if (state.author) t = `Quotes by ${state.author}`;
+  else if (state.category) t = `${state.category} Quotes`;
+  else if (state.search) t = `Search results for “${state.search}”`;
+  document.title = `${t} | Quotations`;
+}
+
+/* ================= HEADER ================= */
+function addCrumb(label, fn) {
+  const s = document.createElement("span");
+  s.className = "breadcrumb";
+  const b = document.createElement("button");
+  b.textContent = label;
+  b.onclick = fn;
+  s.appendChild(b);
+  return s;
+}
+
+function renderHeader() {
+  const title = document.getElementById("page-title");
+  const crumbs = document.getElementById("breadcrumbs");
+
+  title.textContent =
+    state.author && state.category ? `Quotes by ${state.author} in ${state.category}` :
+    state.author ? `Quotes by ${state.author}` :
+    state.category ? `Quotes about ${state.category}` :
+    state.search ? "Search results" : "All Quotations";
+
+  crumbs.innerHTML = "";
+  crumbs.appendChild(addCrumb("Home",()=>setState({search:"",category:"",author:"",page:1})));
+
+  if (state.category) {
+    crumbs.append("›");
+    crumbs.appendChild(addCrumb(state.category,()=>setState({category:state.category,author:"",page:1})));
+  }
+  if (state.author) {
+    crumbs.append("›");
+    crumbs.appendChild(addCrumb(state.author,()=>setState({author:state.author,page:1})));
   }
 }
 
+/* ================= PAGINATION ================= */
+function renderPagination(total) {
+  pagination.innerHTML = "";
+  const pages = Math.ceil(total / PAGE_SIZE);
+  for (let i=1;i<=pages;i++) {
+    const b = document.createElement("button");
+    b.textContent = i;
+    b.disabled = i === state.page;
+    b.onclick = () => setState({page:i});
+    pagination.appendChild(b);
+  }
+}
+
+/* ================= APP ================= */
 function renderApp() {
   const filtered = selectFiltered();
-  const sorted = selectSorted(filtered);
-  const pageItems = selectPage(sorted);
+  if (state.page > Math.ceil(filtered.length / PAGE_SIZE)) state.page = 1;
 
   list.innerHTML = "";
-
-  for (const i of pageItems) {
-    const card = document.createElement("article");
-    card.className = "card";
-    card.innerHTML = `
-      <div class="quote">${escapeHTML(i.text)}</div>
+  for (const i of selectPage(filtered)) {
+    const c = document.createElement("article");
+    c.className = "card";
+    c.innerHTML = `
+      <div class="quote">${i.text}</div>
       <div class="meta">
-        <button type="button" class="category-pill">${escapeHTML(i.category)}</button>
-        <button type="button" class="author-chip">${escapeHTML(i.author)}</button>
-      </div>
-    `;
-    card.querySelector(".category-pill").onclick =
-      () => setState({ category: i.category, page: 1 });
-    card.querySelector(".author-chip").onclick =
-      () => setState({ author: i.author, page: 1 });
-    list.appendChild(card);
+        <button class="category-pill">${i.category}</button>
+        <button class="author-chip">${i.author}</button>
+      </div>`;
+    c.querySelector(".category-pill").onclick = () => setState({category:i.category,page:1});
+    c.querySelector(".author-chip").onclick = () => setState({author:i.author,page:1});
+    list.appendChild(c);
   }
 
   countSpan.textContent = `${filtered.length} results`;
   renderPagination(filtered.length);
+  renderHeader();
+  updateDocumentTitle();
+  writeURL();
 }
 
 /* ================= STATE ================= */
 function setState(patch) {
   Object.assign(state, patch);
+  searchInput.value = state.search;
+  categorySelect.value = state.category;
+  authorSelect.value = state.author;
   renderApp();
 }
 
 /* ================= INIT ================= */
-[...new Set(ITEMS.map(i => i.category))]
-  .forEach(c => categorySelect.add(new Option(c, c)));
+[...new Set(ITEMS.map(i=>i.category))].forEach(v=>categorySelect.add(new Option(v,v)));
+[...new Set(ITEMS.map(i=>i.author))].forEach(v=>authorSelect.add(new Option(v,v)));
 
-[...new Set(ITEMS.map(i => i.author))]
-  .forEach(a => authorSelect.add(new Option(a, a)));
+searchInput.oninput = e => setState({search:e.target.value,page:1});
+categorySelect.onchange = e => setState({category:e.target.value,page:1});
+authorSelect.onchange = e => setState({author:e.target.value,page:1});
 
-searchInput.oninput = e => setState({ search: e.target.value, page: 1 });
-categorySelect.onchange = e => setState({ category: e.target.value, page: 1 });
-authorSelect.onchange = e => setState({ author: e.target.value, page: 1 });
-sortSelect.onchange = e => setState({ sort: e.target.value });
+window.addEventListener("popstate", () => {
+  Object.assign(state, readURL());
+  renderApp();
+});
 
 renderHero();
 renderApp();
 </script>
-
 </body>
 </html>
