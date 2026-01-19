@@ -38,16 +38,11 @@ nav {
 }
 
 nav input,
-nav select,
-nav button {
+nav select {
   padding: 6px 8px;
   border-radius: 6px;
   border: none;
   font-size: 14px;
-}
-
-nav button {
-  cursor: pointer;
 }
 
 #count {
@@ -55,40 +50,57 @@ nav button {
   opacity: .85;
 }
 
+/* ================= HERO ================= */
+#hero {
+  background: linear-gradient(135deg, #111827, #1f2937);
+  color: #fff;
+  padding: 36px 20px 42px;
+}
+
+#hero-inner {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+#hero-label {
+  font-size: 13px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  opacity: .7;
+}
+
+#hero-quote {
+  font-size: 26px;
+  line-height: 1.5;
+  margin: 14px 0 18px;
+  font-weight: 600;
+}
+
+#hero-meta {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+#hero-meta button {
+  background: none;
+  border: none;
+  color: #93c5fd;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+}
+
 /* ================= HEADER ================= */
 #content-header {
   max-width: 900px;
   margin: 0 auto;
-  padding: 16px 20px 8px;
+  padding: 20px 20px 8px;
 }
 
 #subtitle {
   font-size: 18px;
   font-weight: 600;
-}
-
-#breadcrumbs {
-  margin-top: 8px;
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.breadcrumb {
-  background: #374151;
-  color: #fff;
-  padding: 4px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  display: flex;
-  gap: 6px;
-}
-
-.breadcrumb button {
-  background: none;
-  border: none;
-  color: #fff;
-  cursor: pointer;
 }
 
 /* ================= MAIN ================= */
@@ -138,11 +150,6 @@ main {
   font-size: 12px;
 }
 
-.category-Wisdom { color:#5b21b6; }
-.category-Science { color:#075985; }
-.category-Technology { color:#166534; }
-.category-Philosophy { color:#9a3412; }
-
 .author-chip {
   margin-left: auto;
   font-size: 13px;
@@ -176,9 +183,8 @@ main {
 
 /* ================= MOBILE ================= */
 @media (max-width: 640px) {
-  #nav-controls {
-    width: 100%;
-    justify-content: flex-end;
+  #hero-quote {
+    font-size: 20px;
   }
 }
 </style>
@@ -188,49 +194,47 @@ main {
 
 <nav>
   <div id="nav-title">Quotations</div>
-
   <div id="nav-controls">
-    <input id="search" placeholder="Search…" aria-label="Search quotations">
-
-    <select id="category" aria-label="Filter by category">
-      <option value="">All categories</option>
-    </select>
-
-    <select id="author" aria-label="Filter by author">
-      <option value="">All authors</option>
-    </select>
-
-    <select id="sort" aria-label="Sort quotations">
+    <input id="search" placeholder="Search…">
+    <select id="category"><option value="">All categories</option></select>
+    <select id="author"><option value="">All authors</option></select>
+    <select id="sort">
       <option value="text">Sort: Quote (A–Z)</option>
       <option value="author">Sort: Author (A–Z)</option>
       <option value="category">Sort: Category (A–Z)</option>
     </select>
-
-    <button id="random" aria-label="Random quote">🎲 Random</button>
-
     <span id="count"></span>
   </div>
 </nav>
 
+<!-- HERO -->
+<section id="hero">
+  <div id="hero-inner">
+    <div id="hero-label">Quote of the Day</div>
+    <div id="hero-quote"></div>
+    <div id="hero-meta">
+      <button id="hero-author"></button>
+      <button id="hero-category"></button>
+    </div>
+  </div>
+</section>
+
 <section id="content-header">
-  <div id="subtitle"></div>
-  <div id="breadcrumbs"></div>
+  <div id="subtitle">All quotations</div>
 </section>
 
 <main id="list"></main>
-<nav id="pagination" aria-label="Pagination"></nav>
+<nav id="pagination"></nav>
 
 <script>
 /* ================= DATA ================= */
-const QUOTATIONS = [
+const items = [
   { text:"The happiness of your life depends upon the quality of your thoughts.", author:"Marcus Aurelius", category:"Wisdom" },
   { text:"Life is like riding a bicycle. To keep your balance you must keep moving.", author:"Albert Einstein", category:"Science" },
   { text:"That brain of mine is something more than merely mortal; as time will show.", author:"Ada Lovelace", category:"Technology" },
   { text:"We can only see a short distance ahead, but we can see plenty there that needs to be done.", author:"Alan Turing", category:"Technology" },
   { text:"It does not matter how slowly you go as long as you do not stop.", author:"Confucius", category:"Philosophy" }
 ];
-
-const items = [...QUOTATIONS];
 
 /* ================= ELEMENTS ================= */
 const list = document.getElementById("list");
@@ -241,91 +245,60 @@ const authorSelect = document.getElementById("author");
 const sortSelect = document.getElementById("sort");
 const countSpan = document.getElementById("count");
 const subtitle = document.getElementById("subtitle");
-const breadcrumbs = document.getElementById("breadcrumbs");
-const randomBtn = document.getElementById("random");
+
+/* HERO */
+const heroQuote = document.getElementById("hero-quote");
+const heroAuthor = document.getElementById("hero-author");
+const heroCategory = document.getElementById("hero-category");
 
 /* ================= STATE ================= */
 const PAGE_SIZE = 3;
 let currentPage = 1;
-const STORAGE_KEY = "quotation-filters";
 
-/* ================= INIT FILTERS ================= */
+/* ================= INIT FILTER OPTIONS ================= */
 [...new Set(items.map(i => i.category))]
   .forEach(c => categorySelect.add(new Option(c, c)));
 
 [...new Set(items.map(i => i.author))]
   .forEach(a => authorSelect.add(new Option(a, a)));
 
-/* ================= HEADER ================= */
-function updateHeader() {
-  const c = categorySelect.value;
-  const a = authorSelect.value;
-
-  subtitle.textContent =
-    c && a ? `${c} Quotations by ${a}` :
-    c ? `${c} Quotations` :
-    a ? `Quotations by ${a}` :
-    "All quotations";
+/* ================= QUOTE OF THE DAY ================= */
+function todayKey() {
+  return new Date().toISOString().slice(0,10);
 }
 
-/* ================= BREADCRUMBS ================= */
-function makeCrumb(label, onRemove) {
-  const d = document.createElement("div");
-  d.className = "breadcrumb";
-  d.innerHTML = `<span>${label}</span><button aria-label="Remove filter">✕</button>`;
-  d.querySelector("button").onclick = onRemove;
-  return d;
+function getQuoteOfTheDay() {
+  const key = "qotd";
+  const today = todayKey();
+  const cached = JSON.parse(localStorage.getItem(key) || "{}");
+
+  if (cached.date === today) return cached.quote;
+
+  const index =
+    [...today].reduce((a,c)=>a+c.charCodeAt(0),0) % items.length;
+
+  const quote = items[index];
+  localStorage.setItem(key, JSON.stringify({ date: today, quote }));
+  return quote;
 }
 
-function updateBreadcrumbs() {
-  breadcrumbs.innerHTML = "";
+function renderHero() {
+  const q = getQuoteOfTheDay();
+  heroQuote.textContent = q.text;
+  heroAuthor.textContent = q.author;
+  heroCategory.textContent = q.category;
 
-  if (categorySelect.value)
-    breadcrumbs.appendChild(makeCrumb(
-      `Category: ${categorySelect.value}`,
-      () => { categorySelect.value=""; currentPage=1; applyFilters(); }
-    ));
+  heroAuthor.onclick = () => {
+    authorSelect.value = q.author;
+    currentPage = 1;
+    applyFilters();
+  };
 
-  if (authorSelect.value)
-    breadcrumbs.appendChild(makeCrumb(
-      `Author: ${authorSelect.value}`,
-      () => { authorSelect.value=""; currentPage=1; applyFilters(); }
-    ));
-
-  if (searchInput.value)
-    breadcrumbs.appendChild(makeCrumb(
-      `Search: "${searchInput.value}"`,
-      () => { searchInput.value=""; currentPage=1; applyFilters(); }
-    ));
-}
-
-/* ================= URL + STORAGE ================= */
-function readURL() {
-  const p = new URLSearchParams(location.search);
-  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-
-  searchInput.value = p.get("search") ?? stored.search ?? "";
-  categorySelect.value = p.get("category") ?? stored.category ?? "";
-  authorSelect.value = p.get("author") ?? stored.author ?? "";
-  sortSelect.value = p.get("sort") ?? stored.sort ?? "text";
-}
-
-function writeURL() {
-  const p = new URLSearchParams();
-
-  if (searchInput.value) p.set("search", searchInput.value);
-  if (categorySelect.value) p.set("category", categorySelect.value);
-  if (authorSelect.value) p.set("author", authorSelect.value);
-  if (sortSelect.value !== "text") p.set("sort", sortSelect.value);
-
-  history.replaceState(null, "", "?" + p.toString());
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({
-    search: searchInput.value,
-    category: categorySelect.value,
-    author: authorSelect.value,
-    sort: sortSelect.value
-  }));
+  heroCategory.onclick = () => {
+    categorySelect.value = q.category;
+    currentPage = 1;
+    applyFilters();
+  };
 }
 
 /* ================= RENDER ================= */
@@ -346,14 +319,12 @@ function render(filtered) {
   const pageItems = filtered.slice(start, start + PAGE_SIZE);
 
   pageItems.forEach(i => {
-    const safeCategory = i.category.replace(/\s+/g, "-");
-
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <div class="quote">${i.text}</div>
       <div class="meta">
-        <button class="category-pill category-${safeCategory}">${i.category}</button>
+        <button class="category-pill">${i.category}</button>
         <button class="author-chip">${i.author}</button>
       </div>
     `;
@@ -408,43 +379,28 @@ function applyFilters() {
       i.category.toLowerCase().includes(term))
   );
 
-  filtered.sort((a, b) =>
+  filtered.sort((a,b) =>
     String(a[sortSelect.value]).localeCompare(String(b[sortSelect.value]))
   );
 
-  writeURL();
-  updateHeader();
-  updateBreadcrumbs();
   render(filtered);
 }
 
 /* ================= EVENTS ================= */
-let debounce;
 searchInput.addEventListener("input", () => {
-  clearTimeout(debounce);
-  debounce = setTimeout(() => {
-    currentPage = 1;
-    applyFilters();
-  }, 200);
+  currentPage = 1;
+  applyFilters();
 });
 
-[categorySelect, authorSelect, sortSelect]
-  .forEach(el => el.addEventListener("change", () => {
+[categorySelect, authorSelect, sortSelect].forEach(el =>
+  el.addEventListener("change", () => {
     currentPage = 1;
     applyFilters();
-  }));
-
-randomBtn.addEventListener("click", () => {
-  const q = items[Math.floor(Math.random() * items.length)];
-  subtitle.textContent = "Featured Quote";
-  breadcrumbs.innerHTML = "";
-  pagination.innerHTML = "";
-  countSpan.textContent = "1 result";
-  render([q]);
-});
+  })
+);
 
 /* ================= INIT ================= */
-readURL();
+renderHero();
 applyFilters();
 </script>
 
