@@ -131,6 +131,11 @@ main {
   margin-left: auto;
   font-size: 13px;
 }
+
+.no-results {
+  opacity: .6;
+  font-style: italic;
+}
 </style>
 </head>
 
@@ -138,10 +143,14 @@ main {
 
 <nav>
   <div id="nav-title">Quotations</div>
-  <input id="search" placeholder="Search…">
-  <select id="category"><option value="">All categories</option></select>
-  <select id="author"><option value="">All authors</option></select>
-  <select id="sort">
+  <input id="search" placeholder="Search…" aria-label="Search quotations">
+  <select id="category" aria-label="Filter by category">
+    <option value="">All categories</option>
+  </select>
+  <select id="author" aria-label="Filter by author">
+    <option value="">All authors</option>
+  </select>
+  <select id="sort" aria-label="Sort quotations">
     <option value="text">Sort: Quote (A–Z)</option>
     <option value="author">Sort: Author (A–Z)</option>
     <option value="category">Sort: Category (A–Z)</option>
@@ -176,25 +185,30 @@ const countSpan = document.getElementById("count");
 const subtitle = document.getElementById("subtitle");
 const breadcrumbs = document.getElementById("breadcrumbs");
 
-[...new Set(items.map(i => i.category))].forEach(c => categorySelect.add(new Option(c,c)));
-[...new Set(items.map(i => i.author))].forEach(a => authorSelect.add(new Option(a,a)));
+/* populate filters */
+[...new Set(items.map(i => i.category))]
+  .forEach(c => categorySelect.add(new Option(c, c)));
+
+[...new Set(items.map(i => i.author))]
+  .forEach(a => authorSelect.add(new Option(a, a)));
 
 /* ================= HEADER ================= */
 function updateHeader() {
   const c = categorySelect.value;
   const a = authorSelect.value;
 
-  if (c && a) subtitle.textContent = `${c} Quotations by ${a}`;
-  else if (c) subtitle.textContent = `${c} Quotations`;
-  else if (a) subtitle.textContent = `Quotations by ${a}`;
-  else subtitle.textContent = "All quotations";
+  subtitle.textContent =
+    c && a ? `${c} Quotations by ${a}` :
+    c ? `${c} Quotations` :
+    a ? `Quotations by ${a}` :
+    "All quotations";
 }
 
 /* ================= BREADCRUMBS ================= */
 function makeCrumb(label, onRemove) {
   const d = document.createElement("div");
   d.className = "breadcrumb";
-  d.innerHTML = `<span>${label}</span><button>✕</button>`;
+  d.innerHTML = `<span>${label}</span><button aria-label="Remove filter">✕</button>`;
   d.querySelector("button").onclick = onRemove;
   return d;
 }
@@ -221,13 +235,13 @@ function updateBreadcrumbs() {
     ));
 }
 
-/* ================= URL SYNC ================= */
+/* ================= URL + PERSIST ================= */
 function readURL() {
   const p = new URLSearchParams(location.search);
   searchInput.value = p.get("search") || "";
   categorySelect.value = p.get("category") || "";
   authorSelect.value = p.get("author") || "";
-  sortSelect.value = p.get("sort") || "text";
+  sortSelect.value = p.get("sort") || localStorage.getItem("sort") || "text";
 }
 
 function writeURL() {
@@ -236,19 +250,29 @@ function writeURL() {
   if (categorySelect.value) p.set("category", categorySelect.value);
   if (authorSelect.value) p.set("author", authorSelect.value);
   if (sortSelect.value !== "text") p.set("sort", sortSelect.value);
-  history.replaceState(null,"","?"+p.toString());
+  history.replaceState(null, "", "?" + p.toString());
+  localStorage.setItem("sort", sortSelect.value);
 }
 
 /* ================= RENDER ================= */
 function render(filtered) {
   list.innerHTML = "";
+
+  if (!filtered.length) {
+    list.innerHTML = `<p class="no-results">No quotations found.</p>`;
+    countSpan.textContent = "0 results";
+    return;
+  }
+
   filtered.forEach(i => {
+    const safeCategory = i.category.replace(/\s+/g, "-");
+
     const card = document.createElement("div");
     card.className = "card";
     card.innerHTML = `
       <div class="quote">${i.text}</div>
       <div class="meta">
-        <button class="category-pill category-${i.category}">${i.category}</button>
+        <button class="category-pill category-${safeCategory}">${i.category}</button>
         <button class="author-chip">${i.author}</button>
       </div>
     `;
@@ -284,8 +308,8 @@ function applyFilters() {
       i.category.toLowerCase().includes(term))
   );
 
-  filtered.sort((a,b) =>
-    a[sortSelect.value].localeCompare(b[sortSelect.value])
+  filtered.sort((a, b) =>
+    String(a[sortSelect.value]).localeCompare(String(b[sortSelect.value]))
   );
 
   writeURL();
@@ -295,8 +319,14 @@ function applyFilters() {
 }
 
 /* ================= EVENTS ================= */
-[searchInput, categorySelect, authorSelect, sortSelect]
-  .forEach(el => el.addEventListener("input", applyFilters));
+let debounce;
+searchInput.addEventListener("input", () => {
+  clearTimeout(debounce);
+  debounce = setTimeout(applyFilters, 200);
+});
+
+[categorySelect, authorSelect, sortSelect]
+  .forEach(el => el.addEventListener("change", applyFilters));
 
 readURL();
 applyFilters();
