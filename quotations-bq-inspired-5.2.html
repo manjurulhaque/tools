@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Inspirational Quotes</title>
+
+<style>
+/* =====================
+   RESET & BASE
+===================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body {
+  background: #f6f7f9;
+  color: #222;
+  line-height: 1.5;
+}
+
+/* =====================
+   HERO
+===================== */
+.hero {
+  background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+  color: #fff;
+  padding: 1.5rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.2rem;
+  font-weight: bold;
+}
+
+.menu {
+  background: none;
+  border: none;
+  font-size: 1.4rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.hero-content {
+  max-width: 640px;
+  margin: 3rem auto;
+  text-align: center;
+}
+
+.hero blockquote {
+  font-size: 1.6rem;
+  margin-bottom: 0.75rem;
+}
+
+.hero cite {
+  opacity: 0.85;
+  font-style: normal;
+}
+
+.search-box {
+  display: flex;
+  margin-top: 1.5rem;
+}
+
+.search-box input {
+  flex: 1;
+  padding: 0.75rem;
+  border-radius: 6px 0 0 6px;
+  border: none;
+  font-size: 1rem;
+}
+
+.search-box button {
+  padding: 0.75rem 1.2rem;
+  border: none;
+  background: #ffcc00;
+  cursor: pointer;
+  border-radius: 0 6px 6px 0;
+  font-weight: 600;
+}
+
+/* =====================
+   TOPIC CHIPS
+===================== */
+.chips {
+  display: flex;
+  gap: 0.5rem;
+  padding: 1rem;
+  overflow-x: auto;
+}
+
+.chips button {
+  background: #eaeaea;
+  border: none;
+  border-radius: 20px;
+  padding: 0.5rem 1rem;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* =====================
+   TRENDING QUOTES
+===================== */
+.trending {
+  padding: 1.5rem;
+}
+
+.trending h2 {
+  margin-bottom: 1rem;
+}
+
+.quote-card {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.quote-card p {
+  font-size: 1.05rem;
+}
+
+.quote-card span {
+  display: block;
+  margin-top: 0.5rem;
+  font-weight: 600;
+}
+
+.actions {
+  margin-top: 0.5rem;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  color: #0077cc;
+  cursor: pointer;
+  margin-right: 0.75rem;
+}
+
+/* =====================
+   MOODS
+===================== */
+.moods {
+  padding: 1.5rem;
+}
+
+.moods h2 {
+  margin-bottom: 1rem;
+}
+
+.mood-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+
+.mood-grid div {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* =====================
+   STUDIO
+===================== */
+.studio {
+  padding: 1.5rem;
+  background: #fff;
+  text-align: center;
+}
+
+.studio button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: #111;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* =====================
+   AUTHORS
+===================== */
+.authors {
+  padding: 1.5rem;
+}
+
+.author-row {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+}
+
+.author {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 10px;
+  white-space: nowrap;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* =====================
+   DAILY RITUAL
+===================== */
+.daily {
+  padding: 1.5rem;
+  background: #f0f0f0;
+  text-align: center;
+}
+
+.daily button {
+  margin-top: 1rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background: #0077cc;
+  color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* =====================
+   FOOTER
+===================== */
+.footer {
+  background: #111;
+  color: #aaa;
+  text-align: center;
+  padding: 1rem;
+  font-size: 0.9rem;
+}
+
+/* =====================
+   RESPONSIVE
+===================== */
+@media (max-width: 600px) {
+  .hero blockquote {
+    font-size: 1.4rem;
+  }
+  .mood-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="hero">
+  <nav class="nav">
+    <div class="logo">Quotes</div>
+    <button class="menu">☰</button>
+  </nav>
+
+  <div class="hero-content">
+    <blockquote>
+      “Attitude is a little thing that makes a big difference.”
+    </blockquote>
+    <cite>— Winston Churchill</cite>
+
+    <div class="search-box">
+      <input type="text" placeholder="Search quotes, authors, or topics…">
+      <button>Search</button>
+    </div>
+  </div>
+</header>
+
+<section class="chips">
+  <button>Motivation</button>
+  <button>Life</button>
+  <button>Love</button>
+  <button>Success</button>
+  <button>Calm</button>
+  <button>Funny</button>
+</section>
+
+<section class="trending">
+  <h2>Trending Quotes</h2>
+
+  <div class="quote-card">
+    <p>“Life is really simple, but we insist on making it complicated.”</p>
+    <span>Confucius</span>
+    <div class="actions">
+      <button>Copy</button>
+      <button>Save</button>
+      <button>Share</button>
+    </div>
+  </div>
+
+  <div class="quote-card">
+    <p>“Good, better, best. Never let it rest.”</p>
+    <span>St. Jerome</span>
+    <div class="actions">
+      <button>Copy</button>
+      <button>Save</button>
+      <button>Share</button>
+    </div>
+  </div>
+</section>
+
+<section class="moods">
+  <h2>Browse by Mood</h2>
+  <div class="mood-grid">
+    <div>😊 Happy</div>
+    <div>💪 Motivated</div>
+    <div>😔 Sad</div>
+    <div>🧘 Calm</div>
+    <div>🔥 Driven</div>
+    <div>❤️ Romantic</div>
+  </div>
+</section>
+
+<section class="studio">
+  <h2>Picture Quote Studio</h2>
+  <p>Create and share beautiful quote images.</p>
+  <button>Create Image</button>
+</section>
+
+<section class="authors">
+  <h2>Famous Authors</h2>
+  <div class="author-row">
+    <div class="author">Albert Einstein</div>
+    <div class="author">Rumi</div>
+    <div class="author">Maya Angelou</div>
+    <div class="author">Mark Twain</div>
+    <div class="author">Confucius</div>
+  </div>
+</section>
+
+<section class="daily">
+  <h2>Your 30-Second Inspiration</h2>
+  <p>A short reflection to reset your mindset and refocus your day.</p>
+  <button>Get This Daily</button>
+</section>
+
+<footer class="footer">
+  © 2026 Quotes. All rights reserved.
+</footer>
+
+</body>
+</html>
