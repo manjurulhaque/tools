@@ -6,25 +6,34 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
 <style>
+/* ================= BASE ================= */
 body {
   margin: 0;
   font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   background: #f9fafb;
 }
 
+/* ================= NAV ================= */
 nav {
   padding: 14px 18px;
   background: #111827;
   color: #fff;
   display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
   align-items: center;
+  gap: 14px;
 }
 
 #nav-title {
   font-size: 20px;
   font-weight: 700;
+}
+
+#nav-controls {
+  margin-left: auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
 }
 
 nav input,
@@ -36,11 +45,11 @@ nav select {
 }
 
 #count {
-  margin-left: auto;
   font-size: 14px;
   opacity: .85;
 }
 
+/* ================= HEADER ================= */
 #content-header {
   max-width: 900px;
   margin: 0 auto;
@@ -76,6 +85,7 @@ nav select {
   cursor: pointer;
 }
 
+/* ================= MAIN ================= */
 main {
   max-width: 900px;
   margin: 0 auto;
@@ -136,6 +146,14 @@ main {
   opacity: .6;
   font-style: italic;
 }
+
+/* ================= MOBILE ================= */
+@media (max-width: 640px) {
+  #nav-controls {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}
 </style>
 </head>
 
@@ -143,19 +161,26 @@ main {
 
 <nav>
   <div id="nav-title">Quotations</div>
-  <input id="search" placeholder="Search…" aria-label="Search quotations">
-  <select id="category" aria-label="Filter by category">
-    <option value="">All categories</option>
-  </select>
-  <select id="author" aria-label="Filter by author">
-    <option value="">All authors</option>
-  </select>
-  <select id="sort" aria-label="Sort quotations">
-    <option value="text">Sort: Quote (A–Z)</option>
-    <option value="author">Sort: Author (A–Z)</option>
-    <option value="category">Sort: Category (A–Z)</option>
-  </select>
-  <span id="count"></span>
+
+  <div id="nav-controls">
+    <input id="search" placeholder="Search…" aria-label="Search quotations">
+
+    <select id="category" aria-label="Filter by category">
+      <option value="">All categories</option>
+    </select>
+
+    <select id="author" aria-label="Filter by author">
+      <option value="">All authors</option>
+    </select>
+
+    <select id="sort" aria-label="Sort quotations">
+      <option value="text">Sort: Quote (A–Z)</option>
+      <option value="author">Sort: Author (A–Z)</option>
+      <option value="category">Sort: Category (A–Z)</option>
+    </select>
+
+    <span id="count"></span>
+  </div>
 </nav>
 
 <section id="content-header">
@@ -166,6 +191,7 @@ main {
 <main id="list"></main>
 
 <script>
+/* ================= DATA ================= */
 const QUOTATIONS = [
   { text:"The happiness of your life depends upon the quality of your thoughts.", author:"Marcus Aurelius", category:"Wisdom" },
   { text:"Life is like riding a bicycle. To keep your balance you must keep moving.", author:"Albert Einstein", category:"Science" },
@@ -176,6 +202,7 @@ const QUOTATIONS = [
 
 const items = [...QUOTATIONS];
 
+/* ================= ELEMENTS ================= */
 const list = document.getElementById("list");
 const searchInput = document.getElementById("search");
 const categorySelect = document.getElementById("category");
@@ -185,7 +212,7 @@ const countSpan = document.getElementById("count");
 const subtitle = document.getElementById("subtitle");
 const breadcrumbs = document.getElementById("breadcrumbs");
 
-/* populate filters */
+/* ================= INIT FILTERS ================= */
 [...new Set(items.map(i => i.category))]
   .forEach(c => categorySelect.add(new Option(c, c)));
 
@@ -235,7 +262,7 @@ function updateBreadcrumbs() {
     ));
 }
 
-/* ================= URL + PERSIST ================= */
+/* ================= URL + STORAGE ================= */
 function readURL() {
   const p = new URLSearchParams(location.search);
   searchInput.value = p.get("search") || "";
