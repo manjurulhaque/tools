@@ -72,18 +72,26 @@ nav select {
   opacity: .85;
 }
 
-/* ================= HERO (ENHANCED BACKGROUND) ================= */
+/* ================= HERO BASE ================= */
 #hero {
   position: relative;
   color: #fff;
   padding: 56px 20px 64px;
   overflow: hidden;
-  background:
-    radial-gradient(1200px 400px at 10% -10%, rgba(99,102,241,.18), transparent 60%),
-    radial-gradient(800px 300px at 90% 10%, rgba(16,185,129,.12), transparent 55%),
-    linear-gradient(135deg, #0f172a, #1f2937);
+
+  background-size: 200% 200%;
+  animation: hero-flow 20s ease infinite;
+  transition: background 1.2s ease;
 }
 
+/* Smooth gradient motion */
+@keyframes hero-flow {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Subtle texture overlay */
 #hero::after {
   content: "";
   position: absolute;
@@ -101,6 +109,39 @@ nav select {
   max-width: 900px;
   margin: 0 auto;
   position: relative;
+}
+
+/* ================= TIME OF DAY THEMES ================= */
+
+/* 🌅 Morning */
+body[data-time="morning"] #hero {
+  background:
+    radial-gradient(1000px 380px at 15% -10%, rgba(251,191,36,.25), transparent 60%),
+    radial-gradient(700px 300px at 85% 15%, rgba(56,189,248,.18), transparent 55%),
+    linear-gradient(135deg, #1e293b, #334155);
+}
+
+/* ☀️ Day */
+body[data-time="day"] #hero {
+  background:
+    radial-gradient(1200px 400px at 10% -10%, rgba(99,102,241,.18), transparent 60%),
+    radial-gradient(800px 300px at 90% 10%, rgba(16,185,129,.12), transparent 55%),
+    linear-gradient(135deg, #0f172a, #1f2937);
+}
+
+/* 🌇 Evening */
+body[data-time="evening"] #hero {
+  background:
+    radial-gradient(1000px 420px at 10% -10%, rgba(251,146,60,.28), transparent 60%),
+    radial-gradient(700px 300px at 90% 20%, rgba(244,114,182,.18), transparent 55%),
+    linear-gradient(135deg, #1e1b4b, #312e81);
+}
+
+/* 🌙 Night */
+body[data-time="night"] #hero {
+  background:
+    radial-gradient(1200px 500px at 50% -20%, rgba(56,189,248,.12), transparent 60%),
+    linear-gradient(135deg, #020617, #020617);
 }
 
 /* ================= HERO GLASS CARD ================= */
@@ -126,7 +167,7 @@ nav select {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Fallback for no backdrop-filter */
+/* Fallback */
 @supports not (backdrop-filter: blur(1px)) {
   #hero-card {
     background: rgba(31,41,55,.92);
@@ -186,7 +227,7 @@ nav select {
   gap: 6px;
 }
 
-/* ================= BREADCRUMB ANIMATION ================= */
+/* ================= BREADCRUMBS ================= */
 #breadcrumbs button {
   background: none;
   border: none;
@@ -244,7 +285,7 @@ main {
   align-items: center;
 }
 
-/* ================= BUTTON STYLES ================= */
+/* ================= BUTTONS ================= */
 .category-pill,
 .author-chip,
 #hero-category,
@@ -295,14 +336,12 @@ main {
   transform: scaleX(1);
 }
 
-/* ================= PAGINATION (PILL STYLE) ================= */
+/* ================= PAGINATION (PILLS) ================= */
 #pagination {
   display: flex;
   gap: 6px;
   justify-content: center;
   margin: 20px auto 30px;
-  background: transparent;
-  padding: 0;
 }
 
 #pagination button {
@@ -312,14 +351,9 @@ main {
   border-radius: 999px;
   border: 1px solid #e5e7eb;
   background: #fff;
-  color: #111827;
   font-size: var(--text-sm);
   cursor: pointer;
-  transition:
-    background .18s ease,
-    color .18s ease,
-    border-color .18s ease,
-    transform .12s ease;
+  transition: background .18s, transform .12s;
 }
 
 #pagination button:not([disabled]):hover {
@@ -331,12 +365,6 @@ main {
   background: #111827;
   color: #fff;
   border-color: #111827;
-  cursor: default;
-}
-
-#pagination button:focus-visible {
-  outline: 2px solid #c7d2fe;
-  outline-offset: 2px;
 }
 
 /* ================= FOOTER ================= */
@@ -359,40 +387,10 @@ main {
 .footer-left {
   font-size: var(--text-sm);
   opacity: .85;
-  display: flex;
-  gap: 8px;
-  align-items: center;
 }
 
 .footer-right {
   margin-left: auto;
-}
-
-.footer-link {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: var(--text-sm);
-  cursor: pointer;
-  position: relative;
-  padding: 0;
-}
-
-.footer-link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 100%;
-  height: 1px;
-  background: currentColor;
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform .22s cubic-bezier(.4,0,.2,1);
-}
-
-.footer-link:hover::after {
-  transform: scaleX(1);
 }
 
 /* ================= MOBILE ================= */
@@ -642,6 +640,19 @@ window.addEventListener("popstate", () => {
 renderHero();
 renderApp();
 document.getElementById("year").textContent = new Date().getFullYear();
+function setTimeOfDayTheme() {
+  const hour = new Date().getHours();
+  let theme = "day";
+
+  if (hour >= 5 && hour < 11) theme = "morning";
+  else if (hour >= 11 && hour < 17) theme = "day";
+  else if (hour >= 17 && hour < 20) theme = "evening";
+  else theme = "night";
+
+  document.body.dataset.time = theme;
+}
+
+setTimeOfDayTheme();
 
 </script>
 
