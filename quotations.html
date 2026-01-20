@@ -531,31 +531,26 @@ function renderPagination(total) {
   const pages = Math.ceil(total / PAGE_SIZE);
   if (pages <= 1) return;
 
-  const addButton = (label, page) => {
+  const addButton = (label, page, disabled = false) => {
     const b = document.createElement("button");
     b.textContent = label;
-    b.onclick = () => setState({ page });
+    b.disabled = disabled;
+    if (!disabled) {
+      b.onclick = () => setState({ page });
+    }
     dom.pagination.appendChild(b);
   };
 
-  /* Previous pill */
-  if (state.page > 1) {
-    addButton("‹", state.page - 1);
-  }
+  /* Previous */
+  addButton("‹", state.page - 1, state.page === 1);
 
-  /* Page number pills */
+  /* Page numbers */
   for (let i = 1; i <= pages; i++) {
-    const b = document.createElement("button");
-    b.textContent = i;
-    b.disabled = i === state.page;
-    b.onclick = () => setState({ page: i });
-    dom.pagination.appendChild(b);
+    addButton(i, i, i === state.page);
   }
 
-  /* Next pill */
-  if (state.page < pages) {
-    addButton("›", state.page + 1);
-  }
+  /* Next */
+  addButton("›", state.page + 1, state.page === pages);
 }
 
 
