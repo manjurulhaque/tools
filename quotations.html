@@ -72,30 +72,82 @@ nav select {
   opacity: .85;
 }
 
-/* ================= HERO ================= */
+/* ================= HERO (ENHANCED BACKGROUND) ================= */
 #hero {
-  background: linear-gradient(135deg, #111827, #1f2937);
+  position: relative;
   color: #fff;
-  padding: 36px 20px 42px;
+  padding: 56px 20px 64px;
+  overflow: hidden;
+  background:
+    radial-gradient(1200px 400px at 10% -10%, rgba(99,102,241,.18), transparent 60%),
+    radial-gradient(800px 300px at 90% 10%, rgba(16,185,129,.12), transparent 55%),
+    linear-gradient(135deg, #0f172a, #1f2937);
+}
+
+#hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      rgba(255,255,255,.03) 1px,
+      transparent 1px
+    );
+  background-size: 100% 24px;
+  pointer-events: none;
 }
 
 #hero-inner {
   max-width: 900px;
   margin: 0 auto;
+  position: relative;
+}
+
+/* ================= HERO GLASS CARD ================= */
+#hero-card {
+  max-width: 760px;
+  padding: 26px 28px 24px;
+  border-radius: 20px;
+
+  background: rgba(255,255,255,.08);
+  backdrop-filter: blur(14px) saturate(140%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.25),
+    inset 0 1px 0 rgba(255,255,255,.12);
+
+  animation: glass-in 360ms cubic-bezier(.4,0,.2,1);
+}
+
+@keyframes glass-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Fallback for no backdrop-filter */
+@supports not (backdrop-filter: blur(1px)) {
+  #hero-card {
+    background: rgba(31,41,55,.92);
+  }
 }
 
 #hero-label {
   font-size: var(--text-xs);
   letter-spacing: .08em;
   text-transform: uppercase;
-  opacity: .7;
+  opacity: .75;
+  margin-bottom: 10px;
 }
 
 #hero-quote {
   font-size: var(--text-xl);
   line-height: 1.5;
-  margin: 14px 0 18px;
+  margin-bottom: 16px;
   font-weight: var(--font-bold);
+  max-width: 720px;
+  text-shadow: 0 2px 6px rgba(0,0,0,.35);
 }
 
 #hero-meta {
@@ -257,12 +309,11 @@ main {
   min-width: 34px;
   height: 34px;
   padding: 0 12px;
-  border-radius: 999px; /* pill */
+  border-radius: 999px;
   border: 1px solid #e5e7eb;
   background: #fff;
   color: #111827;
   font-size: var(--text-sm);
-  font-weight: var(--font-normal);
   cursor: pointer;
   transition:
     background .18s ease,
@@ -271,13 +322,11 @@ main {
     transform .12s ease;
 }
 
-/* Hover */
 #pagination button:not([disabled]):hover {
   background: #f3f4f6;
   transform: translateY(-1px);
 }
 
-/* Active page */
 #pagination button[disabled] {
   background: #111827;
   color: #fff;
@@ -285,12 +334,10 @@ main {
   cursor: default;
 }
 
-/* Keyboard focus (accessible, subtle) */
 #pagination button:focus-visible {
   outline: 2px solid #c7d2fe;
   outline-offset: 2px;
 }
-
 
 /* ================= FOOTER ================= */
 #footer {
@@ -350,7 +397,9 @@ main {
 
 /* ================= MOBILE ================= */
 @media (max-width: 640px) {
-  #hero-quote { font-size: 22px; }
+  #hero-quote {
+    font-size: 22px;
+  }
 }
 
 </style>
