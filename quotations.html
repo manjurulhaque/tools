@@ -616,29 +616,37 @@ function renderList(items) {
   dom.list.appendChild(frag);
 }
 
-/* ================= PAGINATION ================= */
 function renderPagination(total) {
   dom.pagination.innerHTML = "";
 
-  const pages = Math.ceil(total / PAGE_SIZE);
-  if (pages <= 1) return;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+  if (totalPages <= 1) return;
 
-  const add = (label, page, disabled = false) => {
+  const makeButton = (label, page, disabled) => {
     const b = document.createElement("button");
     b.textContent = label;
     b.disabled = disabled;
-    if (!disabled) b.onclick = () => setState({ page });
-    dom.pagination.appendChild(b);
+    if (!disabled) {
+      b.onclick = () => setState({ page });
+    }
+    return b;
   };
 
-  add("‹", state.page - 1, state.page === 1);
+  const first = makeButton("⏮ First", 1, state.page === 1);
+  const prev  = makeButton("‹ Prev", state.page - 1, state.page === 1);
 
-  for (let i = 1; i <= pages; i++) {
-    add(i, i, i === state.page);
-  }
+  const indicator = document.createElement("span");
+  indicator.textContent = `Page ${state.page} of ${totalPages}`;
+  indicator.style.padding = "0 12px";
+  indicator.style.fontSize = "14px";
+  indicator.style.alignSelf = "center";
 
-  add("›", state.page + 1, state.page === pages);
+  const next  = makeButton("Next ›", state.page + 1, state.page === totalPages);
+  const last  = makeButton("Last ⏭", totalPages, state.page === totalPages);
+
+  dom.pagination.append(first, prev, indicator, next, last);
 }
+
 
 /* ================= APP ================= */
 function renderApp() {
