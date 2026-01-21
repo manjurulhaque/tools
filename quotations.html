@@ -417,7 +417,8 @@ blockquote.quote {
 
 <!-- ================= HERO ================= -->
 <section id="hero">
-<div id="hero-inner" class="d-flex justify-content-center">    <div id="hero-card">
+<div id="hero-inner" class="d-flex justify-content-center">  
+    <div id="hero-card">
       <div id="hero-label">Quote of the Day</div>
 
       <div id="hero-quote"></div>
@@ -463,9 +464,6 @@ blockquote.quote {
 </footer>
 
 <!-- Bootstrap JS (optional) -->
-<script
-  src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
-></script>
 <script>
 "use strict";
 
@@ -517,13 +515,23 @@ const writeURL = s => {
 
 const state = readURL();
 
-/* ================= HERO ================= */
+/* ================= HELPERS ================= */
 function dailyIndex(seed, max) {
   return seed
     .split("")
     .reduce((sum, c) => sum + c.charCodeAt(0), 0) % max;
 }
 
+function shuffle(array) {
+  const a = array.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ================= HERO ================= */
 function renderHero() {
   const today = new Date().toISOString().slice(0, 10);
   const i = dailyIndex(today, ITEMS.length);
@@ -589,7 +597,6 @@ function renderHeader() {
 /* ================= LIST ================= */
 function renderList(items) {
   dom.list.innerHTML = "";
-
   const frag = document.createDocumentFragment();
 
   items.forEach(i => {
@@ -616,6 +623,7 @@ function renderList(items) {
   dom.list.appendChild(frag);
 }
 
+/* ================= PAGINATION ================= */
 function renderPagination(total) {
   dom.pagination.innerHTML = "";
 
@@ -626,9 +634,7 @@ function renderPagination(total) {
     const b = document.createElement("button");
     b.textContent = label;
     b.disabled = disabled;
-    if (!disabled) {
-      b.onclick = () => setState({ page });
-    }
+    if (!disabled) b.onclick = () => setState({ page });
     return b;
   };
 
@@ -647,10 +653,9 @@ function renderPagination(total) {
   dom.pagination.append(first, prev, indicator, next, last);
 }
 
-
 /* ================= APP ================= */
 function renderApp() {
-  const filtered = selectFiltered();
+  const filtered = shuffle(selectFiltered());
 
   if (filtered.length === 0) {
     renderHeader();
