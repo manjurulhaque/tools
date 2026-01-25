@@ -478,8 +478,14 @@ const ITEMS = [
 
 const PAGE_SIZE = 3;
 
-/* ================= STABLE ORDER (4.1) ================= */
-const SESSION_SEED = Math.random().toString(36).slice(2);
+/* ================= PERSISTENT STABLE ORDER ================= */
+const SEED_KEY = "quotes-order-seed";
+
+let SESSION_SEED = localStorage.getItem(SEED_KEY);
+if (!SESSION_SEED) {
+  SESSION_SEED = crypto.randomUUID();
+  localStorage.setItem(SEED_KEY, SESSION_SEED);
+}
 
 function hash(str) {
   let h = 0;
