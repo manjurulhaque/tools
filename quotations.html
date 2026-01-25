@@ -398,7 +398,7 @@ blockquote.quote {
 
 <!-- ================= NAV ================= -->
 <nav>
-  <div id="nav-title">Quotations</div>
+  <div id="nav-title">Manjurul</div>
 
   <div id="nav-controls">
     <input
@@ -448,7 +448,7 @@ blockquote.quote {
 <footer id="footer">
   <div id="footer-inner">
     <div class="footer-left">
-      <strong>Quotations</strong>
+      <strong>Manjurul.com</strong>
       <span>© <span id="year"></span></span>
     </div>
 
@@ -515,6 +515,10 @@ const writeURL = s => {
 
 const state = readURL();
 
+/* ================= SHUFFLE CACHE ================= */
+let shuffledCache = [];
+let lastFilterKey = "";
+
 /* ================= HELPERS ================= */
 function dailyIndex(seed, max) {
   return seed
@@ -529,6 +533,14 @@ function shuffle(array) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function getFilterKey() {
+  return [
+    state.search,
+    state.category,
+    state.author
+  ].join("|");
 }
 
 /* ================= HERO ================= */
@@ -603,20 +615,39 @@ function renderList(items) {
     const card = document.createElement("article");
     card.className = "card";
 
-    card.innerHTML = `
-      <blockquote class="quote">${i.text}</blockquote>
-      <div class="meta">
-        <button class="category-pill">${i.category}</button>
-        <button class="author-chip">${i.author}</button>
-      </div>
-    `;
+    // Quote
+    const quote = document.createElement("blockquote");
+    quote.className = "quote";
+    quote.textContent = i.text;
 
-    card.querySelector(".category-pill").onclick =
-      () => setState({ category: i.category, page: 1 });
+    // Meta container
+    const meta = document.createElement("div");
+    meta.className = "meta";
 
-    card.querySelector(".author-chip").onclick =
-      () => setState({ author: i.author, page: 1 });
+    // Category button
+    const categoryBtn = document.createElement("button");
+    categoryBtn.className = "category-pill";
+    categoryBtn.textContent = i.category;
+    categoryBtn.onclick = () =>
+  setState({
+    category: i.category,
+    author: "",
+    page: 1
+  });
 
+    // Author button
+    const authorBtn = document.createElement("button");
+    authorBtn.className = "author-chip";
+    authorBtn.textContent = i.author;
+    authorBtn.onclick = () =>
+setState({
+    author: i.author,
+    category: "",
+    page: 1
+  });
+    // Assemble
+    meta.append(categoryBtn, authorBtn);
+    card.append(quote, meta);
     frag.appendChild(card);
   });
 
@@ -655,7 +686,14 @@ function renderPagination(total) {
 
 /* ================= APP ================= */
 function renderApp() {
-  const filtered = shuffle(selectFiltered());
+  const filterKey = getFilterKey();
+
+  if (filterKey !== lastFilterKey) {
+    shuffledCache = shuffle(selectFiltered());
+    lastFilterKey = filterKey;
+  }
+
+  const filtered = shuffledCache;
 
   if (filtered.length === 0) {
     renderHeader();
@@ -687,6 +725,10 @@ function setState(patch) {
   Object.assign(state, patch);
   dom.search.value = state.search;
   dom.category.value = state.category;
+
+  shuffledCache = [];
+  lastFilterKey = "";
+
   renderApp();
 }
 
@@ -707,6 +749,8 @@ dom.category.onchange = e =>
 
 window.addEventListener("popstate", () => {
   Object.assign(state, readURL());
+  shuffledCache = [];
+  lastFilterKey = "";
   renderApp();
 });
 
