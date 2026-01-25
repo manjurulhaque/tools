@@ -478,6 +478,23 @@ const ITEMS = [
 
 const PAGE_SIZE = 3;
 
+/* ================= STABLE ORDER (4.1) ================= */
+const SESSION_SEED = Math.random().toString(36).slice(2);
+
+function hash(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) {
+    h = (h << 5) - h + str.charCodeAt(i);
+    h |= 0;
+  }
+  return Math.abs(h);
+}
+
+const ITEMS_WITH_KEY = ITEMS.map(i => ({
+  ...i,
+  _order: hash(SESSION_SEED + i.text + i.author + i.category)
+}));
+
 /* ================= DOM ================= */
 const $ = id => document.getElementById(id);
 const dom = {
@@ -515,32 +532,11 @@ const writeURL = s => {
 
 const state = readURL();
 
-/* ================= SHUFFLE CACHE ================= */
-let shuffledCache = [];
-let lastFilterKey = "";
-
 /* ================= HELPERS ================= */
 function dailyIndex(seed, max) {
   return seed
     .split("")
     .reduce((sum, c) => sum + c.charCodeAt(0), 0) % max;
-}
-
-function shuffle(array) {
-  const a = array.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-function getFilterKey() {
-  return [
-    state.search,
-    state.category,
-    state.author
-  ].join("|");
 }
 
 /* ================= HERO ================= */
@@ -561,14 +557,16 @@ function renderHero() {
 function selectFiltered() {
   const t = state.search.toLowerCase();
 
-  return ITEMS.filter(i =>
-    (!state.category || i.category === state.category) &&
-    (!state.author || i.author === state.author) &&
-    (!t ||
-      i.text.toLowerCase().includes(t) ||
-      i.author.toLowerCase().includes(t)
+  return ITEMS_WITH_KEY
+    .filter(i =>
+      (!state.category || i.category === state.category) &&
+      (!state.author || i.author === state.author) &&
+      (!t ||
+        i.text.toLowerCase().includes(t) ||
+        i.author.toLowerCase().includes(t)
+      )
     )
-  );
+    .sort((a, b) => a._order - b._order);
 }
 
 /* ================= HEADER ================= */
@@ -615,37 +613,25 @@ function renderList(items) {
     const card = document.createElement("article");
     card.className = "card";
 
-    // Quote
     const quote = document.createElement("blockquote");
     quote.className = "quote";
     quote.textContent = i.text;
 
-    // Meta container
     const meta = document.createElement("div");
     meta.className = "meta";
 
-    // Category button
     const categoryBtn = document.createElement("button");
     categoryBtn.className = "category-pill";
     categoryBtn.textContent = i.category;
     categoryBtn.onclick = () =>
-  setState({
-    category: i.category,
-    author: "",
-    page: 1
-  });
+      setState({ category: i.category, author: "", page: 1 });
 
-    // Author button
     const authorBtn = document.createElement("button");
     authorBtn.className = "author-chip";
     authorBtn.textContent = i.author;
     authorBtn.onclick = () =>
-setState({
-    author: i.author,
-    category: "",
-    page: 1
-  });
-    // Assemble
+      setState({ author: i.author, category: "", page: 1 });
+
     meta.append(categoryBtn, authorBtn);
     card.append(quote, meta);
     frag.appendChild(card);
@@ -686,14 +672,7 @@ function renderPagination(total) {
 
 /* ================= APP ================= */
 function renderApp() {
-  const filterKey = getFilterKey();
-
-  if (filterKey !== lastFilterKey) {
-    shuffledCache = shuffle(selectFiltered());
-    lastFilterKey = filterKey;
-  }
-
-  const filtered = shuffledCache;
+  const filtered = selectFiltered();
 
   if (filtered.length === 0) {
     renderHeader();
@@ -725,10 +704,6 @@ function setState(patch) {
   Object.assign(state, patch);
   dom.search.value = state.search;
   dom.category.value = state.category;
-
-  shuffledCache = [];
-  lastFilterKey = "";
-
   renderApp();
 }
 
@@ -749,8 +724,6 @@ dom.category.onchange = e =>
 
 window.addEventListener("popstate", () => {
   Object.assign(state, readURL());
-  shuffledCache = [];
-  lastFilterKey = "";
   renderApp();
 });
 
