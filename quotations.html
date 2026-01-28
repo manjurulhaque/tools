@@ -384,6 +384,14 @@ blockquote.quote {
   margin-left: auto;
 }
 
+.footer-link {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
 /* ================= MOBILE ================= */
 @media (max-width: 640px) {
   #hero-quote {
@@ -406,10 +414,6 @@ blockquote.quote {
       placeholder="Search…"
       aria-label="Search quotes"
     >
-
-    <select id="category">
-      <option value="">All categories</option>
-    </select>
 
     <span id="count" aria-live="polite"></span>
   </div>
@@ -454,18 +458,18 @@ blockquote.quote {
 
     <div class="footer-right">
       <button
-        class="footer-link"
-        onclick="scrollTo({ top: 0, behavior: 'smooth' })"
-      >
-        Back to top ↑
-      </button>
+  class="footer-link"
+  onclick="window.scrollTo({ top: 0, behavior: 'smooth' })"
+>
+  Back to top ↑
+</button>
     </div>
   </div>
 </footer>
 
 <!-- Bootstrap JS (optional) -->
 <script>
-"use strict";
+  "use strict";
 
 /* ================= DATA ================= */
 const ITEMS = [
@@ -498,7 +502,9 @@ function hash(str) {
 
 const ITEMS_WITH_KEY = ITEMS.map(i => ({
   ...i,
-  _order: hash(SESSION_SEED + i.text + i.author + i.category)
+  _order: hash(SESSION_SEED + i.text + i.author + i.category),
+  _textLower: i.text.toLowerCase(),
+  _authorLower: i.author.toLowerCase()
 }));
 
 /* ================= DOM ================= */
@@ -507,7 +513,6 @@ const dom = {
   list: $("list"),
   pagination: $("pagination"),
   search: $("search"),
-  category: $("category"),
   count: $("count"),
   heroQuote: $("hero-quote"),
   heroAuthor: $("hero-author"),
@@ -536,7 +541,7 @@ const writeURL = s => {
   history.replaceState(null, "", `?${p}`);
 };
 
-const state = readURL();
+let state = readURL();
 
 /* ================= HELPERS ================= */
 function dailyIndex(seed, max) {
@@ -567,10 +572,7 @@ function selectFiltered() {
     .filter(i =>
       (!state.category || i.category === state.category) &&
       (!state.author || i.author === state.author) &&
-      (!t ||
-        i.text.toLowerCase().includes(t) ||
-        i.author.toLowerCase().includes(t)
-      )
+      (!t || i._textLower.includes(t) || i._authorLower.includes(t))
     )
     .sort((a, b) => a._order - b._order);
 }
@@ -661,26 +663,23 @@ function renderPagination(total) {
     return b;
   };
 
-  const first = makeButton("⏮ First", 1, state.page === 1);
-  const prev  = makeButton("‹ Prev", state.page - 1, state.page === 1);
-
-  const indicator = document.createElement("span");
-  indicator.textContent = `Page ${state.page} of ${totalPages}`;
-  indicator.style.padding = "0 12px";
-  indicator.style.fontSize = "14px";
-  indicator.style.alignSelf = "center";
-
-  const next  = makeButton("Next ›", state.page + 1, state.page === totalPages);
-  const last  = makeButton("Last ⏭", totalPages, state.page === totalPages);
-
-  dom.pagination.append(first, prev, indicator, next, last);
+  dom.pagination.append(
+    makeButton("⏮ First", 1, state.page === 1),
+    makeButton("‹ Prev", state.page - 1, state.page === 1),
+    Object.assign(document.createElement("span"), {
+      textContent: `Page ${state.page} of ${totalPages}`,
+      style: "padding:0 12px;font-size:14px;align-self:center"
+    }),
+    makeButton("Next ›", state.page + 1, state.page === totalPages),
+    makeButton("Last ⏭", totalPages, state.page === totalPages)
+  );
 }
 
 /* ================= APP ================= */
 function renderApp() {
   const filtered = selectFiltered();
 
-  if (filtered.length === 0) {
+  if (!filtered.length) {
     renderHeader();
     dom.list.innerHTML = "<p>No quotes found.</p>";
     dom.pagination.innerHTML = "";
@@ -707,16 +706,12 @@ function renderApp() {
 
 /* ================= STATE ================= */
 function setState(patch) {
-  Object.assign(state, patch);
+  state = { ...state, ...patch };
   dom.search.value = state.search;
-  dom.category.value = state.category;
   renderApp();
 }
 
 /* ================= INIT ================= */
-[...new Set(ITEMS.map(i => i.category))]
-  .forEach(v => dom.category.add(new Option(v, v)));
-
 let searchTimer;
 dom.search.oninput = e => {
   clearTimeout(searchTimer);
@@ -725,11 +720,8 @@ dom.search.oninput = e => {
   }, 150);
 };
 
-dom.category.onchange = e =>
-  setState({ category: e.target.value, page: 1 });
-
 window.addEventListener("popstate", () => {
-  Object.assign(state, readURL());
+  state = readURL();
   renderApp();
 });
 
@@ -748,7 +740,7 @@ renderHero();
 renderApp();
 setTimeOfDayTheme();
 document.getElementById("year").textContent = new Date().getFullYear();
-</script>
 
+</script>
 </body>
 </html>
