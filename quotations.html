@@ -655,25 +655,79 @@ function renderPagination(total) {
   const totalPages = Math.ceil(total / PAGE_SIZE);
   if (totalPages <= 1) return;
 
-  const makeButton = (label, page, disabled) => {
+  const frag = document.createDocumentFragment();
+
+  const makeButton = (label, page, disabled = false, current = false) => {
     const b = document.createElement("button");
     b.textContent = label;
-    b.disabled = disabled;
-    if (!disabled) b.onclick = () => setState({ page });
+    if (current) {
+      b.disabled = true;
+    } else if (disabled) {
+      b.disabled = true;
+    } else {
+      b.onclick = () => setState({ page });
+    }
     return b;
   };
 
-  dom.pagination.append(
-    makeButton("⏮ First", 1, state.page === 1),
-    makeButton("‹ Prev", state.page - 1, state.page === 1),
-    Object.assign(document.createElement("span"), {
-      textContent: `Page ${state.page} of ${totalPages}`,
-      style: "padding:0 12px;font-size:14px;align-self:center"
-    }),
-    makeButton("Next ›", state.page + 1, state.page === totalPages),
-    makeButton("Last ⏭", totalPages, state.page === totalPages)
+  const makeEllipsis = targetPage => {
+  const b = document.createElement("button");
+  b.textContent = "…";
+  b.style.opacity = ".6";
+
+  b.onclick = () => setState({ page: targetPage });
+
+  return b;
+};
+
+
+  const current = state.page;
+  const windowSize = 2;
+
+  // First / Prev
+  frag.append(
+    makeButton("⏮", 1, current === 1),
+    makeButton("‹", current - 1, current === 1)
   );
+
+  // Calculate page window
+  const start = Math.max(2, current - windowSize);
+  const end = Math.min(totalPages - 1, current + windowSize);
+
+  // Page 1
+  frag.append(makeButton("1", 1, false, current === 1));
+
+  // Left ellipsis
+  if (start > 2) {
+  frag.append(makeEllipsis(Math.max(1, current - 5)));
 }
+
+  // Middle pages
+  for (let p = start; p <= end; p++) {
+    frag.append(makeButton(String(p), p, false, p === current));
+  }
+
+  // Right ellipsis
+ if (end < totalPages - 1) {
+  frag.append(makeEllipsis(Math.min(totalPages, current + 5)));
+}
+
+  // Last page
+  if (totalPages > 1) {
+    frag.append(
+      makeButton(String(totalPages), totalPages, false, current === totalPages)
+    );
+  }
+
+  // Next / Last
+  frag.append(
+    makeButton("›", current + 1, current === totalPages),
+    makeButton("⏭", totalPages, current === totalPages)
+  );
+
+  dom.pagination.appendChild(frag);
+}
+
 
 /* ================= APP ================= */
 function renderApp() {
