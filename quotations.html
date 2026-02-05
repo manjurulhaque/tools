@@ -469,7 +469,7 @@ blockquote.quote {
 
 <!-- Bootstrap JS (optional) -->
 <script>
-  "use strict";
+"use strict";
 
 /* ================= DATA ================= */
 const ITEMS = [
@@ -481,6 +481,16 @@ const ITEMS = [
 ];
 
 const PAGE_SIZE = 3;
+
+/* ================= NORMALIZATION ================= */
+function normalizeKey(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
 
 /* ================= PERSISTENT STABLE ORDER ================= */
 const SEED_KEY = "quotes-order-seed";
@@ -502,6 +512,8 @@ function hash(str) {
 
 const ITEMS_WITH_KEY = ITEMS.map(i => ({
   ...i,
+  authorKey: normalizeKey(i.author),
+  categoryKey: normalizeKey(i.category),
   _order: hash(SESSION_SEED + i.text + i.author + i.category),
   _textLower: i.text.toLowerCase(),
   _authorLower: i.author.toLowerCase()
@@ -538,7 +550,7 @@ const writeURL = s => {
   if (s.category) p.set("category", s.category);
   if (s.author) p.set("author", s.author);
   if (s.page > 1) p.set("page", s.page);
-  history.replaceState(null, "", `?${p}`);
+  history.replaceState(null, "", p.toString() ? `?${p}` : location.pathname);
 };
 
 let state = readURL();
@@ -550,8 +562,17 @@ function dailyIndex(seed, max) {
     .reduce((sum, c) => sum + c.charCodeAt(0), 0) % max;
 }
 
+function labelFromKey(key, type) {
+  const item = ITEMS_WITH_KEY.find(i =>
+    type === "author" ? i.authorKey === key : i.categoryKey === key
+  );
+  return item ? (type === "author" ? item.author : item.category) : key;
+}
+
 /* ================= HERO ================= */
 function renderHero() {
+  if (state.author || state.category || state.search) return;
+
   const today = new Date().toISOString().slice(0, 10);
   const i = dailyIndex(today, ITEMS.length);
   const q = ITEMS[i];
@@ -560,8 +581,11 @@ function renderHero() {
   dom.heroAuthor.textContent = q.author;
   dom.heroCategory.textContent = q.category;
 
-  dom.heroAuthor.onclick = () => setState({ author: q.author, page: 1 });
-  dom.heroCategory.onclick = () => setState({ category: q.category, page: 1 });
+  dom.heroAuthor.onclick = () =>
+    setState({ author: normalizeKey(q.author), page: 1 });
+
+  dom.heroCategory.onclick = () =>
+    setState({ category: normalizeKey(q.category), page: 1 });
 }
 
 /* ================= FILTER ================= */
@@ -570,19 +594,24 @@ function selectFiltered() {
 
   return ITEMS_WITH_KEY
     .filter(i =>
-      (!state.category || i.category === state.category) &&
-      (!state.author || i.author === state.author) &&
-      (!t || i._textLower.includes(t) || i._authorLower.includes(t))
+      (!state.category || i.categoryKey === state.category) &&
+      (!state.author || i.authorKey === state.author) &&
+      (!t ||
+        i._textLower.includes(t) ||
+        i._authorLower.includes(t))
     )
     .sort((a, b) => a._order - b._order);
 }
 
 /* ================= HEADER ================= */
 function renderHeader() {
+  const authorLabel = state.author && labelFromKey(state.author, "author");
+  const categoryLabel = state.category && labelFromKey(state.category, "category");
+
   dom.title.textContent =
-    state.author && state.category ? `Quotes by ${state.author} in ${state.category}` :
-    state.author ? `Quotes by ${state.author}` :
-    state.category ? `Quotes about ${state.category}` :
+    authorLabel && categoryLabel ? `Quotes by ${authorLabel} in ${categoryLabel}` :
+    authorLabel ? `Quotes by ${authorLabel}` :
+    categoryLabel ? `Quotes about ${categoryLabel}` :
     state.search ? "Search results" :
     "All Quotations";
 
@@ -606,10 +635,14 @@ function renderHeader() {
   }));
 
   if (state.category)
-    add(state.category, () => setState({ category: state.category, author: "", page: 1 }));
+    add(categoryLabel, () =>
+      setState({ category: state.category, author: "", page: 1 })
+    );
 
   if (state.author)
-    add(state.author, () => setState({ author: state.author, page: 1 }));
+    add(authorLabel, () =>
+      setState({ author: state.author, page: 1 })
+    );
 }
 
 /* ================= LIST ================= */
@@ -632,13 +665,13 @@ function renderList(items) {
     categoryBtn.className = "category-pill";
     categoryBtn.textContent = i.category;
     categoryBtn.onclick = () =>
-      setState({ category: i.category, author: "", page: 1 });
+      setState({ category: i.categoryKey, author: "", page: 1 });
 
     const authorBtn = document.createElement("button");
     authorBtn.className = "author-chip";
     authorBtn.textContent = i.author;
     authorBtn.onclick = () =>
-      setState({ author: i.author, category: "", page: 1 });
+      setState({ author: i.authorKey, category: "", page: 1 });
 
     meta.append(categoryBtn, authorBtn);
     card.append(quote, meta);
@@ -660,9 +693,7 @@ function renderPagination(total) {
   const makeButton = (label, page, disabled = false, current = false) => {
     const b = document.createElement("button");
     b.textContent = label;
-    if (current) {
-      b.disabled = true;
-    } else if (disabled) {
+    if (current || disabled) {
       b.disabled = true;
     } else {
       b.onclick = () => setState({ page });
@@ -670,56 +701,40 @@ function renderPagination(total) {
     return b;
   };
 
-  const makeEllipsis = targetPage => {
-  const b = document.createElement("button");
-  b.textContent = "…";
-  b.style.opacity = ".6";
-
-  b.onclick = () => setState({ page: targetPage });
-
-  return b;
-};
-
-
   const current = state.page;
   const windowSize = 2;
 
-  // First / Prev
   frag.append(
     makeButton("⏮", 1, current === 1),
-    makeButton("‹", current - 1, current === 1)
+    makeButton("‹", current - 1, current === 1),
+    makeButton("1", 1, false, current === 1)
   );
 
-  // Calculate page window
   const start = Math.max(2, current - windowSize);
   const end = Math.min(totalPages - 1, current + windowSize);
 
-  // Page 1
-  frag.append(makeButton("1", 1, false, current === 1));
-
-  // Left ellipsis
   if (start > 2) {
-  frag.append(makeEllipsis(Math.max(1, current - 5)));
-}
+    const ellipsis = document.createElement("button");
+    ellipsis.textContent = "…";
+    ellipsis.onclick = () => setState({ page: Math.max(1, current - 5) });
+    frag.appendChild(ellipsis);
+  }
 
-  // Middle pages
   for (let p = start; p <= end; p++) {
     frag.append(makeButton(String(p), p, false, p === current));
   }
 
-  // Right ellipsis
- if (end < totalPages - 1) {
-  frag.append(makeEllipsis(Math.min(totalPages, current + 5)));
-}
-
-  // Last page
-  if (totalPages > 1) {
-    frag.append(
-      makeButton(String(totalPages), totalPages, false, current === totalPages)
-    );
+  if (end < totalPages - 1) {
+    const ellipsis = document.createElement("button");
+    ellipsis.textContent = "…";
+    ellipsis.onclick = () => setState({ page: Math.min(totalPages, current + 5) });
+    frag.appendChild(ellipsis);
   }
 
-  // Next / Last
+  if (totalPages > 1) {
+    frag.append(makeButton(String(totalPages), totalPages, false, current === totalPages));
+  }
+
   frag.append(
     makeButton("›", current + 1, current === totalPages),
     makeButton("⏭", totalPages, current === totalPages)
@@ -727,7 +742,6 @@ function renderPagination(total) {
 
   dom.pagination.appendChild(frag);
 }
-
 
 /* ================= APP ================= */
 function renderApp() {
@@ -762,6 +776,7 @@ function renderApp() {
 function setState(patch) {
   state = { ...state, ...patch };
   dom.search.value = state.search;
+  renderHero();
   renderApp();
 }
 
@@ -776,6 +791,7 @@ dom.search.oninput = e => {
 
 window.addEventListener("popstate", () => {
   state = readURL();
+  renderHero();
   renderApp();
 });
 
@@ -794,7 +810,6 @@ renderHero();
 renderApp();
 setTimeOfDayTheme();
 document.getElementById("year").textContent = new Date().getFullYear();
-
 </script>
 </body>
 </html>
