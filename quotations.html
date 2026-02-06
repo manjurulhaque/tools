@@ -492,6 +492,14 @@ function normalizeKey(str) {
     .replace(/^-+|-+$/g, "");
 }
 
+/* SEARCH-SAFE NORMALIZATION */
+function normalizeSearch(str) {
+  return str
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 /* ================= PERSISTENT STABLE ORDER ================= */
 const SEED_KEY = "quotes-order-seed";
 
@@ -515,8 +523,8 @@ const ITEMS_WITH_KEY = ITEMS.map(i => ({
   authorKey: normalizeKey(i.author),
   categoryKey: normalizeKey(i.category),
   _order: hash(SESSION_SEED + i.text + i.author + i.category),
-  _textNorm: normalizeKey(i.text),
-  _authorNorm: normalizeKey(i.author)
+  _textNorm: normalizeSearch(i.text),
+  _authorNorm: normalizeSearch(i.author)
 }));
 
 /* ================= DOM ================= */
@@ -526,6 +534,7 @@ const dom = {
   pagination: $("pagination"),
   search: $("search"),
   count: $("count"),
+  hero: $("hero"),
   heroQuote: $("hero-quote"),
   heroAuthor: $("hero-author"),
   heroCategory: $("hero-category"),
@@ -569,9 +578,22 @@ function labelFromKey(key, type) {
   return item ? (type === "author" ? item.author : item.category) : key;
 }
 
-/* ================= HERO ================= */
+/* ================= HERO (QOTD FIXED) ================= */
 function renderHero() {
-  if (state.author || state.category || state.search) return;
+  const isHome =
+    !state.search &&
+    !state.category &&
+    !state.author &&
+    state.page === 1;
+
+  dom.hero.hidden = !isHome;
+
+  if (!isHome) {
+    dom.heroQuote.textContent = "";
+    dom.heroAuthor.textContent = "";
+    dom.heroCategory.textContent = "";
+    return;
+  }
 
   const today = new Date().toISOString().slice(0, 10);
   const ordered = [...ITEMS_WITH_KEY].sort((a, b) => a._order - b._order);
@@ -591,7 +613,7 @@ function renderHero() {
 
 /* ================= FILTER ================= */
 function selectFiltered() {
-  const t = normalizeKey(state.search);
+  const t = normalizeSearch(state.search);
 
   return ITEMS_WITH_KEY
     .filter(i =>
@@ -720,8 +742,7 @@ function renderPagination(total) {
     const target = Math.max(1, current - 5);
     const ellipsis = document.createElement("button");
     ellipsis.textContent = "…";
-    if (target === current) ellipsis.disabled = true;
-    else ellipsis.onclick = () => setState({ page: target });
+    ellipsis.onclick = () => setState({ page: target });
     frag.appendChild(ellipsis);
   }
 
@@ -733,8 +754,7 @@ function renderPagination(total) {
     const target = Math.min(totalPages, current + 5);
     const ellipsis = document.createElement("button");
     ellipsis.textContent = "…";
-    if (target === current) ellipsis.disabled = true;
-    else ellipsis.onclick = () => setState({ page: target });
+    ellipsis.onclick = () => setState({ page: target });
     frag.appendChild(ellipsis);
   }
 
