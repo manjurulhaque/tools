@@ -763,7 +763,10 @@ function renderPagination(total) {
   const makeButton = (label, page, active=false) => {
     const b = document.createElement("button");
     b.textContent = label;
-    if (active) b.disabled = true;
+    if (active) {
+      b.disabled = true;
+      b.setAttribute("aria-current", "page");
+    }
     else b.onclick = () => setState({ page });
     return b;
   };
