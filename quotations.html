@@ -536,7 +536,8 @@ const ITEMS_WITH_KEY = ITEMS.map(i => ({
   categoryKey: normalizeKey(i.category),
   _order: hash(SESSION_SEED + i.text + i.author + i.category),
   _textNorm: normalizeSearch(i.text),
-  _authorNorm: normalizeSearch(i.author)
+  _authorNorm: normalizeSearch(i.author),
+  _categoryNorm: normalizeSearch(i.category) // ✅ ADD
 }));
 
 /* ================= DOM ================= */
@@ -673,7 +674,7 @@ function selectFiltered() {
     .filter(i =>
       (!state.category || i.categoryKey === state.category) &&
       (!state.author || i.authorKey === state.author) &&
-      (!t || i._textNorm.includes(t) || i._authorNorm.includes(t))
+      (!t || i._textNorm.includes(t) || i._authorNorm.includes(t)) || i._categoryNorm.includes(t) // ✅ ADD
     )
     .sort((a,b)=>a._order-b._order);
 
