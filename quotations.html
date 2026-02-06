@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>Quotations</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="A curated collection of thoughtful quotations.">
 
   <!-- Bootstrap CSS -->
   <link
@@ -552,7 +553,6 @@ const readURL = () => {
   };
 };
 
-/* 🔧 FIX #1: pushState instead of replaceState */
 const writeURL = s => {
   const p = new URLSearchParams();
   if (s.search) p.set("search", s.search);
@@ -560,11 +560,7 @@ const writeURL = s => {
   if (s.author) p.set("author", s.author);
   if (s.page > 1) p.set("page", s.page);
 
-  history.pushState(
-    null,
-    "",
-    location.pathname + (p.toString() ? `?${p}` : "")
-  );
+  history.pushState(null, "", location.pathname + (p.toString() ? `?${p}` : ""));
 };
 
 let state = readURL();
@@ -581,6 +577,28 @@ function labelFromKey(key, type) {
     type === "author" ? i.authorKey === key : i.categoryKey === key
   );
   return item ? (type === "author" ? item.author : item.category) : key;
+}
+
+/* ================= META DESCRIPTION ================= */
+function updateMetaDescription(filtered) {
+  let description = "A curated collection of thoughtful quotations.";
+
+  if (state.author && state.category) {
+    description = `Quotes by ${labelFromKey(state.author, "author")} about ${labelFromKey(state.category, "category")}.`;
+  } else if (state.author) {
+    description = `Quotes by ${labelFromKey(state.author, "author")}.`;
+  } else if (state.category) {
+    description = `Quotes about ${labelFromKey(state.category, "category")}.`;
+  } else if (state.search) {
+    description = `Search results for “${state.search}”.`;
+  } else if (filtered.length) {
+    description = filtered[0].text;
+  }
+
+  description = description.slice(0, 155);
+
+  const meta = document.querySelector('meta[name="description"]');
+  if (meta) meta.setAttribute("content", description);
 }
 
 /* ================= HERO ================= */
@@ -604,11 +622,8 @@ function renderHero() {
   dom.heroAuthor.textContent = q.author;
   dom.heroCategory.textContent = q.category;
 
-  dom.heroAuthor.onclick = () =>
-    setState({ author: q.authorKey, page: 1 });
-
-  dom.heroCategory.onclick = () =>
-    setState({ category: q.categoryKey, page: 1 });
+  dom.heroAuthor.onclick = () => setState({ author: q.authorKey, page: 1 });
+  dom.heroCategory.onclick = () => setState({ category: q.categoryKey, page: 1 });
 }
 
 /* ================= FILTER ================= */
@@ -641,7 +656,6 @@ function renderHeader() {
   const add = (label, fn) => {
     const s = document.createElement("span");
     s.className = "breadcrumb";
-    s.style.animationDelay = `${dom.breadcrumbs.children.length * 60}ms`;
 
     const b = document.createElement("button");
     b.textContent = label;
@@ -651,22 +665,13 @@ function renderHeader() {
     dom.breadcrumbs.appendChild(s);
   };
 
-  add("Home", () => setState({
-    search: "",
-    category: "",
-    author: "",
-    page: 1
-  }));
+  add("Home", () => setState({ search:"", category:"", author:"", page:1 }));
 
   if (state.category)
-    add(categoryLabel, () =>
-      setState({ category: state.category, author: "", page: 1 })
-    );
+    add(categoryLabel, () => setState({ category: state.category, author:"", page:1 }));
 
   if (state.author)
-    add(authorLabel, () =>
-      setState({ author: state.author, page: 1 })
-    );
+    add(authorLabel, () => setState({ author: state.author, page:1 }));
 }
 
 /* ================= LIST ================= */
@@ -688,14 +693,12 @@ function renderList(items) {
     const categoryBtn = document.createElement("button");
     categoryBtn.className = "category-pill";
     categoryBtn.textContent = i.category;
-    categoryBtn.onclick = () =>
-      setState({ category: i.categoryKey, author: "", page: 1 });
+    categoryBtn.onclick = () => setState({ category: i.categoryKey, author:"", page:1 });
 
     const authorBtn = document.createElement("button");
     authorBtn.className = "author-chip";
     authorBtn.textContent = i.author;
-    authorBtn.onclick = () =>
-      setState({ author: i.authorKey, category: "", page: 1 });
+    authorBtn.onclick = () => setState({ author: i.authorKey, category:"", page:1 });
 
     meta.append(categoryBtn, authorBtn);
     card.append(quote, meta);
@@ -712,7 +715,6 @@ function renderPagination(total) {
   if (totalPages <= 1) return;
 
   const current = state.page;
-  const windowSize = 2;
   const frag = document.createDocumentFragment();
 
   const makeButton = (label, page, active = false) => {
@@ -723,35 +725,10 @@ function renderPagination(total) {
     return b;
   };
 
-  const makeEllipsis = () => {
-    const e = document.createElement("button");
-    e.textContent = "…";
-    e.disabled = true;
-    return e;
-  };
-
-  if (current > 1) {
-    frag.append(makeButton("⏮", 1), makeButton("‹", current - 1));
-  }
-
-  frag.append(makeButton("1", 1, current === 1));
-
-  const start = Math.max(2, current - windowSize);
-  const end = Math.min(totalPages - 1, current + windowSize);
-
-  if (start > 2) frag.append(makeEllipsis());
-
-  for (let p = start; p <= end; p++) {
+  if (current > 1) frag.append(makeButton("‹", current - 1));
+  for (let p = 1; p <= totalPages; p++)
     frag.append(makeButton(String(p), p, p === current));
-  }
-
-  if (end < totalPages - 1) frag.append(makeEllipsis());
-
-  frag.append(makeButton(String(totalPages), totalPages, current === totalPages));
-
-  if (current < totalPages) {
-    frag.append(makeButton("›", current + 1), makeButton("⏭", totalPages));
-  }
+  if (current < totalPages) frag.append(makeButton("›", current + 1));
 
   dom.pagination.appendChild(frag);
 }
@@ -766,12 +743,9 @@ function renderApp() {
     dom.pagination.innerHTML = "";
     dom.count.textContent = "0 results";
     document.title = "No results | Quotations";
-    writeURL(state);
+    updateMetaDescription([]);
     return;
   }
-
-  const pages = Math.ceil(filtered.length / PAGE_SIZE);
-  if (state.page > pages) state.page = 1;
 
   renderHeader();
   renderList(filtered.slice(
@@ -782,13 +756,15 @@ function renderApp() {
 
   dom.count.textContent = `${filtered.length} results`;
   document.title = `${dom.title.textContent} | Quotations`;
-  writeURL(state);
+
+  updateMetaDescription(filtered);
 }
 
 /* ================= STATE ================= */
 function setState(patch) {
   state = { ...state, ...patch };
   dom.search.value = state.search;
+  writeURL(state);
   renderHero();
   renderApp();
 }
