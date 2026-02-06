@@ -552,13 +552,15 @@ const readURL = () => {
   };
 };
 
+/* 🔧 FIX #1: pushState instead of replaceState */
 const writeURL = s => {
   const p = new URLSearchParams();
   if (s.search) p.set("search", s.search);
   if (s.category) p.set("category", s.category);
   if (s.author) p.set("author", s.author);
   if (s.page > 1) p.set("page", s.page);
-  history.replaceState(
+
+  history.pushState(
     null,
     "",
     location.pathname + (p.toString() ? `?${p}` : "")
@@ -590,7 +592,6 @@ function renderHero() {
     state.page === 1;
 
   dom.hero.hidden = !isHome;
-
   if (!isHome) return;
 
   const today = new Date().toISOString().slice(0, 10);
@@ -618,9 +619,7 @@ function selectFiltered() {
     .filter(i =>
       (!state.category || i.categoryKey === state.category) &&
       (!state.author || i.authorKey === state.author) &&
-      (!t ||
-        i._textNorm.includes(t) ||
-        i._authorNorm.includes(t))
+      (!t || i._textNorm.includes(t) || i._authorNorm.includes(t))
     )
     .sort((a, b) => a._order - b._order);
 }
@@ -706,10 +705,9 @@ function renderList(items) {
   dom.list.appendChild(frag);
 }
 
-/* ================= PAGINATION (FIXED ELLIPSIS) ================= */
+/* ================= PAGINATION ================= */
 function renderPagination(total) {
   dom.pagination.innerHTML = "";
-
   const totalPages = Math.ceil(total / PAGE_SIZE);
   if (totalPages <= 1) return;
 
@@ -720,13 +718,8 @@ function renderPagination(total) {
   const makeButton = (label, page, active = false) => {
     const b = document.createElement("button");
     b.textContent = label;
-
-    if (active) {
-      b.disabled = true;
-    } else {
-      b.onclick = () => setState({ page });
-    }
-
+    if (active) b.disabled = true;
+    else b.onclick = () => setState({ page });
     return b;
   };
 
@@ -737,15 +730,10 @@ function renderPagination(total) {
     return e;
   };
 
-  /* ===== FIRST / PREV (HIDDEN ON PAGE 1) ===== */
   if (current > 1) {
-    frag.append(
-      makeButton("⏮", 1),
-      makeButton("‹", current - 1)
-    );
+    frag.append(makeButton("⏮", 1), makeButton("‹", current - 1));
   }
 
-  /* ===== PAGE 1 ===== */
   frag.append(makeButton("1", 1, current === 1));
 
   const start = Math.max(2, current - windowSize);
@@ -759,19 +747,10 @@ function renderPagination(total) {
 
   if (end < totalPages - 1) frag.append(makeEllipsis());
 
-  /* ===== LAST PAGE ===== */
-  if (totalPages > 1) {
-    frag.append(
-      makeButton(String(totalPages), totalPages, current === totalPages)
-    );
-  }
+  frag.append(makeButton(String(totalPages), totalPages, current === totalPages));
 
-  /* ===== NEXT / LAST (HIDDEN ON LAST PAGE) ===== */
   if (current < totalPages) {
-    frag.append(
-      makeButton("›", current + 1),
-      makeButton("⏭", totalPages)
-    );
+    frag.append(makeButton("›", current + 1), makeButton("⏭", totalPages));
   }
 
   dom.pagination.appendChild(frag);
