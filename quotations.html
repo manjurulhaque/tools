@@ -672,10 +672,16 @@ function selectFiltered() {
   _cacheKey = key;
   _cacheResult = ITEMS_WITH_KEY
     .filter(i =>
-      (!state.category || i.categoryKey === state.category) &&
-      (!state.author || i.authorKey === state.author) &&
-      (!t || i._textNorm.includes(t) || i._authorNorm.includes(t)) || i._categoryNorm.includes(t) // ✅ ADD
-    )
+  (!state.category || i.categoryKey === state.category) &&
+  (!state.author || i.authorKey === state.author) &&
+  (
+    !t ||
+    i._textNorm.includes(t) ||
+    i._authorNorm.includes(t) ||
+    i._categoryNorm.includes(t)
+  )
+)
+
     .sort((a,b)=>a._order-b._order);
 
   return _cacheResult;
@@ -729,12 +735,12 @@ function renderList(items) {
     const c = document.createElement("button");
     c.className = "category-pill";
     c.textContent = i.category;
-    c.onclick = () => setState({ category:i.categoryKey, author:"", page:1 });
+    c.onclick = () => setState({ category:i.categoryKey, page:1 });
 
     const a = document.createElement("button");
     a.className = "author-chip";
     a.textContent = i.author;
-    a.onclick = () => setState({ author:i.authorKey, category:"", page:1 });
+    a.onclick = () => setState({ author:i.authorKey, page:1 });
 
     m.append(c,a);
     card.append(q,m);
