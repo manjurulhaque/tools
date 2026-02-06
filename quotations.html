@@ -515,8 +515,8 @@ const ITEMS_WITH_KEY = ITEMS.map(i => ({
   authorKey: normalizeKey(i.author),
   categoryKey: normalizeKey(i.category),
   _order: hash(SESSION_SEED + i.text + i.author + i.category),
-  _textLower: i.text.toLowerCase(),
-  _authorLower: i.author.toLowerCase()
+  _textNorm: normalizeKey(i.text),
+  _authorNorm: normalizeKey(i.author)
 }));
 
 /* ================= DOM ================= */
@@ -574,31 +574,32 @@ function renderHero() {
   if (state.author || state.category || state.search) return;
 
   const today = new Date().toISOString().slice(0, 10);
-  const i = dailyIndex(today, ITEMS.length);
-  const q = ITEMS[i];
+  const ordered = [...ITEMS_WITH_KEY].sort((a, b) => a._order - b._order);
+  const i = dailyIndex(today, ordered.length);
+  const q = ordered[i];
 
   dom.heroQuote.textContent = q.text;
   dom.heroAuthor.textContent = q.author;
   dom.heroCategory.textContent = q.category;
 
   dom.heroAuthor.onclick = () =>
-    setState({ author: normalizeKey(q.author), page: 1 });
+    setState({ author: q.authorKey, page: 1 });
 
   dom.heroCategory.onclick = () =>
-    setState({ category: normalizeKey(q.category), page: 1 });
+    setState({ category: q.categoryKey, page: 1 });
 }
 
 /* ================= FILTER ================= */
 function selectFiltered() {
-  const t = state.search.toLowerCase();
+  const t = normalizeKey(state.search);
 
   return ITEMS_WITH_KEY
     .filter(i =>
       (!state.category || i.categoryKey === state.category) &&
       (!state.author || i.authorKey === state.author) &&
       (!t ||
-        i._textLower.includes(t) ||
-        i._authorLower.includes(t))
+        i._textNorm.includes(t) ||
+        i._authorNorm.includes(t))
     )
     .sort((a, b) => a._order - b._order);
 }
@@ -620,9 +621,12 @@ function renderHeader() {
   const add = (label, fn) => {
     const s = document.createElement("span");
     s.className = "breadcrumb";
+    s.style.animationDelay = `${dom.breadcrumbs.children.length * 60}ms`;
+
     const b = document.createElement("button");
     b.textContent = label;
     b.onclick = fn;
+
     s.appendChild(b);
     dom.breadcrumbs.appendChild(s);
   };
@@ -689,20 +693,19 @@ function renderPagination(total) {
   if (totalPages <= 1) return;
 
   const frag = document.createDocumentFragment();
+  const current = state.page;
+  const windowSize = 2;
 
-  const makeButton = (label, page, disabled = false, current = false) => {
+  const makeButton = (label, page, disabled = false, currentBtn = false) => {
     const b = document.createElement("button");
     b.textContent = label;
-    if (current || disabled) {
+    if (currentBtn || disabled) {
       b.disabled = true;
     } else {
       b.onclick = () => setState({ page });
     }
     return b;
   };
-
-  const current = state.page;
-  const windowSize = 2;
 
   frag.append(
     makeButton("⏮", 1, current === 1),
@@ -714,9 +717,11 @@ function renderPagination(total) {
   const end = Math.min(totalPages - 1, current + windowSize);
 
   if (start > 2) {
+    const target = Math.max(1, current - 5);
     const ellipsis = document.createElement("button");
     ellipsis.textContent = "…";
-    ellipsis.onclick = () => setState({ page: Math.max(1, current - 5) });
+    if (target === current) ellipsis.disabled = true;
+    else ellipsis.onclick = () => setState({ page: target });
     frag.appendChild(ellipsis);
   }
 
@@ -725,17 +730,16 @@ function renderPagination(total) {
   }
 
   if (end < totalPages - 1) {
+    const target = Math.min(totalPages, current + 5);
     const ellipsis = document.createElement("button");
     ellipsis.textContent = "…";
-    ellipsis.onclick = () => setState({ page: Math.min(totalPages, current + 5) });
+    if (target === current) ellipsis.disabled = true;
+    else ellipsis.onclick = () => setState({ page: target });
     frag.appendChild(ellipsis);
   }
 
-  if (totalPages > 1) {
-    frag.append(makeButton(String(totalPages), totalPages, false, current === totalPages));
-  }
-
   frag.append(
+    makeButton(String(totalPages), totalPages, false, current === totalPages),
     makeButton("›", current + 1, current === totalPages),
     makeButton("⏭", totalPages, current === totalPages)
   );
