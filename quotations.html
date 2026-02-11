@@ -248,6 +248,40 @@ body[data-time="night"] #hero {
   transform: translateY(-4px);
   animation: crumb-in 220ms cubic-bezier(.4,0,.2,1) forwards;
 }
+.breadcrumb-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: var(--text-xs);
+  opacity: .8;
+}
+
+.breadcrumb-item {
+  display: flex;
+  align-items: center;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+  content: "/";
+  margin-right: 8px;
+  opacity: .6;
+}
+
+.breadcrumb-item button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: inherit;
+  color: inherit;
+  padding: 0;
+}
+
+.breadcrumb-item button:hover {
+  text-decoration: underline;
+}
 
 @keyframes crumb-in {
   to { opacity: 1; transform: translateY(0); }
@@ -701,19 +735,58 @@ function renderHeader() {
 
   dom.breadcrumbs.innerHTML = "";
 
-  const add = (label, fn) => {
-    const s = document.createElement("span");
-    s.className = "breadcrumb";
-    const b = document.createElement("button");
-    b.textContent = label;
-    b.onclick = fn;
-    s.appendChild(b);
-    dom.breadcrumbs.appendChild(s);
-  };
+  // Create semantic nav + list
+  const nav = document.createElement("nav");
+  nav.setAttribute("aria-label", "Breadcrumb");
 
-  add("Home",()=>setState({search:"",category:"",author:"",page:1}));
-  if (c) add(c,()=>setState({category:state.category,author:"",page:1}));
-  if (a) add(a,()=>setState({author:state.author,page:1}));
+  const ol = document.createElement("ol");
+  ol.className = "breadcrumb-list";
+
+  function addItem(label, isCurrent, onClick) {
+    const li = document.createElement("li");
+    li.className = "breadcrumb-item";
+
+    if (isCurrent) {
+      const span = document.createElement("span");
+      span.textContent = label;
+      span.setAttribute("aria-current", "page");
+      li.appendChild(span);
+    } else {
+      const btn = document.createElement("button");
+      btn.textContent = label;
+      btn.onclick = onClick;
+      li.appendChild(btn);
+    }
+
+    ol.appendChild(li);
+  }
+
+  // Home
+  const isHome =
+    !state.search && !state.category && !state.author;
+
+  addItem("Home", isHome, () =>
+    setState({ search:"", category:"", author:"", page:1 })
+  );
+
+  if (c) {
+    addItem(
+      c,
+      !a,
+      () => setState({ category:state.category, author:"", page:1 })
+    );
+  }
+
+  if (a) {
+    addItem(
+      a,
+      true,
+      () => {}
+    );
+  }
+
+  nav.appendChild(ol);
+  dom.breadcrumbs.appendChild(nav);
 }
 
 /* ================= LIST ================= */
