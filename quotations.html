@@ -238,7 +238,7 @@ body[data-time="night"] #hero {
 }
 
 #breadcrumbs {
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   opacity: .75;
   display: flex;
   gap: 6px;
@@ -252,11 +252,11 @@ body[data-time="night"] #hero {
 .breadcrumb-list {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 10;
   display: flex;
   gap: 8px;
   align-items: center;
-  font-size: var(--text-xs);
+  font-size: var(--text-sm);
   opacity: .8;
 }
 
@@ -872,6 +872,14 @@ function renderPagination(total) {
 function renderApp() {
   const filtered = selectFiltered();
 
+  // 🔒 Ensure page is within valid bounds
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+
+  if (state.page > totalPages) {
+    state.page = totalPages;
+    writeURL(state); // keep URL in sync
+  }
+
   if (!filtered.length) {
     renderHeader();
     dom.list.innerHTML = "<p>No quotes found.</p>";
@@ -885,10 +893,18 @@ function renderApp() {
   }
 
   renderHeader();
-  renderList(filtered.slice((state.page-1)*PAGE_SIZE, state.page*PAGE_SIZE));
+
+  renderList(
+    filtered.slice(
+      (state.page - 1) * PAGE_SIZE,
+      state.page * PAGE_SIZE
+    )
+  );
+
   renderPagination(filtered.length);
 
   dom.count.textContent = `${filtered.length} results`;
+
   document.title =
     dom.title.textContent === "All Quotations"
       ? "Inspirational Quotations by Author & Topic"
